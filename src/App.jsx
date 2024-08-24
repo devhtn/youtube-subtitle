@@ -1,11 +1,16 @@
-import Button from '@mui/material/Button'
+import { RouterProvider } from 'react-router-dom'
+import { ToastContainer } from 'react-toastify'
 
+import 'react-toastify/dist/ReactToastify.css'
+
+import router from './config/router/routerConfig'
+
+router
 function App() {
   return (
     <>
-      <div>
-        <Button variant="contained">Hello world</Button>
-      </div>
+      <ToastContainer />
+      <RouterProvider router={router} />
     </>
   )
 }
