@@ -1,6 +1,9 @@
+import 'react-toastify/dist/ReactToastify.css'
+
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
+import { ToastContainer } from 'react-toastify'
 
 import CssBaseline from '@mui/material/CssBaseline'
 import { ThemeProvider } from '@mui/material/styles'
@@ -9,8 +12,9 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
 
-import { persistor, store } from './config/redux/store'
-import theme from './theme'
+import theme from './config/theme'
+import { persistor, store } from './redux/store'
+import env from './config/env'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
@@ -18,7 +22,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
       <PersistGate loading={null} persistor={persistor}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
-          <GoogleOAuthProvider clientId='412352915991-qidg9ggvbofkjq6213tfjrbrorl9ecth.apps.googleusercontent.com'>
+          <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
+            <ToastContainer />
             <App />
           </GoogleOAuthProvider>
         </ThemeProvider>

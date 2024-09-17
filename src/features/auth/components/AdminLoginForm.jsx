@@ -1,8 +1,7 @@
 import * as React from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import LockIcon from '@mui/icons-material/LockOpen'
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline'
@@ -20,10 +19,13 @@ import TextField from '~/components/fields/TextField'
 
 import authApi from '../authApi'
 import { login } from '../authSlice'
+import customToast from '~/config/toast'
 
 const AdminLoginForm = () => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const location = useLocation()
+
   const {
     control,
     handleSubmit,
@@ -37,17 +39,24 @@ const AdminLoginForm = () => {
 
   const [showPassword, setShowPassword] = React.useState(false)
 
+  const pathname = location.pathname
+
   const togglePassword = () => {
     setShowPassword(!showPassword)
   }
   const onSubmit = async (data) => {
-    try {
-      const response = await authApi.signin(data)
-      dispatch(login(response))
-      navigate('/admin')
-    } catch (error) {
-      toast.error(error.message)
-    }
+    const id = customToast.loading()
+    setTimeout(async () => {
+      try {
+        const response = await authApi.adminLogin(data)
+        dispatch(login(response))
+        customToast.stop()
+        if (pathname === '/admin/login') navigate('/admin')
+        else window.close()
+      } catch (error) {
+        customToast.update(id, error.message, 'error')
+      }
+    }, 1000)
   }
   return (
     <Box p={2}>

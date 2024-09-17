@@ -9,7 +9,7 @@ const RequireAuth = ({ allowedRoles, children }) => {
 
   useEffect(() => {
     if (!allowedRoles.includes(userRole)) {
-      navigate('/admin/login') // Nếu người dùng không có quyền, điều hướng về trang login
+      navigate('/not-found')
     }
   }, [allowedRoles, navigate, userRole])
 

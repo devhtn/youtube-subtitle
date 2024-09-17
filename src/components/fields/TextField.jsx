@@ -16,8 +16,8 @@ const TextField = ({ name, control, label, rules, type, ...props }) => {
           type={type ? type : 'text'}
           error={!!error}
           helperText={error ? error.message : ''}
-          variant='outlined'
           fullWidth
+          size='small'
           margin='normal'
           {...props}
         />

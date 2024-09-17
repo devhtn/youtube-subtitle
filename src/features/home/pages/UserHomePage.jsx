@@ -1,7 +1,7 @@
 import { Box } from '@mui/material'
 
 const UserHomePage = () => {
-  return <Box>Home</Box>
+  return <Box>UserHomePage</Box>
 }
 
 export default UserHomePage
