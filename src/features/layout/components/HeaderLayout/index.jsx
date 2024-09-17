@@ -18,7 +18,7 @@ import Toolbar from '@mui/material/Toolbar'
 import Typography from '@mui/material/Typography'
 
 import SearchInput from './HeaderSearch'
-import { toggleSidebar } from '~/layouts/components/SidebarLayout/sidebarSlice'
+import { toggleSidebar } from '~/features/layout/components/Sidebar/sidebarSlice'
 
 import useAuth from '~/hooks/useAuth'
 

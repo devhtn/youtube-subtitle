@@ -1,10 +1,12 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
+import { Menu } from '@mui/icons-material'
 import MailIcon from '@mui/icons-material/Mail'
 import InboxIcon from '@mui/icons-material/MoveToInbox'
 import {
   Box,
   Divider,
+  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -14,6 +16,8 @@ import {
 import MuiDrawer from '@mui/material/Drawer'
 import { styled } from '@mui/material/styles'
 
+import { toggleSidebar } from './sidebarSlice'
+
 const openedMixin = (theme) => ({
   width: theme.app.sidebarWidth,
   overflowX: 'hidden'
@@ -21,22 +25,20 @@ const openedMixin = (theme) => ({
 
 const closedMixin = (theme) => ({
   overflowX: 'hidden',
-  width: `calc(${theme.spacing(7)} + 1px)`,
-  [theme.breakpoints.up('sm')]: {
-    width: `calc(${theme.spacing(8)} + 1px)`
-  }
+  width: `calc(${theme.spacing(8)} + 1px)`
 })
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  // necessary for content to be below app bar
-  ...theme.mixins.toolbar,
-  '@media (min-width:600px)': {
-    minHeight: theme.app.headerHeight // Ghi đè min-height cho màn hình >= 600px
-  }
-}))
+// const DrawerHeader = styled('div')(({ theme }) => ({
+//   // necessary for content to be below app bar
+//   ...theme.mixins.toolbar,
+//   '@media (min-width:600px)': {
+//     minHeight: theme.app.headerHeight // Ghi đè min-height cho màn hình >= 600px
+//   }
+// }))
 
 const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== 'open'
+  // Không dùng shouldForwardProp khi không cần thiết
+  // shouldForwardProp: (prop) => prop !== 'open'
 })(({ theme, open }) => ({
   width: theme.app.sidebarWidth,
   flexShrink: 0,
@@ -56,43 +58,38 @@ const Drawer = styled(MuiDrawer, {
 }))
 
 const SidebarLayout = () => {
-  const isOpen = useSelector((state) => state.sidebar.isOpen)
+  const sidebar = useSelector((state) => state.sidebar)
+  const dispatch = useDispatch()
 
   return (
-    <Drawer variant='permanent' open={isOpen}>
-      <DrawerHeader />
+    <Drawer
+      variant={sidebar.persistent ? 'persistent' : 'permanent'}
+      open={sidebar.isOpen}
+    >
+      {/* <DrawerHeader /> */}
       <Box
         sx={{
           overflowY: 'auto',
-          overflowX: 'hidden',
-          // '&::-webkit-scrollbar': {
-          //   width: 0
-          // },
-          '&:hover': {
-            '&::-webkit-scrollbar': {
-              width: '8px' // Hiển thị scrollbar khi hover
-            }
-          },
-          // '&::-webkit-scrollbar-thumb': {
-          //   backgroundColor: '#c4c4c4' // Màu sắc của thanh cuộn
-          // },
-          // '&::-webkit-scrollbar-track': {
-          //   backgroundColor: '#fff' // Màu nền của đường cuộn
-          // }
-          '&::-webkit-scrollbar': {
-            width: '0px'
-          },
-          '&::-webkit-scrollbar-thumb': {
-            backgroundColor: '#c4c4c4',
-            borderRadius: '10px',
-            border: '2px solid transparent',
-            backgroundClip: 'content-box'
-          },
-          '&::-webkit-scrollbar-track': {
-            backgroundColor: '#f5f5f5'
-          }
+          overflowX: 'hidden'
         }}
       >
+        <Box
+          sx={{
+            display: 'flex',
+            justifyContent: open ? 'initial' : 'center',
+            mt: 1,
+            px: '8px'
+          }}
+        >
+          <IconButton
+            size='large'
+            color='inherit'
+            aria-label='open drawer'
+            onClick={() => dispatch(toggleSidebar())}
+          >
+            <Menu />
+          </IconButton>
+        </Box>
         <List>
           {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
             <ListItem key={text} disablePadding sx={{ display: 'block' }}>

@@ -1,8 +1,11 @@
-import publicAxios from '~/config/axios/publicAxios'
+import publicAxios from '~/api/publicAxios'
 
 const authApi = {
-  signin(body) {
+  adminLogin(body) {
     return publicAxios.post('/auth/admin-login', body)
+  },
+  userLogin(body) {
+    return publicAxios.post('/auth/google-login', body)
   }
 }
 

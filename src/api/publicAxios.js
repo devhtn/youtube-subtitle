@@ -1,9 +1,14 @@
 import axios from 'axios'
 import queryString from 'query-string'
 
+import env from '~/config/env'
+
 const publicAxios = axios.create({
-  baseURL: import.meta.env.VITE_API_URL,
-  paramsSerializer: (params) => queryString.stringify(params)
+  baseURL: env.API_URL,
+  paramsSerializer: (params) => queryString.stringify(params),
+  headers: {
+    'Content-Type': 'application/json'
+  }
 })
 
 publicAxios.interceptors.request.use(
@@ -25,7 +30,7 @@ publicAxios.interceptors.response.use(
     return response.data
   },
   (error) => {
-    return Promise.reject(error.response.data)
+    return Promise.reject(error.response)
   }
 )
 

@@ -1,11 +1,33 @@
-import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import SubtitlesIcon from '@mui/icons-material/Subtitles'
 import { Box, Dialog, DialogContent, Typography } from '@mui/material'
 import { GoogleLogin } from '@react-oauth/google'
 
+import authApi from '../authApi'
+import { login } from '../authSlice'
+import customToast from '~/config/toast'
+
 const UserLoginPage = () => {
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const location = useLocation()
+
+  const pathname = location.pathname
+
+  const handleSuccess = async (googleResponse) => {
+    const id = customToast.loading()
+    try {
+      const response = await authApi.userLogin(googleResponse)
+      dispatch(login(response))
+      customToast.stop()
+      if (pathname === '/login') navigate('/')
+      else window.close()
+    } catch (error) {
+      customToast.update(id, error.message, 'error')
+    }
+  }
 
   return (
     <Dialog maxWidth='xs' fullWidth open={true} aria-labelledby='auth dialog'>
@@ -41,9 +63,7 @@ const UserLoginPage = () => {
               continue with
             </Typography>
             <GoogleLogin
-              onSuccess={(response) => {
-                console.log(response)
-              }}
+              onSuccess={handleSuccess}
               onError={() => {
                 console.log('Login Failed')
               }}

@@ -1,6 +1,6 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
-import sidebar from '~/layouts/components/SidebarLayout/sidebarSlice'
+import sidebar from '~/features/layout/components/SidebarLayout/sidebarSlice'
 
 import auth from '~/features/auth/authSlice'
 
