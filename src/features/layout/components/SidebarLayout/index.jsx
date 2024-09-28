@@ -1,11 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux'
+import { useState } from 'react'
 
-import { Menu } from '@mui/icons-material'
-import MailIcon from '@mui/icons-material/Mail'
+import {
+  Home,
+  KeyboardAlt,
+  Menu,
+  OtherHouses,
+  PlayCircle
+} from '@mui/icons-material'
 import InboxIcon from '@mui/icons-material/MoveToInbox'
 import {
   Box,
-  Divider,
   IconButton,
   List,
   ListItem,
@@ -16,7 +20,8 @@ import {
 import MuiDrawer from '@mui/material/Drawer'
 import { styled } from '@mui/material/styles'
 
-import { toggleSidebar } from './sidebarSlice'
+import Account from './Account'
+import Navigation from './Navigation'
 
 const openedMixin = (theme) => ({
   width: theme.app.sidebarWidth,
@@ -28,6 +33,7 @@ const closedMixin = (theme) => ({
   width: `calc(${theme.spacing(8)} + 1px)`
 })
 
+// Dùng cái này khi có header để đẩy sidebar đi xuống khỏi header cố định
 // const DrawerHeader = styled('div')(({ theme }) => ({
 //   // necessary for content to be below app bar
 //   ...theme.mixins.toolbar,
@@ -37,7 +43,7 @@ const closedMixin = (theme) => ({
 // }))
 
 const Drawer = styled(MuiDrawer, {
-  // Không dùng shouldForwardProp khi không cần thiết
+  // Không dùng shouldForwardProp khi không cần thiết, nó khiến persistent không work
   // shouldForwardProp: (prop) => prop !== 'open'
 })(({ theme, open }) => ({
   width: theme.app.sidebarWidth,
@@ -58,21 +64,19 @@ const Drawer = styled(MuiDrawer, {
 }))
 
 const SidebarLayout = () => {
-  const sidebar = useSelector((state) => state.sidebar)
-  const dispatch = useDispatch()
+  const [open, setOpen] = useState(false)
 
   return (
-    <Drawer
-      variant={sidebar.persistent ? 'persistent' : 'permanent'}
-      open={sidebar.isOpen}
-    >
+    <Drawer variant={'permanent'} open={open}>
       {/* <DrawerHeader /> */}
       <Box
         sx={{
-          overflowY: 'auto',
-          overflowX: 'hidden'
+          display: 'flex',
+          flexDirection: 'column',
+          height: '100%'
         }}
       >
+        {/* control sidebar */}
         <Box
           sx={{
             display: 'flex',
@@ -85,60 +89,28 @@ const SidebarLayout = () => {
             size='large'
             color='inherit'
             aria-label='open drawer'
-            onClick={() => dispatch(toggleSidebar())}
+            onClick={() => setOpen(!open)}
           >
             <Menu />
           </IconButton>
         </Box>
-        <List>
-          {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
-        <Divider />
-        <List>
-          {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem key={text} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                sx={{
-                  minHeight: 48,
-                  justifyContent: open ? 'initial' : 'center',
-                  px: 2.5
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center'
-                  }}
-                >
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                </ListItemIcon>
-                <ListItemText primary={text} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-        </List>
+
+        {/* List */}
+        <Box
+          sx={{
+            flexGrow: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            overflowX: 'hidden',
+            overflowY: 'auto',
+            justifyContent: 'space-between'
+          }}
+        >
+          <List>
+            <Navigation icon={<KeyboardAlt />} openSidebar={open} />
+          </List>
+          <Account openSidebar={open} />
+        </Box>
       </Box>
     </Drawer>
   )

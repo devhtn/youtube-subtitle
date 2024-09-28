@@ -6,19 +6,13 @@ import { Box } from '@mui/material'
 import SideBar from '../components/SidebarLayout'
 
 const MainLayout = () => {
-  const sidebar = useSelector((state) => state.sidebar)
   return (
     <Box>
       {/* <Header /> */}
       <SideBar />
       <Box
         sx={{
-          ml: (theme) =>
-            sidebar.isOpen
-              ? theme.app.sidebarWidth
-              : !sidebar.persistent
-                ? `calc(${theme.spacing(8)} + 1px)`
-                : 0,
+          ml: (theme) => `calc(${theme.spacing(8)} + 1px)`,
           display: 'flex',
           justifyContent: 'center'
         }}

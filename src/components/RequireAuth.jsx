@@ -5,15 +5,14 @@ import useAuth from '~/hooks/useAuth'
 
 const RequireAuth = ({ allowedRoles, children }) => {
   const navigate = useNavigate()
-  const userRole = useAuth()
+  const auth = useAuth()
 
   useEffect(() => {
-    if (!allowedRoles.includes(userRole)) {
-      navigate('/not-found')
-    }
-  }, [allowedRoles, navigate, userRole])
+    if (!auth.role) navigate('/login')
+    else if (!allowedRoles.includes(auth.role)) navigate('/not-found')
+  }, [allowedRoles, navigate, auth.role])
 
-  if (!allowedRoles.includes(userRole)) {
+  if (!allowedRoles.includes(auth.role)) {
     return null
   }
 

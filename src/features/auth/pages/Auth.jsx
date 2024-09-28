@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import SubtitlesIcon from '@mui/icons-material/Subtitles'
+import { Subtitles } from '@mui/icons-material'
 import {
   Box,
   Dialog,
@@ -11,10 +11,11 @@ import {
   Typography
 } from '@mui/material'
 
-import AdminForgotForm from '../components/AdminForgotForm'
-import AdminLoginForm from '../components/AdminLoginForm'
+import ForgetForm from '../components/ForgetForm'
+import AdminLoginForm from '../components/LoginForm'
+import SignupForm from '../components/SignupForm'
 
-const AdminLoginPage = () => {
+const Auth = () => {
   const navigate = useNavigate()
   const [authIndex, setAuthIndex] = React.useState(0)
 
@@ -31,15 +32,14 @@ const AdminLoginPage = () => {
   const gobackToSignIn = () => {
     setAuthIndex(0)
   }
-  if (authIndex === 2) return <AdminForgotForm {...{ gobackToSignIn }} />
+  if (authIndex === 2) return <ForgetForm {...{ gobackToSignIn }} />
   return (
     <Dialog maxWidth='xs' fullWidth open={true} aria-labelledby='auth dialog'>
       <DialogContent sx={{ py: 5 }}>
         <Box
-          onClick={() => navigate('/')}
           sx={{ display: 'flex', justifyContent: 'center', cursor: 'pointer' }}
         >
-          <SubtitlesIcon sx={{ fontSize: 30, color: '#ff0000' }} />
+          <Subtitles sx={{ fontSize: 30, color: 'primary.main' }} />
 
           <Typography
             variant='h6'
@@ -50,7 +50,7 @@ const AdminLoginPage = () => {
               fontWeight: 'bold'
             }}
           >
-            YTSub
+            YTNOTE
           </Typography>
         </Box>
         <Tabs
@@ -60,15 +60,15 @@ const AdminLoginPage = () => {
           onChange={tabChange}
           aria-label='auth tabs'
         >
-          <Tab label='Login' tabIndex={0} />
-          <Tab label='Forgot' tabIndex={1} />
+          <Tab label='Đăng nhập' tabIndex={0} />
+          <Tab label='Đăng ký' tabIndex={1} />
         </Tabs>
         {(() => {
           switch (authIndex) {
             case 0:
               return <AdminLoginForm {...{ goToForget, goToSignUp }} />
             case 1:
-              return <AdminForgotForm {...{ gobackToSignIn }} />
+              return <SignupForm {...{ gobackToSignIn }} />
             default:
               return null
           }
@@ -77,4 +77,4 @@ const AdminLoginPage = () => {
     </Dialog>
   )
 }
-export default AdminLoginPage
+export default Auth

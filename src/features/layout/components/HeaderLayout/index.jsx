@@ -110,7 +110,7 @@ const HeaderLayout = () => {
         px: 2,
         zIndex: (theme) => theme.zIndex.drawer + 1,
         bgcolor: '#fff',
-        color: (theme) => theme.palette.text.primary
+        color: (theme) => theme.palette.primary
       }}
     >
       <Toolbar
