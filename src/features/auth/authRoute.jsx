@@ -1,24 +1,14 @@
-import AdminLoginPage from './pages/AdminLoginPage'
-import UserLoginPage from './pages/UserLoginPage'
+import Auth from './pages/Auth'
 
 const authRoutes = [
-  // admin auth routes
-  {
-    path: '/admin/login',
-    element: <AdminLoginPage />
-  },
-  {
-    path: '/admin/re-login',
-    element: <AdminLoginPage />
-  },
   // user auth routes
   {
     path: '/login',
-    element: <UserLoginPage />
+    element: <Auth />
   },
   {
     path: '/re-login',
-    element: <UserLoginPage />
+    element: <Auth />
   }
 ]
 export default authRoutes

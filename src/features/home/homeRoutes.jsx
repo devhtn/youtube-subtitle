@@ -11,7 +11,7 @@ const homeRoutes = [
       {
         path: '/admin',
         element: (
-          <RequireAuth allowedRoles={['admin']} loginPage={'admin'}>
+          <RequireAuth allowedRoles={['admin']}>
             <AdminHomePage />
           </RequireAuth>
         )
@@ -25,7 +25,7 @@ const homeRoutes = [
       {
         path: '/',
         element: (
-          <RequireAuth allowedRoles={['user']} loginPage={'user'}>
+          <RequireAuth allowedRoles={['user']}>
             <UserHomePage />
           </RequireAuth>
         )

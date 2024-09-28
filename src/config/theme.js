@@ -1,6 +1,8 @@
 import { createTheme } from '@mui/material/styles'
 
 const theme = createTheme({
+  // Những thuộc tính do MUI định nghĩa, ta custom sẽ ảnh hưởng tới nhiều component sẵn có
+  // Chỉ nên tự định nghĩa thuộc tính được dùng nhiều nơi hoặc sẽ được thay đổi thường xuyên
   app: {
     headerHeight: '56px',
     sidebarWidth: '240px'
@@ -9,9 +11,26 @@ const theme = createTheme({
     fontFamily: 'Nunito, sans-serif'
   },
   palette: {
+    primary: {
+      main: '#ff3199'
+    },
+    secondary: {
+      main: '#ffcd5b'
+    },
     text: {
-      primary: '#212121',
-      secondary: '#737373'
+      primary: '#737373'
+    },
+    success: {
+      main: '#26db13'
+    },
+    warning: {
+      main: '#ffa211'
+    },
+    error: {
+      main: '#ff4141'
+    },
+    action: {
+      disabled: '#a3a3a23b'
     }
   },
   components: {

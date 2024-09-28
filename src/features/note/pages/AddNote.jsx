@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useNavigate } from 'react-router-dom'
 
 import {
   Box,
@@ -14,10 +15,12 @@ import TextField from '~/components/fields/TextField'
 import noteApi from '../noteApi'
 import noteUtil from '../noteUtil'
 import customToast from '~/config/toast'
+import util from '~/utils'
 
 const AddNote = () => {
+  const navigate = useNavigate()
   const { control, handleSubmit } = useForm()
-  const [checkVideo, setCheckVideo] = useState(null)
+  const [checkVideo, setCheckVideo] = useState({})
 
   const onSubmit = async (data) => {
     const id = customToast.loading()
@@ -26,17 +29,18 @@ const AddNote = () => {
       customToast.error(err.data.message)
     })
     customToast.stop(id)
-    setCheckVideo(checkVideo)
+    if (checkVideo) setCheckVideo(checkVideo)
+    console.log(checkVideo)
   }
 
   const handleAddNote = async () => {
     const id = customToast.loading()
-    const note = await noteApi.addNote(checkVideo).catch((err) => {
+    const videoId = await noteApi.addNote(checkVideo).catch((err) => {
       customToast.stop(id)
       customToast.error(err.data.message)
     })
     customToast.stop(id)
-    console.log(note)
+    if (videoId) navigate(`/note/${videoId}`)
   }
   return (
     <Box>
@@ -77,10 +81,10 @@ const AddNote = () => {
           *Bạn cần kiểm tra thông tin video trước khi tạo notes
         </FormHelperText>
       </form>
-      {checkVideo && (
+      {!util.isEmptyObject(checkVideo) && (
         <Box>
           <Typography variant='h6' component='h1' gutterBottom>
-            {checkVideo?.title}
+            {checkVideo.title}
           </Typography>
           <Box mt={2}>
             <img
@@ -93,7 +97,7 @@ const AddNote = () => {
             <Typography variant='body1'>
               <strong>Số lượng từ vựng:</strong> {checkVideo.countWords} word
             </Typography>
-            {checkVideo.checkList.map((el) => (
+            {checkVideo.checkList?.map((el) => (
               <Typography variant='body1' key={el.id} marginLeft={4}>
                 - Có <strong>{el.match}</strong> word thuộc {el.name} ({el.desc}
                 )

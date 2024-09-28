@@ -7,14 +7,14 @@ const useAuth = () => {
   const token = auth.token ? auth.token : null
 
   if (!token) {
-    return null
+    return {}
   }
 
   try {
     const decoded = jwtDecode(token) // Giải mã token
-    return decoded.role // Trả về role
+    return decoded // Trả về role
   } catch (error) {
-    return null
+    return {}
   }
 }
 

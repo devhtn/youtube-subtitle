@@ -7,8 +7,11 @@ const noteApi = {
   addNote(checkVideo) {
     return privateAxios.post('/note/add-note', checkVideo)
   },
-  getNote(id) {
-    return privateAxios.get(`/note/get-note/${id}`)
+  getDictation(id) {
+    return privateAxios.get(`/note/get-dictation/${id}`)
+  },
+  updateSegment(segment) {
+    return privateAxios.patch('/note/update-segment', segment)
   }
 }
 
