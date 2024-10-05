@@ -1,27 +1,23 @@
 import { useState } from 'react'
 
 import {
-  Home,
+  Analytics,
+  AutoGraph,
+  Dashboard,
+  Keyboard,
   KeyboardAlt,
+  ManageAccounts,
   Menu,
-  OtherHouses,
-  PlayCircle
+  VideoSettings
 } from '@mui/icons-material'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import {
-  Box,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText
-} from '@mui/material'
+import { Box, IconButton, List } from '@mui/material'
 import MuiDrawer from '@mui/material/Drawer'
 import { styled } from '@mui/material/styles'
 
 import Account from './Account'
 import Navigation from './Navigation'
+
+import useAuth from '~/hooks/useAuth'
 
 const openedMixin = (theme) => ({
   width: theme.app.sidebarWidth,
@@ -65,6 +61,7 @@ const Drawer = styled(MuiDrawer, {
 
 const SidebarLayout = () => {
   const [open, setOpen] = useState(false)
+  const auth = useAuth()
 
   return (
     <Drawer variant={'permanent'} open={open}>
@@ -106,9 +103,40 @@ const SidebarLayout = () => {
             justifyContent: 'space-between'
           }}
         >
-          <List>
-            <Navigation icon={<KeyboardAlt />} openSidebar={open} />
-          </List>
+          {auth.role === 'admin' ? (
+            <List>
+              <Navigation
+                text='Dashboard'
+                icon={<Dashboard />}
+                openSidebar={open}
+              />
+              <Navigation
+                text='Quản lý bài tập'
+                icon={<VideoSettings />}
+                openSidebar={open}
+              />
+              <Navigation
+                text='Quản lý account'
+                icon={<ManageAccounts />}
+                openSidebar={open}
+              />
+            </List>
+          ) : (
+            <List>
+              <Navigation
+                text='Thống kê phát triển'
+                icon={<AutoGraph />}
+                openSidebar={open}
+                path='/'
+              />
+              <Navigation
+                text='Chép chính tả'
+                icon={<Keyboard />}
+                openSidebar={open}
+                path='/exercise'
+              />
+            </List>
+          )}
           <Account openSidebar={open} />
         </Box>
       </Box>

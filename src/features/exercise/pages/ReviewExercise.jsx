@@ -3,28 +3,22 @@ import ReactPlayer from 'react-player'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { KeyboardAlt, Pause, PlayArrow } from '@mui/icons-material'
-import {
-  Box,
-  IconButton,
-  LinearProgress,
-  Skeleton,
-  Typography
-} from '@mui/material'
+import { Box, IconButton, Skeleton, Typography } from '@mui/material'
 
 import Dictation from '../components/Dictation'
-import NoteSegment from '../components/NoteSegment'
-import NoteSegmentForm from '../components/NoteSegmentForm'
+import ExerciseSegment from '../components/SegmentNote'
 import PlayRate from '../components/PlayRate'
 import ProcessDictation from '../components/ProcessDictation'
 import Segment from '../components/Segment'
+import ExerciseSegmentForm from '../components/SegmentNoteForm'
 import Volume from '../components/Volume'
 
-import noteApi from '../noteApi'
+import exerciseApi from '../exerciseApi'
 import util from '~/utils'
 
-const Note = () => {
+const ReviewExercise = () => {
   const navigate = useNavigate()
-  const { id } = useParams()
+  const { videoId } = useParams()
   const playerRef = useRef(null)
   const [dictation, setDictation] = useState({})
   const [loading, setLoading] = useState(true)
@@ -34,11 +28,12 @@ const Note = () => {
   const [volume, setVolume] = useState(100)
   const [playbackRate, setPlaybackRate] = useState(1)
   const [isDictation, setIsDictation] = useState(false)
-  const [openFormSegmentNote, setOpenFormSegmentNote] = useState(false)
-  const [showSegmentNote, setShowSegmentNote] = useState(true)
+  const [openFormSegmentExercise, setOpenFormSegmentExercise] = useState(false)
+  const [showSegmentExercise, setShowSegmentExercise] = useState(true)
 
   const timeoutRef = useRef(null)
-  const process = (dictation.countCompletedWords * 100) / dictation.countWords
+  const process =
+    (dictation.countCompletedWords * 100) / dictation.countDictationWords
 
   const handleReady = () => {
     setLoading(false) // Ẩn Skeleton khi video sẵn sàng
@@ -75,18 +70,7 @@ const Note = () => {
       // Seek đến vị trí cần thiết
       playerRef.current.seekTo(segment.start + 0.001, 'seconds')
 
-      const segmentDuration = (segment.end - segment.start) * 1000
-
-      setTimeout(() => {
-        setPlaying(true)
-        if (timeoutRef.current) {
-          clearTimeout(timeoutRef.current)
-        }
-        timeoutRef.current = setTimeout(() => {
-          setPlaying(false)
-          timeoutRef.current = null
-        }, segmentDuration)
-      }, 500)
+      setPlaying(true)
     }
   }, [])
 
@@ -104,11 +88,11 @@ const Note = () => {
   // effect
   useEffect(() => {
     ;(async () => {
-      const dictation = await noteApi
-        .getDictation(id)
+      const exercise = await exerciseApi
+        .getExercise(videoId)
         .catch(() => navigate('/not-found'))
-      if (dictation) {
-        setDictation(dictation)
+      if (exercise) {
+        setDictation(exercise)
       }
     })()
   }, [])
@@ -153,7 +137,7 @@ const Note = () => {
               />
             )}
             <ReactPlayer
-              url={`https://www.youtube.com/embed/${id}`}
+              url={`https://www.youtube.com/embed/${videoId}`}
               style={{ position: 'absolute', top: 0, left: 0 }}
               width='100%'
               height='100%'
@@ -229,9 +213,9 @@ const Note = () => {
             </IconButton>
           </Box>
 
-          {/* Segment Note */}
-          {currentSegment.note && showSegmentNote && (
-            <NoteSegment segment={currentSegment} />
+          {/* Segment Exercise */}
+          {currentSegment.exercise && showSegmentExercise && (
+            <ExerciseSegment segment={currentSegment} />
           )}
         </Box>
         <Box width={1 / 3}>
@@ -265,7 +249,7 @@ const Note = () => {
                         segment={segment}
                         isCurrent={currentSegment === segment}
                         handleSegmentClick={memorizedHandleSegmentClick}
-                        setOpenFormSegmentNote={setOpenFormSegmentNote}
+                        setOpenFormSegmentExercise={setOpenFormSegmentExercise}
                         setSelectedSegment={setSelectedSegment}
                       />
                     </Box>
@@ -276,9 +260,9 @@ const Note = () => {
                     handleSegmentClick={memorizedHandleSegmentClick}
                     dictation={dictation}
                     setDictation={setDictation}
-                    setOpenFormSegmentNote={setOpenFormSegmentNote}
+                    setOpenFormSegmentExercise={setOpenFormSegmentExercise}
                     setSelectedSegment={setSelectedSegment}
-                    setShowSegmentNote={setShowSegmentNote}
+                    setShowSegmentExercise={setShowSegmentExercise}
                   />
                 )}
               </Box>
@@ -290,13 +274,13 @@ const Note = () => {
         </Box>
       </Box>
 
-      {/* Dialog segment note form */}
+      {/* Dialog segment exercise form */}
       {!util.isEmptyObject(selectedSegment) && (
-        <NoteSegmentForm
+        <ExerciseSegmentForm
           selectedSegment={selectedSegment}
           setSelectedSegment={setSelectedSegment}
-          open={openFormSegmentNote}
-          setOpen={setOpenFormSegmentNote}
+          open={openFormSegmentExercise}
+          setOpen={setOpenFormSegmentExercise}
           dictation={dictation}
           setDictation={setDictation}
         />
@@ -305,4 +289,4 @@ const Note = () => {
   )
 }
 
-export default Note
+export default ReviewExercise

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
@@ -7,40 +7,52 @@ import {
   Button,
   FormControl,
   FormHelperText,
+  List,
+  ListItem,
   Typography
 } from '@mui/material'
 
 import TextField from '~/components/fields/TextField'
 
-import noteApi from '../noteApi'
-import noteUtil from '../noteUtil'
+import exerciseApi from '../exerciseApi'
+import exerciseUtil from '../exerciseUtil'
 import customToast from '~/config/toast'
+import useAuth from '~/hooks/useAuth'
 import util from '~/utils'
 
-const AddNote = () => {
+const CreateExercise = () => {
   const navigate = useNavigate()
-  const { control, handleSubmit } = useForm()
+  const auth = useAuth()
+  const { control, handleSubmit, reset } = useForm()
   const [checkVideo, setCheckVideo] = useState({})
 
   const onSubmit = async (data) => {
     const id = customToast.loading()
-    const checkVideo = await noteApi.checkVideo(data).catch((err) => {
+    const checkVideo = await exerciseApi.checkVideo(data).catch((err) => {
       customToast.stop(id)
       customToast.error(err.data.message)
     })
     customToast.stop(id)
     if (checkVideo) setCheckVideo(checkVideo)
-    console.log(checkVideo)
   }
 
-  const handleAddNote = async () => {
+  const handleCreateExercise = async () => {
     const id = customToast.loading()
-    const videoId = await noteApi.addNote(checkVideo).catch((err) => {
-      customToast.stop(id)
-      customToast.error(err.data.message)
-    })
+    const videoId = await exerciseApi
+      .createExercise(checkVideo)
+      .catch((err) => {
+        customToast.stop(id)
+        customToast.error(err.data.message)
+      })
     customToast.stop(id)
-    if (videoId) navigate(`/note/${videoId}`)
+    if (videoId) {
+      if (auth.role === 'user') navigate(`/exercise/${videoId}/play`)
+      else {
+        customToast.success('Video được public thành công')
+        setCheckVideo({})
+        reset()
+      }
+    }
   }
   return (
     <Box>
@@ -53,9 +65,6 @@ const AddNote = () => {
             <Typography sx={{ color: 'orange', fontSize: '14px' }}>
               - Video phải có CC/Subtitles là tiếng Anh gốc ( Không phải auto
               translate )
-            </Typography>
-            <Typography sx={{ color: 'orange', fontSize: '14px' }}>
-              - Video có tốc độ nói và ngắt câu hợp lý
             </Typography>
           </Box>
         </Box>
@@ -78,7 +87,7 @@ const AddNote = () => {
           </Button>
         </FormControl>
         <FormHelperText sx={{ fontSize: '14px' }}>
-          *Bạn cần kiểm tra thông tin video trước khi tạo notes
+          *Bạn cần kiểm tra thông tin video trước khi tạo bài tập
         </FormHelperText>
       </form>
       {!util.isEmptyObject(checkVideo) && (
@@ -87,43 +96,57 @@ const AddNote = () => {
             {checkVideo.title}
           </Typography>
           <Box mt={2}>
-            <img
-              src={checkVideo.thumbnails[3].url}
-              alt={checkVideo.title}
-              width='300'
-            />
+            <img src={checkVideo.thumbnails[2].url} alt={checkVideo.title} />
           </Box>
           <Box mt={2}>
             <Typography variant='body1'>
-              <strong>Số lượng từ vựng:</strong> {checkVideo.countWords} word
+              <strong>Số lượng từ vựng:</strong>{' '}
+              {checkVideo.totalDictationUniqWords} words
             </Typography>
-            {checkVideo.checkList?.map((el) => (
-              <Typography variant='body1' key={el.id} marginLeft={4}>
-                - Có <strong>{el.match}</strong> word thuộc {el.name} ({el.desc}
-                )
-              </Typography>
-            ))}
+            <List sx={{ listStyleType: 'disc', p: '0 0 0 32px' }}>
+              {checkVideo.checkList?.map((el) => (
+                <ListItem key={el.id} sx={{ display: 'list-item', p: 0 }}>
+                  <Typography variant='body1'>
+                    {el.match} words thuộc {el.name} ({el.desc})
+                  </Typography>
+                </ListItem>
+              ))}
+            </List>
             <Typography variant='body1'>
-              <strong>Tốc độ nói trung bình: </strong> {checkVideo.avgSpeed}{' '}
-              word/s
+              <strong>Số lượng từ vựng phải chép chính tả:</strong>{' '}
+              {checkVideo.totalDictationWords} words
+            </Typography>
+            <Typography variant='body1'>
+              <strong>Tốc độ nói trung bình: </strong> {checkVideo.avgSpeed} WPM
             </Typography>
             <Typography variant='body1'>
               <strong>Thể loại:</strong> {checkVideo.category}
             </Typography>
             <Typography variant='body1'>
               <strong>Thời lượng:</strong>{' '}
-              {noteUtil.formatTime(checkVideo.duration)}
+              {exerciseUtil.formatTime(checkVideo.duration)}
             </Typography>
           </Box>
           <FormControl margin='normal'>
-            <Button
-              style={{ textTransform: 'none', textWrap: 'nowrap' }}
-              variant='contained'
-              color='primary'
-              onClick={handleAddNote}
-            >
-              Tạo note với video này
-            </Button>
+            {auth.role === 'admin' ? (
+              <Button
+                style={{ textTransform: 'none', textWrap: 'nowrap' }}
+                variant='contained'
+                color='primary'
+                onClick={handleCreateExercise}
+              >
+                Tạo và chia sẻ video với mọi người
+              </Button>
+            ) : (
+              <Button
+                style={{ textTransform: 'none', textWrap: 'nowrap' }}
+                variant='contained'
+                color='primary'
+                onClick={handleCreateExercise}
+              >
+                Tạo bài tập với video này
+              </Button>
+            )}
           </FormControl>
         </Box>
       )}
@@ -131,4 +154,4 @@ const AddNote = () => {
   )
 }
 
-export default AddNote
+export default CreateExercise

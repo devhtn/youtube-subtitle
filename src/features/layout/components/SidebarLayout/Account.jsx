@@ -1,16 +1,15 @@
-import React from 'react'
-import { useSelector } from 'react-redux'
+import React, { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { useNavigate } from 'react-router-dom'
 
 import {
+  AccountBox,
   AccountCircle,
-  ExitToApp,
-  LoginOutlined,
-  PersonAdd,
-  Settings
+  DarkMode,
+  ExitToApp
 } from '@mui/icons-material'
 import {
   Avatar,
-  Divider,
   List,
   ListItem,
   ListItemButton,
@@ -20,9 +19,16 @@ import {
   MenuItem
 } from '@mui/material'
 
+import authApi from '~/features/auth/authApi'
+import { logout } from '~/features/auth/authSlice'
+
 const Account = ({ openSidebar }) => {
   const auth = useSelector((state) => state.auth)
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState(null)
+  const [user, setUser] = React.useState({})
   const open = Boolean(anchorEl)
 
   const handleClick = (event) => {
@@ -31,6 +37,20 @@ const Account = ({ openSidebar }) => {
   const handleClose = () => {
     setAnchorEl(null)
   }
+
+  //
+  const handleLogout = () => {
+    dispatch(logout())
+    handleClose
+    navigate('/intro')
+  }
+
+  // useEffect
+  useEffect(() => {
+    ;(async () => {
+      await authApi.getUser().then((user) => setUser(user))
+    })()
+  }, [])
 
   const renderMenu = (
     <Menu
@@ -74,18 +94,18 @@ const Account = ({ openSidebar }) => {
     >
       <MenuItem onClick={handleClose} sx={{ typography: 'body2' }}>
         <ListItemIcon>
-          <PersonAdd fontSize='small' />
+          <DarkMode fontSize='small' />
         </ListItemIcon>
-        Add another account
+        Dark mode
       </MenuItem>
       <MenuItem onClick={handleClose} sx={{ typography: 'body2' }}>
         <ListItemIcon>
-          <Settings fontSize='small' />
+          <AccountBox fontSize='small' />
         </ListItemIcon>
-        Settings
+        Account
       </MenuItem>
 
-      <MenuItem onClick={handleClose} sx={{ typography: 'body2' }}>
+      <MenuItem onClick={handleLogout} sx={{ typography: 'body2' }}>
         <ListItemIcon>
           <ExitToApp fontSize='small' />
         </ListItemIcon>
@@ -111,14 +131,14 @@ const Account = ({ openSidebar }) => {
               justifyContent: 'center'
             }}
           >
-            {auth.user.picture ? (
-              <Avatar src={auth.user.picture} sx={{ width: 24, height: 24 }} />
+            {user.picture ? (
+              <Avatar src={user.picture} sx={{ width: 24, height: 24 }} />
             ) : (
               <AccountCircle />
             )}
           </ListItemIcon>
           <ListItemText
-            primary={auth.user.name}
+            primary={user.name}
             primaryTypographyProps={{
               fontSize: '14px',
               overflow: 'hidden', // Ẩn nội dung tràn

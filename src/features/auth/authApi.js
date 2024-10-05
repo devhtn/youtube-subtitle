@@ -1,3 +1,4 @@
+import privateAxios from '~/api/privateAxios'
 import publicAxios from '~/api/publicAxios'
 
 const authApi = {
@@ -9,6 +10,9 @@ const authApi = {
   },
   register(body) {
     return publicAxios.post('/auth/register', body)
+  },
+  getUser() {
+    return privateAxios.get('/auth')
   }
 }
 

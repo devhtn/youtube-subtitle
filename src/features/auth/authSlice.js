@@ -10,17 +10,18 @@ const authPersist = {
 export const slice = createSlice({
   name: 'auth',
   initialState: {
-    token: null,
-    user: null
+    token: null
   },
   reducers: {
     login: (state, action) => {
-      const { token, user } = action.payload
+      const token = action.payload
       state.token = token
-      state.user = user
+    },
+    logout: (state) => {
+      state.token = null
     }
   }
 })
 
-export const { login } = slice.actions
+export const { login, logout } = slice.actions
 export default persistReducer(authPersist, slice.reducer)

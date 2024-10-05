@@ -17,7 +17,7 @@ const MainLayout = () => {
           justifyContent: 'center'
         }}
       >
-        <Box sx={{ width: '100%', px: 2, pt: 2 }}>
+        <Box sx={{ width: '100%', pt: 1, px:1 }}>
           <Outlet />
         </Box>
       </Box>

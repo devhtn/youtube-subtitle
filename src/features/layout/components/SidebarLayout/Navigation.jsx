@@ -1,6 +1,5 @@
-import React from 'react'
+import { useNavigate } from 'react-router-dom'
 
-import { Inbox } from '@mui/icons-material'
 import {
   ListItem,
   ListItemButton,
@@ -8,9 +7,14 @@ import {
   ListItemText
 } from '@mui/material'
 
-const Navigation = ({ openSidebar, icon }) => {
+const Navigation = ({ openSidebar, icon, text, path }) => {
+  const navigate = useNavigate()
+
+  const handleClick = () => {
+    navigate(path)
+  }
   return (
-    <ListItem disablePadding sx={{ display: 'block' }}>
+    <ListItem disablePadding sx={{ display: 'block' }} onClick={handleClick}>
       <ListItemButton
         sx={{
           minHeight: 48,
@@ -28,7 +32,7 @@ const Navigation = ({ openSidebar, icon }) => {
           {icon}
         </ListItemIcon>
         <ListItemText
-          primary='Video'
+          primary={text}
           primaryTypographyProps={{ fontSize: '14px' }}
           sx={{ opacity: openSidebar ? 1 : 0 }}
         />

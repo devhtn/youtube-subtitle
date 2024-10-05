@@ -4,7 +4,6 @@ import { SlowMotionVideo } from '@mui/icons-material'
 import {
   Box,
   IconButton,
-  Input,
   Menu,
   Slider,
   Stack,

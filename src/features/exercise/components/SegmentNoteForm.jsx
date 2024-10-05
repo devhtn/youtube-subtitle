@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 import {
@@ -10,40 +10,48 @@ import {
   FormControl,
   FormLabel
 } from '@mui/material'
-import _ from 'lodash'
 
 import TextField from '~/components/fields/TextField'
 
-import noteApi from '../noteApi'
+import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'
 
-const NoteSegmentForm = ({
+const SegmentNoteForm = ({
   open,
   setOpen,
   selectedSegment,
   dictation,
-  setDictation
+  setDictation,
+  segmentNote,
+  setSegmentNote
 }) => {
-  const { control, handleSubmit, reset } = useForm({})
+  const { control, handleSubmit, reset } = useForm({
+    defaultValues: { note: '' }
+  })
 
   const onSubmit = async (data) => {
     const id = customToast.loading()
-    const newSegment = _.cloneDeep(selectedSegment)
-    newSegment.note = data.note
-    const updateDictation = await noteApi
-      .updateSegment({
-        segment: newSegment,
-        id: dictation.id
-      })
-      .catch(() => customToast.error())
+    const update = await exerciseApi
+      .updateDictationSegmentNote(dictation.id, selectedSegment.id, data)
+      .catch(() => customToast.error('Lỗi server'))
     customToast.stop(id)
-    if (updateDictation) {
-      setDictation(updateDictation)
+    if (update) {
+      setDictation(update)
+      setSegmentNote(data.note)
       customToast.success('Bạn đã tạo ghi chú thành công')
       setOpen(false)
       reset()
     }
   }
+
+  // Cập nhật giá trị form khi segmentNote thay đổi
+  useEffect(() => {
+    if (segmentNote) {
+      reset({ note: segmentNote }) // Cập nhật giá trị ghi chú mặc định
+    } else {
+      reset({ note: '' }) // Trường hợp không có ghi chú
+    }
+  }, [segmentNote, reset])
 
   return (
     <Dialog maxWidth='sm' fullWidth open={open} aria-labelledby='auth dialog'>
@@ -81,4 +89,4 @@ const NoteSegmentForm = ({
   )
 }
 
-export default NoteSegmentForm
+export default SegmentNoteForm

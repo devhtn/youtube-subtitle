@@ -39,7 +39,6 @@ const LoginForm = ({ goToForget }) => {
       password: ''
     }
   })
-  console.log(errors.username)
   const [showPassword, setShowPassword] = React.useState(false)
 
   const pathname = location.pathname
@@ -50,10 +49,10 @@ const LoginForm = ({ goToForget }) => {
   const onSubmit = async (data) => {
     const id = customToast.loading()
     try {
-      const response = await authApi.login(data)
-      dispatch(login(response))
+      const token = await authApi.login(data)
+      dispatch(login(token))
       customToast.stop()
-      const { role } = jwtDecode(response.token)
+      const { role } = jwtDecode(token)
       if (pathname === '/login') {
         if (['admin'].includes(role)) navigate('/admin')
         else navigate('/')

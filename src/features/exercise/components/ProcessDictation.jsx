@@ -19,10 +19,10 @@ const ProcessDictation = ({ process }) => {
   return (
     <Box
       sx={{
-        height: '50px',
+        height: '20px',
         px: 2,
         backgroundColor: '#fff',
-        border: '1px solid #ddd'
+        border: (theme) => theme.app.border
       }}
     >
       <Box height={'100%'} display='flex' alignItems='center'>

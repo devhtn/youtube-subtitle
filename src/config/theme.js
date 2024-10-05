@@ -5,12 +5,19 @@ const theme = createTheme({
   // Chỉ nên tự định nghĩa thuộc tính được dùng nhiều nơi hoặc sẽ được thay đổi thường xuyên
   app: {
     headerHeight: '56px',
-    sidebarWidth: '240px'
+    sidebarWidth: '300px',
+    border: '1px solid #ddd'
   },
   typography: {
-    fontFamily: 'Nunito, sans-serif'
+    fontFamily: 'Nunito, sans-serif',
+    body2: {
+      color: '#606060'
+    }
   },
   palette: {
+    background: {
+      secondary: '#f5f5f5db'
+    },
     primary: {
       main: '#ff3199'
     },
@@ -18,7 +25,8 @@ const theme = createTheme({
       main: '#ffcd5b'
     },
     text: {
-      primary: '#737373'
+      primary: '#2e2e2e',
+      secondary: '#606060'
     },
     success: {
       main: '#26db13'
@@ -27,7 +35,7 @@ const theme = createTheme({
       main: '#ffa211'
     },
     error: {
-      main: '#ff4141'
+      main: '#f21616'
     },
     action: {
       disabled: '#a3a3a23b'
