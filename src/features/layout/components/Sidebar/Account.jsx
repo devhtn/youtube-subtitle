@@ -1,15 +1,10 @@
 import React, { useEffect } from 'react'
+import ReactAvatar from 'react-avatar'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
+import { AccountBox, DarkMode, ExitToApp } from '@mui/icons-material'
 import {
-  AccountBox,
-  AccountCircle,
-  DarkMode,
-  ExitToApp
-} from '@mui/icons-material'
-import {
-  Avatar,
   List,
   ListItem,
   ListItemButton,
@@ -23,8 +18,6 @@ import authApi from '~/features/auth/authApi'
 import { logout } from '~/features/auth/authSlice'
 
 const Account = ({ openSidebar }) => {
-  const auth = useSelector((state) => state.auth)
-
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -119,7 +112,6 @@ const Account = ({ openSidebar }) => {
         <ListItemButton
           sx={{
             minHeight: 48,
-            justifyContent: open ? 'initial' : 'center',
             px: 2.5
           }}
           onClick={handleClick}
@@ -131,11 +123,7 @@ const Account = ({ openSidebar }) => {
               justifyContent: 'center'
             }}
           >
-            {user.picture ? (
-              <Avatar src={user.picture} sx={{ width: 24, height: 24 }} />
-            ) : (
-              <AccountCircle />
-            )}
+            <ReactAvatar name={user.name} size='24' round />
           </ListItemIcon>
           <ListItemText
             primary={user.name}

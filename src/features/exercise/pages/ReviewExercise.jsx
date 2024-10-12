@@ -2,38 +2,45 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { KeyboardAlt, Pause, PlayArrow } from '@mui/icons-material'
-import { Box, IconButton, Skeleton, Typography } from '@mui/material'
+import {
+  PlaylistAdd,
+  PlaylistAddCircle,
+  Queue,
+  Subtitles,
+  ThumbUpAltOutlined,
+  WatchLater
+} from '@mui/icons-material'
+import { Box, IconButton, Skeleton, Stack, Typography } from '@mui/material'
 
-import Dictation from '../components/Dictation'
-import ExerciseSegment from '../components/SegmentNote'
-import PlayRate from '../components/PlayRate'
-import ProcessDictation from '../components/ProcessDictation'
+import Comment from '../components/Comment'
 import Segment from '../components/Segment'
-import ExerciseSegmentForm from '../components/SegmentNoteForm'
-import Volume from '../components/Volume'
 
 import exerciseApi from '../exerciseApi'
+import customToast from '~/config/toast'
+import authApi from '~/features/auth/authApi'
+import useAuth from '~/hooks/useAuth'
 import util from '~/utils'
 
 const ReviewExercise = () => {
   const navigate = useNavigate()
+  const auth = useAuth()
   const { videoId } = useParams()
   const playerRef = useRef(null)
-  const [dictation, setDictation] = useState({})
+  const [exercise, setExercise] = useState({})
   const [loading, setLoading] = useState(true)
   const [currentSegment, setCurrentSegment] = useState({})
-  const [selectedSegment, setSelectedSegment] = useState({})
+  const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
   const [playing, setPlaying] = useState(false)
-  const [volume, setVolume] = useState(100)
-  const [playbackRate, setPlaybackRate] = useState(1)
-  const [isDictation, setIsDictation] = useState(false)
-  const [openFormSegmentExercise, setOpenFormSegmentExercise] = useState(false)
-  const [showSegmentExercise, setShowSegmentExercise] = useState(true)
+  const [user, setUser] = useState({})
 
-  const timeoutRef = useRef(null)
-  const process =
-    (dictation.countCompletedWords * 100) / dictation.countDictationWords
+  const isLiked = user.likeList?.includes(exercise.id)
+
+  const handleToggleLike = async () => {
+    const newUser = await exerciseApi.toggleLike({
+      exerciseId: exercise.id
+    })
+    if (newUser) setUser(newUser)
+  }
 
   const handleReady = () => {
     setLoading(false) // Ẩn Skeleton khi video sẵn sàng
@@ -43,11 +50,11 @@ const ReviewExercise = () => {
     const currentTime = state.playedSeconds
 
     // Find the matching subtitle based on current time
-    const currentSegment =
-      dictation.subs.find(
-        (segment) => currentTime >= segment.start && currentTime <= segment.end
-      ) || {}
-    setCurrentSegment(currentSegment || {})
+    const findIndex = exercise.segments.findIndex(
+      (segment) => currentTime >= segment.start && currentTime <= segment.end
+    )
+    setCurrentSegment(exercise.segments[findIndex] || {})
+    if (findIndex !== -1) setCurrentSegmentIndex(findIndex)
     // Set the subtitle if it exists, otherwise clear it
   }
 
@@ -62,9 +69,6 @@ const ReviewExercise = () => {
     if (selection.length > 0) {
       return
     }
-    if (timeoutRef.current) {
-      return
-    }
 
     if (playerRef.current) {
       // Seek đến vị trí cần thiết
@@ -74,217 +78,161 @@ const ReviewExercise = () => {
     }
   }, [])
 
-  const memoizedSetVolume = useCallback((value) => {
-    setVolume(value)
-  }, [])
-  const memoizedSetPlayRate = useCallback((value) => {
-    setPlaybackRate(value)
-  }, [])
-
-  const handlePlayPause = () => {
-    setPlaying(!playing)
-  }
-
   // effect
   useEffect(() => {
     ;(async () => {
-      const exercise = await exerciseApi
-        .getExercise(videoId)
-        .catch(() => navigate('/not-found'))
-      if (exercise) {
-        setDictation(exercise)
+      try {
+        const [exercise, user] = await Promise.all([
+          exerciseApi.getExercise(videoId),
+          authApi.getUser(auth.id)
+        ])
+        setExercise(exercise)
+        setUser(user)
+      } catch {
+        navigate('/not-found')
       }
     })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // Tự động cuộn đến currentSegment khi video play
+  // effect currentSegment change
   useEffect(() => {
     if (currentSegment) {
-      const element = document.getElementById(
-        `subtitle-${currentSegment.start}`
-      )
+      // scrollIntoView
+      const element = document.getElementById(`segment-${currentSegment.start}`)
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [currentSegment, isDictation])
-
-  useEffect(() => {
-    // Clear timeout khi component unmount
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current)
-      }
-    }
-  }, [])
+  }, [currentSegment])
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex' }}>
-        <Box width={2 / 3}>
-          <Box
-            sx={{
-              position: 'relative',
-              paddingTop: '56.25%' // 16:9 aspect ratio
-            }}
-          >
-            {loading && (
-              <Skeleton
-                variant='rectangular'
-                width='100%'
-                height='100%'
-                sx={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
-              />
-            )}
-            <ReactPlayer
-              url={`https://www.youtube.com/embed/${videoId}`}
-              style={{ position: 'absolute', top: 0, left: 0 }}
+    <Box sx={{ display: 'flex' }}>
+      <Box width={2 / 3}>
+        <Box
+          sx={{
+            position: 'relative',
+            paddingTop: '56.25%' // 16:9 aspect ratio
+          }}
+        >
+          {loading && (
+            <Skeleton
+              variant='rectangular'
               width='100%'
               height='100%'
-              onProgress={handleProgress}
-              onPlay={() => setPlaying(true)}
-              onPause={handlePause}
-              playing={playing}
-              volume={volume / 100}
-              playbackRate={playbackRate}
-              ref={playerRef}
-              onReady={handleReady} // Ẩn Skeleton khi video đã sẵn sàng
+              sx={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
             />
-            {isDictation && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                  backgroundColor: 'rgba(0, 0, 0, 0.2)', // Lớp phủ mờ
-                  zIndex: 1,
-                  pointerEvents: 'all', // Chặn mọi tương tác với ReactPlayer,
-                  cursor: 'not-allowed'
-                }}
-              />
-            )}
-            {currentSegment.text && !isDictation && (
-              <Box
-                sx={{
-                  position: 'absolute',
-                  bottom: '0', // Adjust as needed for lower subtitle
-                  left: '50%',
-                  transform: 'translateX(-50%)',
-                  color: '#fff',
-                  backgroundColor: 'rgba(0, 0, 0)', // Semi-transparent background
-                  padding: '6px 16px',
-                  borderRadius: '4px',
-                  textAlign: 'center',
-                  width: '100%',
-                  height: '44px'
-                }}
-              >
-                <Typography fontSize={20}>{currentSegment.text}</Typography>
-              </Box>
-            )}
-          </Box>
-          {/* control */}
-          <Box
-            sx={{
-              position: 'sticky',
-              top: 0,
-              width: '100%',
-              py: 1,
-              display: 'flex',
-              gap: 1,
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
-          >
-            {/* Nút Play/Pause */}
-            <IconButton onClick={handlePlayPause}>
-              {playing ? <Pause /> : <PlayArrow />}
-            </IconButton>
-
-            {/* Control Volume */}
-            <Volume setVolume={memoizedSetVolume} />
-            {/* Control play rate */}
-            <PlayRate setPlayRate={memoizedSetPlayRate} />
-            {/* Control isDictation */}
-            <IconButton onClick={() => setIsDictation(!isDictation)}>
-              <KeyboardAlt sx={{ color: isDictation && 'warning.main' }} />
-            </IconButton>
-          </Box>
-
-          {/* Segment Exercise */}
-          {currentSegment.exercise && showSegmentExercise && (
-            <ExerciseSegment segment={currentSegment} />
+          )}
+          <ReactPlayer
+            url={`https://www.youtube.com/embed/${videoId}`}
+            style={{ position: 'absolute', top: 0, left: 0 }}
+            width='100%'
+            height='100%'
+            onProgress={handleProgress}
+            onPlay={() => setPlaying(true)}
+            onPause={handlePause}
+            playing={playing}
+            ref={playerRef}
+            onReady={handleReady} // Ẩn Skeleton khi video đã sẵn sàng
+            controls
+          />
+        </Box>
+        <Box
+          sx={{
+            bottom: '0', // Adjust as needed for lower subtitle
+            color: '#fff',
+            backgroundColor: 'rgba(0, 0, 0)', // Semi-transparent background
+            textAlign: 'center',
+            width: '100%',
+            height: '44px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center'
+          }}
+        >
+          <Typography variant='subtitle1'>
+            {currentSegment.transText}
+          </Typography>
+        </Box>
+        {/* comment */}
+        <Box p={2}>
+          {!util.isEmptyObject(exercise) && (
+            <Comment exerciseId={exercise.id} />
           )}
         </Box>
-        <Box width={1 / 3}>
+      </Box>
+      <Box width={1 / 3}>
+        <Box
+          sx={{
+            position: 'sticky',
+            top: '0',
+            height: 'calc(100vh - 56px)',
+            backgroundColor: '#f5f5f5eb' // Đặt màu nền sidebar
+          }}
+        >
+          {/* show subtitle */}
           <Box
-            sx={{
-              position: 'sticky',
-              top: '16px',
-              // height: ???,
-              height: 'calc(100vh - 32px)',
-              backgroundColor: '#f5f5f5eb' // Đặt màu nền sidebar
-            }}
+            height={'100%'}
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'space-between'}
           >
-            {/* show subtitle */}
             <Box
-              height={'100%'}
-              display={'flex'}
-              flexDirection={'column'}
-              justifyContent={'space-between'}
+              sx={{
+                overflowY: 'auto', // Cho phép cuộn khi nội dung tràn
+                overflowX: 'hidden'
+              }}
             >
-              <Box
-                sx={{
-                  maxHeight: 'calc(100vh - 32px - 50px)',
-                  overflowY: 'auto', // Cho phép cuộn khi nội dung tràn
-                  overflowX: 'hidden'
-                }}
-              >
-                <Box sx={{ display: isDictation ? 'none' : 'block' }}>
-                  {dictation.subs?.map((segment, index) => (
-                    <Box key={index}>
-                      <Segment
-                        segment={segment}
-                        isCurrent={currentSegment === segment}
-                        handleSegmentClick={memorizedHandleSegmentClick}
-                        setOpenFormSegmentExercise={setOpenFormSegmentExercise}
-                        setSelectedSegment={setSelectedSegment}
-                      />
-                    </Box>
-                  ))}
-                </Box>
-                {!util.isEmptyObject(dictation) && isDictation && (
-                  <Dictation
-                    handleSegmentClick={memorizedHandleSegmentClick}
-                    dictation={dictation}
-                    setDictation={setDictation}
-                    setOpenFormSegmentExercise={setOpenFormSegmentExercise}
-                    setSelectedSegment={setSelectedSegment}
-                    setShowSegmentExercise={setShowSegmentExercise}
-                  />
-                )}
+              <Box>
+                {exercise.segments?.map((segment, index) => (
+                  <Box key={index}>
+                    <Segment
+                      segment={segment}
+                      isCurrent={currentSegment === segment}
+                      handleSegmentClick={memorizedHandleSegmentClick}
+                    />
+                  </Box>
+                ))}
               </Box>
-              {!util.isEmptyObject(dictation) && (
-                <ProcessDictation process={process} />
-              )}
             </Box>
           </Box>
+          <Stack
+            direction='row'
+            alignItems='center'
+            justifyContent='space-between'
+            gap={2}
+            sx={{
+              borderLeft: '1px solid #f5f5f5eb',
+              borderRight: '1px solid #f5f5f5eb',
+              py: 1,
+              px: 2
+            }}
+          >
+            <Box>
+              <Typography variant='subtitle1'>
+                <Typography color={'warning.main'} variant='span'>
+                  {currentSegmentIndex + 1}
+                </Typography>
+                {' / '}
+                {exercise.segments?.length}
+              </Typography>
+            </Box>
+            {/* action */}
+            <Stack direction='row' gap={2}>
+              <IconButton>
+                <Queue />
+              </IconButton>
+              <IconButton onClick={handleToggleLike}>
+                <ThumbUpAltOutlined
+                  sx={{
+                    color: isLiked ? 'warning.main' : ''
+                  }}
+                />
+              </IconButton>
+            </Stack>
+          </Stack>
         </Box>
       </Box>
-
-      {/* Dialog segment exercise form */}
-      {!util.isEmptyObject(selectedSegment) && (
-        <ExerciseSegmentForm
-          selectedSegment={selectedSegment}
-          setSelectedSegment={setSelectedSegment}
-          open={openFormSegmentExercise}
-          setOpen={setOpenFormSegmentExercise}
-          dictation={dictation}
-          setDictation={setDictation}
-        />
-      )}
     </Box>
   )
 }

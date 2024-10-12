@@ -3,7 +3,7 @@ import ReactPlayer from 'react-player'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import { Pause, PlayArrow } from '@mui/icons-material'
-import { Box, IconButton, Skeleton } from '@mui/material'
+import { Box, Button, IconButton, Skeleton, Typography } from '@mui/material'
 
 import Dictation from '../components/Dictation'
 import PlayRate from '../components/PlayRate'
@@ -11,11 +11,11 @@ import ProcessDictation from '../components/ProcessDictation'
 import Volume from '../components/Volume'
 
 import exerciseApi from '../exerciseApi'
+import customToast from '~/config/toast'
 import util from '~/utils'
 
 const PlayExercise = () => {
   const navigate = useNavigate()
-  const { id } = useParams()
   const playerRef = useRef(null)
   const [dictation, setDictation] = useState({})
   const [exercise, setExercise] = useState({})
@@ -24,9 +24,10 @@ const PlayExercise = () => {
   const [volume, setVolume] = useState(100)
   const [playbackRate, setPlaybackRate] = useState(1)
   const [currentTime, setCurrentTime] = useState(0)
+  const [currentSegment, setCurrentSegment] = useState({})
   const timeoutRef = useRef(null)
   const process =
-    (dictation.totalCompletedSegments * 100) / exercise.segments?.length
+    (dictation?.completedSegmentsCount * 100) / exercise.segments?.length
 
   const handleReady = () => {
     setLoading(false) // Ẩn Skeleton khi video sẵn sàng
@@ -69,27 +70,22 @@ const PlayExercise = () => {
     setPlaying(!playing)
   }
 
-  // effect
   useEffect(() => {
-    const fetchData = async () => {
+    ;(async () => {
       try {
-        // Gọi cả hai API đồng thời
-        const [exercise, dictation] = await Promise.all([
-          exerciseApi.getExercise(id),
-          exerciseApi.getDictation(id)
-        ])
-
-        // Cập nhật cả hai state cùng lúc
-        setExercise(exercise)
-        setDictation(dictation)
-      } catch {
-        // Nếu có lỗi, điều hướng về trang NotFound
-        navigate('/not-found')
-      }
-    }
-
-    fetchData()
-  }, [id, navigate]) // Thêm các dependencies cần thiết
+        const dictation = await exerciseApi.getUserDictations({
+          isCompleted: false
+        })
+        if (dictation[0]) {
+          setDictation(dictation[0] || {})
+          setExercise(dictation[0].exerciseId || {})
+        } else {
+          navigate('/exercise/discover')
+          customToast.success('Bạn cần chọn exercise trước khi play')
+        }
+      } catch {}
+    })()
+  }, [])
 
   useEffect(() => {
     // Clear timeout khi component unmount
@@ -101,103 +97,125 @@ const PlayExercise = () => {
   }, [])
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex' }}>
-        <Box width={2 / 3}>
-          <Box
-            sx={{
-              position: 'relative',
-              paddingTop: '56.25%' // 16:9 aspect ratio
-            }}
-          >
-            {loading && (
-              <Skeleton
-                variant='rectangular'
+    !util.isEmptyObject(dictation) && (
+      <Box>
+        <Box sx={{ display: 'flex' }}>
+          <Box width={2 / 3}>
+            <Box
+              sx={{
+                position: 'relative',
+                paddingTop: '56.25%' // 16:9 aspect ratio
+              }}
+            >
+              {loading && (
+                <Skeleton
+                  variant='rectangular'
+                  width='100%'
+                  height='100%'
+                  sx={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+                />
+              )}
+              <ReactPlayer
+                url={`https://www.youtube.com/embed/${exercise.videoId}`}
+                style={{ position: 'absolute', top: 0, left: 0 }}
                 width='100%'
                 height='100%'
-                sx={{ position: 'absolute', top: 0, left: 0, zIndex: 1 }}
+                onProgress={handleProgress}
+                onPlay={() => setPlaying(true)}
+                onPause={handlePause}
+                playing={playing}
+                volume={volume / 100}
+                playbackRate={playbackRate}
+                ref={playerRef}
+                onReady={handleReady} // Ẩn Skeleton khi video đã sẵn sàng
               />
-            )}
-            <ReactPlayer
-              url={`https://www.youtube.com/embed/${id}`}
-              style={{ position: 'absolute', top: 0, left: 0 }}
-              width='100%'
-              height='100%'
-              onProgress={handleProgress}
-              onPlay={() => setPlaying(true)}
-              onPause={handlePause}
-              playing={playing}
-              volume={volume / 100}
-              playbackRate={playbackRate}
-              ref={playerRef}
-              onReady={handleReady} // Ẩn Skeleton khi video đã sẵn sàng
-              controls
-            />
-          </Box>
-          <ProcessDictation process={process} />
-        </Box>
-        <Box width={1 / 3}>
-          <Box
-            sx={{
-              position: 'sticky',
-              top: '16px',
-              // height: ???,
-              height: 'calc(100vh - 16px)',
-              backgroundColor: 'background.secondary' // Đặt màu nền sidebar
-            }}
-          >
-            {/* show subtitle */}
-            <Box
-              height={'100%'}
-              display={'flex'}
-              flexDirection={'column'}
-              justifyContent={'space-between'}
-            >
               <Box
                 sx={{
-                  overflowY: 'auto', // Cho phép cuộn khi nội dung tràn
-                  overflowX: 'hidden'
-                }}
-              >
-                {!util.isEmptyObject(exercise) && (
-                  <Dictation
-                    handlePlay={handlePlay}
-                    exercise={exercise}
-                    dictation={dictation}
-                    setDictation={setDictation}
-                    currentTime={currentTime}
-                  />
-                )}
-              </Box>
-              {/* control */}
-              <Box
-                sx={{
-                  position: 'sticky',
-                  top: 0,
+                  position: 'absolute',
+                  bottom: '0', // Adjust as needed for lower subtitle
+                  left: '50%',
+                  transform: 'translateX(-50%)',
+                  color: '#fff',
+                  backgroundColor: 'rgba(0, 0, 0)', // Semi-transparent background
+                  borderRadius: '4px',
+                  textAlign: 'center',
                   width: '100%',
-                  py: 1,
+                  height: '44px',
                   display: 'flex',
-                  gap: 1,
                   alignItems: 'center',
                   justifyContent: 'center'
                 }}
               >
-                {/* Nút Play/Pause */}
-                <IconButton onClick={handlePlayPause}>
-                  {playing ? <Pause /> : <PlayArrow />}
-                </IconButton>
+                <Typography>
+                  {currentSegment ? currentSegment.transText : ''}
+                </Typography>
+              </Box>
+            </Box>
+            <ProcessDictation process={process} />
+          </Box>
+          <Box width={1 / 3}>
+            <Box
+              sx={{
+                position: 'sticky',
+                top: '0',
+                height: 'calc(100vh)',
+                backgroundColor: 'background.secondary' // Đặt màu nền sidebar
+              }}
+            >
+              {/* show subtitle */}
+              <Box
+                height={'100%'}
+                display={'flex'}
+                flexDirection={'column'}
+                justifyContent={'space-between'}
+              >
+                <Box
+                  sx={{
+                    overflowY: 'auto', // Cho phép cuộn khi nội dung tràn
+                    overflowX: 'hidden'
+                  }}
+                >
+                  {!util.isEmptyObject(exercise) && (
+                    <Dictation
+                      handlePlay={handlePlay}
+                      exercise={exercise}
+                      dictation={dictation}
+                      setDictation={setDictation}
+                      currentTime={currentTime}
+                      setCurrentSegment={setCurrentSegment}
+                    />
+                  )}
+                </Box>
+                {/* control */}
+                <Box
+                  sx={{
+                    position: 'sticky',
+                    top: 0,
+                    width: '100%',
+                    py: 1,
+                    display: 'flex',
+                    gap: 1,
+                    alignItems: 'center',
+                    justifyContent: 'center'
+                  }}
+                >
+                  {/* Nút Play/Pause */}
+                  <IconButton onClick={handlePlayPause}>
+                    {playing ? <Pause /> : <PlayArrow />}
+                  </IconButton>
 
-                {/* Control Volume */}
-                <Volume setVolume={memoizedSetVolume} />
-                {/* Control play rate */}
-                <PlayRate setPlayRate={memoizedSetPlayRate} />
-                {/* Control isDictation */}
+                  {/* Control Volume */}
+                  <Volume setVolume={memoizedSetVolume} />
+                  {/* Control play rate */}
+                  <PlayRate setPlayRate={memoizedSetPlayRate} />
+                  {/* Control isDictation */}
+                </Box>
               </Box>
             </Box>
           </Box>
         </Box>
       </Box>
-    </Box>
+    )
   )
 }
 

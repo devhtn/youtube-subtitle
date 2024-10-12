@@ -1,11 +1,9 @@
-import { useSelector } from 'react-redux'
-import { Outlet } from 'react-router-dom'
-
 import { Box } from '@mui/material'
 
+import MenuTabs from '../components/MenuTabs'
 import SideBar from '../components/Sidebar'
 
-const MainLayout = () => {
+const ExtraLayout = ({ tabItems }) => {
   return (
     <Box>
       {/* <Header /> */}
@@ -17,11 +15,11 @@ const MainLayout = () => {
           justifyContent: 'center'
         }}
       >
-        <Box sx={{ width: '100%', px: 1 }}>
-          <Outlet />
+        <Box sx={{ width: '100%', pt: 1, px: 1 }}>
+          <MenuTabs tabItems={tabItems} />
         </Box>
       </Box>
     </Box>
   )
 }
-export default MainLayout
+export default ExtraLayout

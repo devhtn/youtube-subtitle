@@ -15,7 +15,14 @@ import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'
 
 const Dictation = memo(
-  ({ exercise, dictation, setDictation, handlePlay, currentTime }) => {
+  ({
+    exercise,
+    dictation,
+    setDictation,
+    handlePlay,
+    currentTime,
+    setCurrentSegment
+  }) => {
     const [validSegments, setValidSegments] = useState([])
     const [segmentIndex, setSegmentIndex] = useState(null)
     const [resultSegment, setResultSegment] = useState({})
@@ -75,6 +82,7 @@ const Dictation = memo(
     }
 
     const handlePlayTime = (segmentIndex) => {
+      console.log(segmentIndex)
       if (segmentIndex !== null) {
         let prev = segmentIndex === 0 ? 0 : 1
         let next = segmentIndex === segments.length - 1 ? 0 : 1
@@ -89,7 +97,7 @@ const Dictation = memo(
     const getRandomSegment = () => {
       // Lấy ngẫu nhiên một phần tử từ mảng validSegments
       const randomValidSegment =
-        validSegments[Math.floor(Math.random() * validSegments.length)]
+        validSegments[Math.floor(Math.random() * validSegments.length - 1)]
 
       // Tìm kiếm segment được lưu trữ trong dictation thõa mãn segment đã random
       const findSegmentNote =
@@ -150,6 +158,10 @@ const Dictation = memo(
       setValidSegments(validSegments)
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+      setCurrentSegment(segments[segmentIndex])
+    }, [segmentIndex])
 
     return (
       <Box sx={{ p: 2 }}>
@@ -273,6 +285,7 @@ const Dictation = memo(
                 </Box>
               </FormControl>
             </form>
+            {/* note */}
             {isCheck && segmentNote && <SegmentNote note={segmentNote} />}
             <SegmentNoteForm
               segmentNote={segmentNote}
@@ -282,6 +295,7 @@ const Dictation = memo(
               setOpen={setOpenSegmentNoteForm}
               dictation={dictation}
               setDictation={setDictation}
+              resultSegment={resultSegment}
             />
           </Box>
         ) : (
@@ -292,7 +306,7 @@ const Dictation = memo(
             type='submit'
             fullWidth
           >
-            Bắt đầu nghe chép video này
+            Click to start
           </Button>
         )}
       </Box>

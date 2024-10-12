@@ -1,16 +1,21 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { Close } from '@mui/icons-material'
 import {
+  Box,
   Button,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   FormControl,
-  FormLabel
+  FormLabel,
+  Stack,
+  Typography
 } from '@mui/material'
 
+import Segment from './Segment'
 import TextField from '~/components/fields/TextField'
 
 import exerciseApi from '../exerciseApi'
@@ -23,7 +28,8 @@ const SegmentNoteForm = ({
   dictation,
   setDictation,
   segmentNote,
-  setSegmentNote
+  setSegmentNote,
+  resultSegment
 }) => {
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { note: '' }
@@ -31,12 +37,12 @@ const SegmentNoteForm = ({
 
   const onSubmit = async (data) => {
     const id = customToast.loading()
-    const update = await exerciseApi
+    const resp = await exerciseApi
       .updateDictationSegmentNote(dictation.id, selectedSegment.id, data)
       .catch(() => customToast.error('Lỗi server'))
     customToast.stop(id)
-    if (update) {
-      setDictation(update)
+    if (resp) {
+      setDictation(resp)
       setSegmentNote(data.note)
       customToast.success('Bạn đã tạo ghi chú thành công')
       setOpen(false)
@@ -55,10 +61,12 @@ const SegmentNoteForm = ({
 
   return (
     <Dialog maxWidth='sm' fullWidth open={open} aria-labelledby='auth dialog'>
-      <DialogActions>
-        <Button onClick={() => setOpen(false)}>Đóng</Button>
-      </DialogActions>
-      <DialogTitle fontStyle={'italic'}>{selectedSegment.text}</DialogTitle>
+      <Box mt={2} pl={3}>
+        <Segment isCheck={true} segment={resultSegment} />
+      </Box>
+      <Typography pl={3} mt={3} >
+        {selectedSegment.transText}
+      </Typography>
       <DialogContent>
         <form onSubmit={handleSubmit(onSubmit)}>
           <FormLabel>Ghi chú</FormLabel>
@@ -72,17 +80,23 @@ const SegmentNoteForm = ({
             multiline
             minRows={5}
           />
-          <FormControl margin='normal'>
-            <Button
-              style={{ textTransform: 'none' }}
-              size='large'
-              variant='contained'
-              fullWidth
-              type='submit'
-            >
-              Lưu ghi chú vào subtitle
-            </Button>
-          </FormControl>
+          <Stack direction='row' justifyContent='space-between'>
+            <FormControl margin='normal'>
+              <Button
+                style={{ textTransform: 'none' }}
+                variant='contained'
+                fullWidth
+                type='submit'
+              >
+                Lưu ghi chú vào subtitle
+              </Button>
+            </FormControl>
+            <FormControl margin='normal'>
+              <Button variant='outlined' onClick={() => setOpen(false)}>
+                <Close />
+              </Button>
+            </FormControl>
+          </Stack>
         </form>
       </DialogContent>
     </Dialog>

@@ -52,6 +52,7 @@ const Segment = memo(
             return (
               <Typography
                 key={index}
+                fontSize='14px'
                 color={
                   match
                     ? match.isCorrected
@@ -59,7 +60,7 @@ const Segment = memo(
                       : isCheck
                         ? 'error.main'
                         : ''
-                    : '#000fff'
+                    : 'text.hightlight'
                 }
                 variant='span'
               >
@@ -78,7 +79,7 @@ const Segment = memo(
             position: 'absolute',
             bottom: 0,
             right: '8px',
-            color: '#7bb58a'
+            color: 'warning.main'
           }}
         >
           {noteUtil.formatTime(segment.start)}

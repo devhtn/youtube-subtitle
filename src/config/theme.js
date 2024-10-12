@@ -9,10 +9,7 @@ const theme = createTheme({
     border: '1px solid #ddd'
   },
   typography: {
-    fontFamily: 'Nunito, sans-serif',
-    body2: {
-      color: '#606060'
-    }
+    fontFamily: 'Nunito, sans-serif'
   },
   palette: {
     background: {
@@ -26,7 +23,7 @@ const theme = createTheme({
     },
     text: {
       primary: '#2e2e2e',
-      secondary: '#606060'
+      hightlight: '#4786bd'
     },
     success: {
       main: '#26db13'

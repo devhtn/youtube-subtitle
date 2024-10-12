@@ -1,13 +1,16 @@
 import { useState } from 'react'
 
 import {
-  Analytics,
   AutoGraph,
   Dashboard,
+  FitnessCenter,
   Keyboard,
   KeyboardAlt,
+  LibraryBooks,
+  LocalLibrary,
   ManageAccounts,
   Menu,
+  Slideshow,
   VideoSettings
 } from '@mui/icons-material'
 import { Box, IconButton, List } from '@mui/material'
@@ -59,7 +62,7 @@ const Drawer = styled(MuiDrawer, {
   })
 }))
 
-const SidebarLayout = () => {
+const Sidebar = () => {
   const [open, setOpen] = useState(false)
   const auth = useAuth()
 
@@ -130,10 +133,16 @@ const SidebarLayout = () => {
                 path='/'
               />
               <Navigation
-                text='Chép chính tả'
-                icon={<Keyboard />}
+                text='Quản lý bài tập'
+                icon={<LibraryBooks />}
                 openSidebar={open}
                 path='/exercise'
+              />
+              <Navigation
+                text='Làm bài tập'
+                icon={<FitnessCenter />}
+                openSidebar={open}
+                path='/play'
               />
             </List>
           )}
@@ -143,4 +152,4 @@ const SidebarLayout = () => {
     </Drawer>
   )
 }
-export default SidebarLayout
+export default Sidebar

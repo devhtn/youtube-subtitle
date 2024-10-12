@@ -1,9 +1,12 @@
+import ExtraLayout from '../layout/layouts/ExtraLayout'
 import MainLayout from '../layout/layouts/MainLayout'
 import CreateExercise from './pages/CreateExercise'
-import Exercise from './pages/Exercise'
+import DiscoverExercise from './pages/DiscoverExercise'
+import ExerciseList from './pages/ExerciseList'
 import ManageExercise from './pages/ManageExercise'
 import PlayExercise from './pages/PlayExercise'
 import ReviewExercise from './pages/ReviewExercise'
+import SavedExerciseList from './pages/SavedExerciseList'
 import RequireAuth from '~/components/RequireAuth'
 
 const exerciseRoutes = [
@@ -12,16 +15,16 @@ const exerciseRoutes = [
     element: <MainLayout />,
     children: [
       {
+        path: 'play',
+        element: (
+          <RequireAuth allowedRoles={['user']}>
+            <PlayExercise />
+          </RequireAuth>
+        )
+      },
+      {
         path: 'exercise',
         children: [
-          {
-            path: 'create',
-            element: (
-              <RequireAuth allowedRoles={['user']}>
-                <CreateExercise />
-              </RequireAuth>
-            )
-          },
           {
             path: 'admin/create',
             element: (
@@ -39,26 +42,61 @@ const exerciseRoutes = [
             )
           },
           {
-            path: '',
-            element: (
-              <RequireAuth allowedRoles={['user']}>
-                <Exercise />
-              </RequireAuth>
-            )
-          },
-          {
-            path: ':id/play',
-            element: (
-              <RequireAuth allowedRoles={['user']}>
-                <PlayExercise />
-              </RequireAuth>
-            )
-          },
-          {
             path: ':videoId/review',
             element: (
               <RequireAuth allowedRoles={['user']}>
                 <ReviewExercise />
+              </RequireAuth>
+            )
+          }
+        ]
+      }
+    ]
+  },
+  {
+    element: (
+      <ExtraLayout
+        tabItems={[
+          { label: 'Exercise', pathname: '/exercise' },
+          { label: 'Liked', pathname: '/exercise/liked' },
+          { label: 'Discover', pathname: '/exercise/discover' },
+          { label: 'Create', pathname: '/exercise/create' }
+        ]}
+      />
+    ),
+    children: [
+      {
+        path: 'exercise',
+        children: [
+          {
+            path: '',
+            element: (
+              <RequireAuth allowedRoles={['user']}>
+                <ExerciseList />
+              </RequireAuth>
+            )
+          },
+          {
+            path: 'liked',
+            element: (
+              <RequireAuth allowedRoles={['user']}>
+                <SavedExerciseList />
+              </RequireAuth>
+            )
+          },
+          {
+            path: 'discover',
+            element: (
+              <RequireAuth allowedRoles={['user']}>
+                <DiscoverExercise />
+              </RequireAuth>
+            )
+          },
+          {
+            path: 'create',
+            element: (
+              <RequireAuth allowedRoles={['user']}>
+                <CreateExercise />
               </RequireAuth>
             )
           }

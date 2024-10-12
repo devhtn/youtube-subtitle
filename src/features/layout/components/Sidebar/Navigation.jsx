@@ -1,4 +1,5 @@
-import { useNavigate } from 'react-router-dom'
+import { cloneElement } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import {
   ListItem,
@@ -9,16 +10,18 @@ import {
 
 const Navigation = ({ openSidebar, icon, text, path }) => {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const isMatch = location.pathname.split('/')[1] === path.split('/')[1]
 
   const handleClick = () => {
-    navigate(path)
+    if (!isMatch) navigate(path)
   }
   return (
     <ListItem disablePadding sx={{ display: 'block' }} onClick={handleClick}>
       <ListItemButton
         sx={{
           minHeight: 48,
-          justifyContent: open ? 'initial' : 'center',
           px: 2.5
         }}
       >
@@ -29,7 +32,11 @@ const Navigation = ({ openSidebar, icon, text, path }) => {
             justifyContent: 'center'
           }}
         >
-          {icon}
+          {cloneElement(icon, {
+            sx: {
+              color: isMatch ? 'primary.main' : ''
+            }
+          })}
         </ListItemIcon>
         <ListItemText
           primary={text}
