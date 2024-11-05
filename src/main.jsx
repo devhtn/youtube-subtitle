@@ -12,22 +12,20 @@ import { PersistGate } from 'redux-persist/integration/react'
 
 import App from './App'
 
+import env from './config/env'
 import theme from './config/theme'
 import { persistor, store } from './redux/store'
-import env from './config/env'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <Provider store={store}>
-      <PersistGate loading={null} persistor={persistor}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
-            <ToastContainer />
-            <App />
-          </GoogleOAuthProvider>
-        </ThemeProvider>
-      </PersistGate>
-    </Provider>
-  </React.StrictMode>
+  <Provider store={store}>
+    <PersistGate loading={null} persistor={persistor}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
+          <ToastContainer />
+          <App />
+        </GoogleOAuthProvider>
+      </ThemeProvider>
+    </PersistGate>
+  </Provider>
 )

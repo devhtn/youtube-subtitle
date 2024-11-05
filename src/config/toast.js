@@ -5,9 +5,12 @@ const defaultToastConfig = {
   autoClose: 4000,
   hideProgressBar: true,
   closeButton: true,
+  closeOnClick: true,
   theme: 'light',
   style: {
-    fontSize: '14px'
+    fontSize: '14px',
+    width: '400px',
+    right: '76px'
   }
 }
 

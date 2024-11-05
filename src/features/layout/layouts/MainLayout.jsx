@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 
 import { Box } from '@mui/material'
 
-import SideBar from '../components/SidebarLayout'
+import SideBar from '../components/Sidebar'
 
 const MainLayout = () => {
   return (
@@ -17,7 +17,7 @@ const MainLayout = () => {
           justifyContent: 'center'
         }}
       >
-        <Box sx={{ width: '100%', px: 2, pt: 2 }}>
+        <Box sx={{ width: '100%', px: 1 }}>
           <Outlet />
         </Box>
       </Box>

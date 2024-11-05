@@ -1,9 +1,15 @@
-import AdminHomePage from './pages/AdminHomePage'
-import UserHomePage from './pages/UserHomePage'
+import Analysis from './pages/Analysis'
+import Dashboard from './pages/Dashboard'
+import Intro from './pages/Intro'
 import RequireAuth from '~/components/RequireAuth'
 import MainLayout from '~/features/layout/layouts/MainLayout'
 
 const homeRoutes = [
+  // intro
+  {
+    path: '/',
+    element: <Intro />
+  },
   // admin home routes
   {
     element: <MainLayout />,
@@ -12,7 +18,7 @@ const homeRoutes = [
         path: '/admin',
         element: (
           <RequireAuth allowedRoles={['admin']}>
-            <AdminHomePage />
+            <Dashboard />
           </RequireAuth>
         )
       }
@@ -23,10 +29,10 @@ const homeRoutes = [
     element: <MainLayout />,
     children: [
       {
-        path: '/',
+        path: '/analysis',
         element: (
           <RequireAuth allowedRoles={['user']}>
-            <UserHomePage />
+            <Analysis />
           </RequireAuth>
         )
       }
