@@ -1,51 +1,113 @@
-import ReactAvatar from 'react-avatar'
+import { useContext, useEffect, useState } from 'react'
 
+import { Visibility } from '@mui/icons-material'
 import {
-  CheckCircle,
-  CheckCircleOutline,
-  Done,
-  FavoriteBorder,
-  HowToReg,
-  ThumbUpOffAlt
-} from '@mui/icons-material'
-import {
+  Avatar,
   Box,
   Card,
   CardContent,
   CardMedia,
-  Grid,
-  List,
-  ListItem,
-  Stack,
+  Skeleton,
   Typography
 } from '@mui/material'
+import _ from 'lodash'
+
+import CardAction from './CardAction'
 
 import exerciseUtil from '../exerciseUtil'
 
-const CardItem = ({
-  exercise,
-  isCheckInfo = false,
-  onClickThumbnail,
-  user = {}
-}) => {
-  const isLiked = user.likeList?.includes(exercise.id)
+const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
+  const [isImageLoaded, setIsImageLoaded] = useState(false)
   return (
     <>
       <Card>
-        {/* Card Media (Image) */}
-        <CardMedia
-          onClick={() => onClickThumbnail(exercise.videoId)}
-          component='img'
-          image={exercise.thumbnails[3].url}
-          alt={exercise.name}
-          sx={{ cursor: 'pointer' }}
-        />
+        <Box
+          sx={{
+            position: 'relative',
+            paddingTop: '56.25%', // Tỷ lệ 16:9
+            '&:hover .media-icons': {
+              opacity: 1 // Hiển thị các biểu tượng khi hover vào Box
+            }
+          }}
+        >
+          {/* Card Media (Image) */}
+          {!isImageLoaded && (
+            <Skeleton
+              variant='rectangular'
+              animation='wave'
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%'
+              }}
+            />
+          )}
+          <CardMedia
+            component='img'
+            image={exercise.thumbnails[3].url}
+            alt={exercise.name}
+            onLoad={() => setIsImageLoaded(true)} // Khi ảnh tải xong, cập nhật trạng thái
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              cursor: !isCheckInfo ? 'pointer' : '',
+              display: isImageLoaded ? 'block' : 'none' // Ẩn ảnh cho đến khi nó tải xong
+            }}
+          />
+
+          {/* Thẻ thời lượng nằm góc dưới bên phải */}
+          <Box
+            sx={{
+              position: 'absolute',
+              bottom: 8, // Cách đáy một chút
+              right: 8, // Cách phải một chút
+              backgroundColor: 'rgba(0, 0, 0, 0.7)', // Nền mờ
+              color: 'white',
+              padding: '2px 6px', // Khoảng cách giữa text và viền
+              borderRadius: '4px',
+              fontSize: '12px'
+            }}
+          >
+            {exerciseUtil.formatTime(exercise.duration)}
+          </Box>
+
+          {/* IconButtons chỉ hiển thị khi hover và nằm chính giữa */}
+          {!isCheckInfo && (
+            <Box
+              className='media-icons'
+              onClick={() => handlePreview(exercise.videoId)}
+              sx={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: 2,
+                opacity: 0, // Ẩn các biểu tượng khi không hover
+                transition: 'opacity 0.3s ease',
+                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Tạo nền mờ phía sau các biểu tượng
+                cursor: 'pointer'
+              }}
+            >
+              <Visibility sx={{ color: 'warning.main', fontSize: '32px' }} />
+            </Box>
+          )}
+        </Box>
         {/* Card Content */}
         <CardContent>
           {/* Name of the Content */}
           <Typography
             variant='body1'
             component='div'
+            mb={2}
             sx={{
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -57,92 +119,30 @@ const CardItem = ({
           </Typography>
 
           {/* Avatar and Shared By */}
-          {exercise.shareUserId ? (
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: '4px', gap: 2 }}>
-              <ReactAvatar name={exercise.shareUserId.name} size='40' round />
+          {!isCheckInfo && (
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
+              <Avatar
+                src={
+                  !_.isEmpty(exercise.firstUser)
+                    ? `https://robohash.org/${exercise.firstUser._id}?set=set4`
+                    : ''
+                }
+                name={exercise.firstUser?.name}
+                size='40'
+              />
               <Box>
                 <Typography variant='body2' color='text.secondary'>
-                  Shared by
+                  First completed by
                 </Typography>
                 <Typography variant='body2' color='text.secondary'>
-                  {exercise.shareUserId.name}
+                  {exercise.firstUser?.name || '? ? ?'}
                 </Typography>
               </Box>
             </Box>
-          ) : (
-            exercise.userId && (
-              <Box
-                sx={{ display: 'flex', alignItems: 'center', mt: '4px', gap: 2 }}
-              >
-                <ReactAvatar name={exercise.userId.name} size='40' round />
-                <Box>
-                  <Typography variant='body2' color='text.secondary'>
-                    Added by
-                  </Typography>
-                  <Typography variant='body2' color='text.secondary'>
-                    {exercise.userId.name}
-                  </Typography>
-                </Box>
-              </Box>
-            )
           )}
+          {/* action */}
 
-          <Typography variant='body2' sx={{ mt: '4px' }}>
-            Thể loại: {exercise.category}
-          </Typography>
-          <Typography variant='body2' sx={{ mt: '4px' }}>
-            Từ vựng cơ bản: {exercise.checkList[0].match} words
-          </Typography>
-          <Typography variant='body2' sx={{ mt: '4px' }}>
-            Từ vựng nâng cao:{' '}
-            {exercise.totalDictationUniqWords - exercise.checkList[0].match}{' '}
-            words
-          </Typography>
-          <Typography variant='body2' sx={{ mt: '4px' }}>
-            Từ chép chính tả: {exercise.totalDictationWords} words
-          </Typography>
-          <Typography variant='body2' sx={{ mt: '4px' }}>
-            Tốc độ nói: {exercise.avgSpeed} WPM
-          </Typography>
-          <Typography variant='body2' sx={{ mt: '4px' }}>
-            Thời lượng: {exerciseUtil.formatTime(exercise.duration)}
-          </Typography>
-
-          {!isCheckInfo && (
-            <Box
-              display={'flex'}
-              alignItems='center'
-              justifyContent={'space-between'}
-              mt={2}
-            >
-              <Stack
-                direction='row'
-                gap={2}
-                border={(theme) => theme.app.border}
-                padding='2px 10px'
-                borderRadius='10px'
-              >
-                <Stack direction='row'>
-                  <HowToReg sx={{ fontSize: '20px' }} />
-                  <Typography variant='body2'>
-                    {exercise.completedCount}
-                  </Typography>
-                </Stack>
-                <Stack direction='row'>
-                  <ThumbUpOffAlt
-                    sx={{
-                      fontSize: '20px',
-                      color: isLiked ? 'warning.main' : ''
-                    }}
-                  />
-                  <Typography variant='body2'>{exercise.likesCount}</Typography>
-                </Stack>
-              </Stack>
-              <Typography variant='body2'>
-                {exerciseUtil.getTimeSince(exercise.createdAt)}
-              </Typography>
-            </Box>
-          )}
+          {!isCheckInfo && <CardAction exercise={exercise} />}
         </CardContent>
       </Card>
     </>

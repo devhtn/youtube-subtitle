@@ -7,7 +7,7 @@ import MainLayout from '~/features/layout/layouts/MainLayout'
 const homeRoutes = [
   // intro
   {
-    path: '/intro',
+    path: '/',
     element: <Intro />
   },
   // admin home routes
@@ -29,7 +29,7 @@ const homeRoutes = [
     element: <MainLayout />,
     children: [
       {
-        path: '/',
+        path: '/analysis',
         element: (
           <RequireAuth allowedRoles={['user']}>
             <Analysis />

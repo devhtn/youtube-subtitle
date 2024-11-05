@@ -1,12 +1,9 @@
-import ExtraLayout from '../layout/layouts/ExtraLayout'
 import MainLayout from '../layout/layouts/MainLayout'
 import CreateExercise from './pages/CreateExercise'
-import DiscoverExercise from './pages/DiscoverExercise'
-import ExerciseList from './pages/ExerciseList'
+import ListExercises from './pages/ListExercises'
 import ManageExercise from './pages/ManageExercise'
 import PlayExercise from './pages/PlayExercise'
-import ReviewExercise from './pages/ReviewExercise'
-import SavedExerciseList from './pages/SavedExerciseList'
+import PreviewExercise from './pages/PreviewExercise'
 import RequireAuth from '~/components/RequireAuth'
 
 const exerciseRoutes = [
@@ -14,14 +11,6 @@ const exerciseRoutes = [
   {
     element: <MainLayout />,
     children: [
-      {
-        path: 'play',
-        element: (
-          <RequireAuth allowedRoles={['user']}>
-            <PlayExercise />
-          </RequireAuth>
-        )
-      },
       {
         path: 'exercise',
         children: [
@@ -42,53 +31,18 @@ const exerciseRoutes = [
             )
           },
           {
-            path: ':videoId/review',
+            path: 'preview/:id',
             element: (
               <RequireAuth allowedRoles={['user']}>
-                <ReviewExercise />
-              </RequireAuth>
-            )
-          }
-        ]
-      }
-    ]
-  },
-  {
-    element: (
-      <ExtraLayout
-        tabItems={[
-          { label: 'Exercise', pathname: '/exercise' },
-          { label: 'Liked', pathname: '/exercise/liked' },
-          { label: 'Discover', pathname: '/exercise/discover' },
-          { label: 'Create', pathname: '/exercise/create' }
-        ]}
-      />
-    ),
-    children: [
-      {
-        path: 'exercise',
-        children: [
-          {
-            path: '',
-            element: (
-              <RequireAuth allowedRoles={['user']}>
-                <ExerciseList />
+                <PreviewExercise />
               </RequireAuth>
             )
           },
           {
-            path: 'liked',
+            path: 'list',
             element: (
               <RequireAuth allowedRoles={['user']}>
-                <SavedExerciseList />
-              </RequireAuth>
-            )
-          },
-          {
-            path: 'discover',
-            element: (
-              <RequireAuth allowedRoles={['user']}>
-                <DiscoverExercise />
+                <ListExercises />
               </RequireAuth>
             )
           },
@@ -99,12 +53,19 @@ const exerciseRoutes = [
                 <CreateExercise />
               </RequireAuth>
             )
+          },
+          {
+            path: 'play',
+            element: (
+              <RequireAuth allowedRoles={['user']}>
+                <PlayExercise />
+              </RequireAuth>
+            )
           }
         ]
       }
     ]
   }
-  // user home routes
 ]
 
 export default exerciseRoutes

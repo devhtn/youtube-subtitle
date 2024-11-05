@@ -1,25 +1,26 @@
-import { memo } from 'react'
+import { memo, useMemo } from 'react'
 
-import { Box, Typography } from '@mui/material'
+import { Done, WarningAmber } from '@mui/icons-material'
+import { Box, Stack, Typography } from '@mui/material'
 
-import noteUtil from '../exerciseUtil'
 import util from '~/utils'
 
 const Segment = memo(
   ({
     isCurrent,
     segment,
-    handleSegmentClick = () => {},
+    onClick,
     isDictation = false,
-    isCheck = false
+    isCheck = false,
+    dictationSegment = {}
   }) => {
     const arrayWords = segment.text.split(' ')
+
     const findWord = (word, dictationWords) => {
       // Kiểm tra xem từ trong mảng words có nằm trong từ hiện tại không
       const cleanWord = word
         .replace(/^[^a-zA-Z0-9]+/, '')
         .replace(/[^a-zA-Z0-9]+$/, '')
-        .toLowerCase()
 
       return dictationWords.find((dictationWord) => {
         // Kiểm tra nếu dictationWord là object chứa thuộc tính word
@@ -41,10 +42,10 @@ const Segment = memo(
           backgroundColor: isCurrent
             ? '#94b1bc4d' // Màu nền khác khi segment đang kích hoạt
             : 'transparent',
-          cursor: !util.isEmptyFunction(handleSegmentClick) && 'pointer',
+          cursor: !util.isEmptyFunction(onClick) && 'pointer',
           position: 'relative'
         }}
-        onClick={() => handleSegmentClick(segment)}
+        onClick={() => onClick(segment)}
       >
         <Box>
           {arrayWords.map((word, index) => {
@@ -60,7 +61,7 @@ const Segment = memo(
                       : isCheck
                         ? 'error.main'
                         : ''
-                    : 'text.hightlight'
+                    : 'secondary.main'
                 }
                 variant='span'
               >
@@ -73,17 +74,25 @@ const Segment = memo(
         </Box>
 
         {/* show start of segment */}
-        <Typography
-          variant='caption'
-          sx={{
-            position: 'absolute',
-            bottom: 0,
-            right: '8px',
-            color: 'warning.main'
-          }}
+        <Stack
+          direction='row'
+          alignItems='center'
+          sx={{ position: 'absolute', bottom: 0, right: '8px' }}
         >
-          {noteUtil.formatTime(segment.start)}
-        </Typography>
+          {dictationSegment.isCompleted && (
+            <Done sx={{ color: 'success.main' }} />
+          )}
+          <Typography
+            sx={{
+              color: dictationSegment.isCompleted
+                ? 'success.main'
+                : 'warning.main'
+            }}
+          >
+            {dictationSegment.attemptsCount > 0 &&
+              dictationSegment.attemptsCount}
+          </Typography>
+        </Stack>
       </Box>
     )
   }

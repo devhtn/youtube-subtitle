@@ -19,7 +19,7 @@ const theme = createTheme({
       main: '#ff3199'
     },
     secondary: {
-      main: '#ffcd5b'
+      main: '#11a5ff'
     },
     text: {
       primary: '#2e2e2e',
@@ -41,15 +41,20 @@ const theme = createTheme({
   components: {
     MuiCssBaseline: {
       styleOverrides: {
-        body: {
+        html: {
           '*::-webkit-scrollbar': {
-            width: '8px' // Hiển thị scrollbar khi hover
+            width: '8px',
+            height: '8px' // Chiều cao scrollbar cho trục ngang (nếu cần)
           },
           '*::-webkit-scrollbar-thumb': {
             backgroundColor: '#c4c4c4',
             borderRadius: '10px',
             border: '2px solid transparent',
-            backgroundClip: 'content-box'
+            backgroundClip: 'content-box',
+            transition: 'background-color 0.3s ease', // Thêm hiệu ứng chuyển màu
+            '&:hover': {
+              backgroundColor: '#a0a0a0' // Màu khi hover
+            }
           },
           '*::-webkit-scrollbar-track': {
             backgroundColor: '#f5f5f5'
@@ -60,7 +65,7 @@ const theme = createTheme({
     MuiSvgIcon: {
       styleOverrides: {
         root: {
-          color: '#959595' // Màu cho icon SVG
+          color: '#959595'
         }
       }
     }

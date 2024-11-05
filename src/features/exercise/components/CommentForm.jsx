@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import ReactAvatar from 'react-avatar'
+import { useContext, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { Close } from '@mui/icons-material'
 import {
+  Avatar,
   Box,
   Button,
   FormControl,
@@ -11,6 +11,7 @@ import {
   Stack,
   Typography
 } from '@mui/material'
+import _ from 'lodash'
 
 import TextField from '~/components/fields/TextField'
 
@@ -22,10 +23,10 @@ const CommentForm = ({
   reply,
   setReply,
   parentId = null,
-  setComments,
   subReply = false,
   replyName = null,
-  setIsShowReplies
+  setIsShowReplies,
+  onCreate
 }) => {
   const [user, setUser] = useState({})
   const [open, setOpen] = useState(false)
@@ -36,29 +37,16 @@ const CommentForm = ({
   // Hàm xử lý khi gửi comment
   const onSubmit = async (data) => {
     data.parentId = parentId
+    data.exerciseId = exerciseId
     try {
-      const newComment = await exerciseApi.createComment(exerciseId, data)
-      console.log(newComment)
-      if (newComment.parentId === null)
-        setComments((prev) => [newComment, ...prev])
-      else
-        setComments((prev) =>
-          prev.map((comment) => {
-            if (comment.id === newComment.parentId) {
-              return {
-                ...comment,
-                replies: [newComment, ...comment.replies] // Thêm vào đầu mảng replies
-              }
-            }
-            return comment
-          })
-        )
+      const newComment = await exerciseApi.createComment(data)
       if (reply) {
         setReply(false)
         setIsShowReplies(true)
       }
       setOpen(false)
       reset()
+      onCreate(newComment)
     } catch (error) {}
   }
 
@@ -73,10 +61,17 @@ const CommentForm = ({
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} onFocus={() => setOpen(true)}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
         <Stack direction='row' spacing={2} alignItems='center'>
           <Box>
-            <ReactAvatar size='40' round name={user.name} />
+            <Avatar
+              name={user.name}
+              src={
+                !_.isEmpty(user)
+                  ? `https://robohash.org/${user.id}?set=set4`
+                  : ''
+              }
+            />
           </Box>
 
           {/* Sử dụng Controller để kết nối TextField với React Hook Form */}

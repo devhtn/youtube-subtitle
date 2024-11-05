@@ -6,9 +6,7 @@ import {
   Box,
   Button,
   Dialog,
-  DialogActions,
   DialogContent,
-  DialogTitle,
   FormControl,
   FormLabel,
   Stack,
@@ -37,17 +35,19 @@ const SegmentNoteForm = ({
 
   const onSubmit = async (data) => {
     const id = customToast.loading()
-    const resp = await exerciseApi
-      .updateDictationSegmentNote(dictation.id, selectedSegment.id, data)
-      .catch(() => customToast.error('Lỗi server'))
-    customToast.stop(id)
-    if (resp) {
-      setDictation(resp)
+    try {
+      const updateDictation = await exerciseApi.updateDictationSegment(
+        dictation.id,
+        selectedSegment.id,
+        data
+      )
+      setDictation(updateDictation)
       setSegmentNote(data.note)
       customToast.success('Bạn đã tạo ghi chú thành công')
       setOpen(false)
       reset()
-    }
+    } catch (error) {}
+    customToast.stop(id)
   }
 
   // Cập nhật giá trị form khi segmentNote thay đổi
@@ -61,10 +61,10 @@ const SegmentNoteForm = ({
 
   return (
     <Dialog maxWidth='sm' fullWidth open={open} aria-labelledby='auth dialog'>
-      <Box mt={2} pl={3}>
+      <Box mt={2} px={3}>
         <Segment isCheck={true} segment={resultSegment} />
       </Box>
-      <Typography pl={3} mt={3} >
+      <Typography px={5} mt={2} variant='body2'>
         {selectedSegment.transText}
       </Typography>
       <DialogContent>
@@ -80,7 +80,12 @@ const SegmentNoteForm = ({
             multiline
             minRows={5}
           />
-          <Stack direction='row' justifyContent='space-between'>
+          <Stack direction='row' gap={2} justifyContent='flex-end'>
+            <FormControl margin='normal'>
+              <Button variant='outlined' onClick={() => setOpen(false)}>
+                <Close />
+              </Button>
+            </FormControl>
             <FormControl margin='normal'>
               <Button
                 style={{ textTransform: 'none' }}
@@ -89,11 +94,6 @@ const SegmentNoteForm = ({
                 type='submit'
               >
                 Lưu ghi chú vào subtitle
-              </Button>
-            </FormControl>
-            <FormControl margin='normal'>
-              <Button variant='outlined' onClick={() => setOpen(false)}>
-                <Close />
               </Button>
             </FormControl>
           </Stack>

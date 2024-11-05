@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode'
 
 const useAuth = () => {
   const auth = useSelector((state) => state.auth)
-  const token = auth.token ? auth.token : null
+  const token = auth ? auth.token : null
 
   if (!token) {
     return auth

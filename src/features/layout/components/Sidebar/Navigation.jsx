@@ -8,11 +8,11 @@ import {
   ListItemText
 } from '@mui/material'
 
-const Navigation = ({ openSidebar, icon, text, path }) => {
+const Navigation = ({ openSidebar, icon, text, path = '' }) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const isMatch = location.pathname.split('/')[1] === path.split('/')[1]
+  const isMatch = location.pathname === path
 
   const handleClick = () => {
     if (!isMatch) navigate(path)
@@ -21,7 +21,7 @@ const Navigation = ({ openSidebar, icon, text, path }) => {
     <ListItem disablePadding sx={{ display: 'block' }} onClick={handleClick}>
       <ListItemButton
         sx={{
-          minHeight: 48,
+          minHeight: 60,
           px: 2.5
         }}
       >

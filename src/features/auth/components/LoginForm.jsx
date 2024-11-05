@@ -21,8 +21,9 @@ import { jwtDecode } from 'jwt-decode'
 import TextField from '~/components/fields/TextField'
 
 import authApi from '../authApi'
-import { login } from '../authSlice'
+import { login } from '../slices/authSlice'
 import customToast from '~/config/toast'
+import { persistor } from '~/redux/store'
 
 const LoginForm = ({ goToForget }) => {
   const navigate = useNavigate()
@@ -51,6 +52,8 @@ const LoginForm = ({ goToForget }) => {
     try {
       const token = await authApi.login(data)
       dispatch(login(token))
+      // Đợi redux persist
+      await persistor.flush()
       customToast.stop()
       const { role } = jwtDecode(token)
       if (pathname === '/login') {
@@ -92,6 +95,7 @@ const LoginForm = ({ goToForget }) => {
               </InputAdornment>
             )
           }}
+          autoComplete='username'
         />
         <TextField
           name='password'
@@ -120,6 +124,7 @@ const LoginForm = ({ goToForget }) => {
               </InputAdornment>
             )
           }}
+          autoComplete='password'
         />
 
         <Typography

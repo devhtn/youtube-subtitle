@@ -46,7 +46,13 @@ const SeekBarDictation = ({
             height: 12
           },
           '& .MuiSlider-rail': {
-            backgroundColor: '#e0e0e0' // Màu sắc của rail
+            backgroundColor: '#e0e0e0', // Màu sắc của rail
+            borderRadius: 0
+          },
+          '& .MuiSlider-mark': {
+            height: 6, // Tăng chiều cao của mark
+            width: 4, // Tăng độ rộng của mark,
+            backgroundColor: 'secondary.main'
           }
         }}
       />

@@ -38,6 +38,7 @@ privateAxios.interceptors.response.use(
     return res.data
   },
   (err) => {
+    console.log(err)
     if (err.response.status === 401) {
       const auth = localStorage.getItem('persist:auth')
       if (auth && typeof auth === 'string') {

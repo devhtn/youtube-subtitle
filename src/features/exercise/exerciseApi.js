@@ -10,22 +10,20 @@ const exerciseApi = {
   getDictation(id) {
     return privateAxios.get(`/exercise/dictation/${id}`)
   },
-  updateDictationProcess(dictationId, segmentId) {
+  updateDictationSegment(dictationId, segmentId, body) {
     return privateAxios.patch(
-      `/exercise/dictation/${dictationId}/segment/${segmentId}/process`
-    )
-  },
-  updateDictationSegmentNote(dictationId, segmentId, body) {
-    return privateAxios.patch(
-      `/exercise/dictation/${dictationId}/segment/${segmentId}/note`,
+      `/exercise/dictation/${dictationId}/segment/${segmentId}`,
       body
     )
   },
   getExercise(videoId) {
     return privateAxios.get(`/exercise/${videoId}`)
   },
-  createComment(exerciseId, body) {
-    return privateAxios.post(`/exercise/${exerciseId}/comment`, body)
+  getUserList() {
+    return privateAxios.get(`/exercise/user-list`)
+  },
+  createComment(body) {
+    return privateAxios.post(`/exercise/comment`, body)
   },
   getExerciseComments(exerciseId) {
     return privateAxios.get(`/exercise/${exerciseId}/comment`)
@@ -36,11 +34,17 @@ const exerciseApi = {
   toggleLike(body) {
     return privateAxios.post(`/exercise/toggle-like`, body)
   },
-  getExercises() {
-    return privateAxios.get('/exercise')
+  getExercises(query) {
+    return privateAxios.get('/exercise', { params: query })
   },
   getUserDictations(query) {
     return privateAxios.get('/exercise/user-dictation', { params: query })
+  },
+  createDictation(body) {
+    return privateAxios.post('/exercise/dictation', body)
+  },
+  delDictation(id) {
+    return privateAxios.delete(`/exercise/dictation/${id}`)
   }
 }
 

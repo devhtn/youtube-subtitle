@@ -8,11 +8,12 @@ const RequireAuth = ({ allowedRoles, children }) => {
   const auth = useAuth()
 
   useEffect(() => {
-    if (!auth.role) navigate('/login')
-    else if (!allowedRoles.includes(auth.role)) navigate('/not-found')
-  }, [allowedRoles, navigate, auth.role])
+    if (!auth || !allowedRoles.includes(auth.role)) {
+      navigate('/login')
+    }
+  }, [allowedRoles, navigate, auth])
 
-  if (!allowedRoles.includes(auth.role)) {
+  if (!auth || !allowedRoles.includes(auth.role)) {
     return null
   }
 

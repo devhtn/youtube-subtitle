@@ -1,44 +1,57 @@
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 
-import { Box, LinearProgress, Typography } from '@mui/material'
+import Box from '@mui/material/Box'
+import CircularProgress from '@mui/material/CircularProgress'
+import Typography from '@mui/material/Typography'
 
-const ProcessDictation = ({ process }) => {
-  const [displayedProcess, setDisplayedProcess] = useState(0)
+function CircularProgressWithLabel(props) {
+  const getColor = (value) => {
+    if (value < 25) return '#FFA500' // Màu vàng
+    if (value < 50) return '#fff900' // Màu vàng
+    if (value < 75) return '#00BFFF' // Màu xanh dương
+    return '#4CAF50' // Màu xanh lá
+  }
 
-  useEffect(() => {
-    // Tăng dần giá trị displayedProcess tới giá trị process trong 0.5 giây
-    if (process > displayedProcess) {
-      const increment = (process - displayedProcess) / 20 // Chia nhỏ giá trị tăng
-      const timer = setTimeout(() => {
-        setDisplayedProcess((prev) => Math.min(prev + increment, process))
-      }, 25) // Cập nhật sau mỗi 25ms
-
-      return () => clearTimeout(timer) // Dọn dẹp timeout khi component unmount hoặc khi giá trị process thay đổi
-    }
-  }, [process, displayedProcess])
   return (
-    <Box
-      sx={{
-        height: '20px',
-        px: 2,
-        backgroundColor: '#fff',
-        border: (theme) => theme.app.border
-      }}
-    >
-      <Box height={'100%'} display='flex' alignItems='center'>
-        {/* Thanh progress */}
-        <Box width='100%' mr={1}>
-          <LinearProgress variant='determinate' value={process} />
-        </Box>
-        {/* Label hiển thị % */}
-        <Box minWidth={50}>
-          <Typography variant='body2' color='success.main'>
-            {`${displayedProcess.toFixed(2)}%`}
-          </Typography>
-        </Box>
+    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+      <CircularProgress
+        variant='determinate'
+        value={100} // Giá trị cố định để giữ cho vòng tròn nền đầy
+        sx={{ color: 'grey.300' }} // Màu mặc định cho vòng tròn nền
+      />
+      {/* Vòng tròn tiến trình */}
+      <CircularProgress
+        variant='determinate'
+        {...props}
+        sx={{
+          position: 'absolute',
+          color: getColor(props.value) // Sử dụng hàm để lấy màu cho vòng tròn tiến trình
+        }}
+      />
+      <Box
+        sx={{
+          top: 0,
+          left: 0,
+          bottom: 0,
+          right: 0,
+          position: 'absolute',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Typography
+          variant='caption'
+          component='div'
+          sx={{ color: 'text.secondary' }}
+        >
+          {`${Math.round(props.value)}%`}
+        </Typography>
       </Box>
     </Box>
   )
 }
 
-export default ProcessDictation
+export default function ProcessDictation({ process }) {
+  return <CircularProgressWithLabel value={process} />
+}

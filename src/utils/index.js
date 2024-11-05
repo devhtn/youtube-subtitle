@@ -1,6 +1,3 @@
-const isEmptyObject = (obj) => {
-  return Object.keys(obj).length === 0
-}
 const isEmptyFunction = (fn) => {
   return (
     fn.toString().replace(/\s+/g, '') ===
@@ -8,5 +5,5 @@ const isEmptyFunction = (fn) => {
   )
 }
 
-const util = { isEmptyObject, isEmptyFunction }
+const util = { isEmptyFunction }
 export default util

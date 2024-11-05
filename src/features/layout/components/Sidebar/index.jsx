@@ -3,17 +3,14 @@ import { useState } from 'react'
 import {
   AutoGraph,
   Dashboard,
-  FitnessCenter,
-  Keyboard,
-  KeyboardAlt,
+  KeyboardDoubleArrowLeft,
+  KeyboardDoubleArrowRight,
   LibraryBooks,
-  LocalLibrary,
   ManageAccounts,
-  Menu,
-  Slideshow,
-  VideoSettings
+  PostAdd,
+  SportsEsports
 } from '@mui/icons-material'
-import { Box, IconButton, List } from '@mui/material'
+import { Box, Button, List } from '@mui/material'
 import MuiDrawer from '@mui/material/Drawer'
 import { styled } from '@mui/material/styles'
 
@@ -67,7 +64,16 @@ const Sidebar = () => {
   const auth = useAuth()
 
   return (
-    <Drawer variant={'permanent'} open={open}>
+    <Drawer
+      variant={'permanent'}
+      open={open}
+      PaperProps={{
+        sx: {
+          boxShadow: open ? '1px 0px 10px rgba(0, 0, 0, 0.2)' : '', // Chỉ bóng đổ bên phải
+          transition: 'width 0.2s ease'
+        }
+      }}
+    >
       {/* <DrawerHeader /> */}
       <Box
         sx={{
@@ -81,18 +87,17 @@ const Sidebar = () => {
           sx={{
             display: 'flex',
             justifyContent: open ? 'initial' : 'center',
-            mt: 1,
-            px: '8px'
+            alignSelf: open ? 'end' : ''
           }}
         >
-          <IconButton
+          <Button
             size='large'
             color='inherit'
             aria-label='open drawer'
             onClick={() => setOpen(!open)}
           >
-            <Menu />
-          </IconButton>
+            {!open ? <KeyboardDoubleArrowRight /> : <KeyboardDoubleArrowLeft />}
+          </Button>
         </Box>
 
         {/* List */}
@@ -106,22 +111,31 @@ const Sidebar = () => {
             justifyContent: 'space-between'
           }}
         >
-          {auth.role === 'admin' ? (
+          {auth && auth.role === 'admin' ? (
             <List>
               <Navigation
                 text='Dashboard'
                 icon={<Dashboard />}
                 openSidebar={open}
+                path='/admin'
               />
               <Navigation
                 text='Quản lý bài tập'
-                icon={<VideoSettings />}
+                icon={<LibraryBooks />}
                 openSidebar={open}
+                path='/exercise/admin/manage'
+              />
+              <Navigation
+                text='Tạo mới bài tập'
+                icon={<PostAdd />}
+                openSidebar={open}
+                path='/exercise/admin/create'
               />
               <Navigation
                 text='Quản lý account'
                 icon={<ManageAccounts />}
                 openSidebar={open}
+                path='/user'
               />
             </List>
           ) : (
@@ -133,16 +147,22 @@ const Sidebar = () => {
                 path='/'
               />
               <Navigation
-                text='Quản lý bài tập'
+                text='Danh sách bài tập'
                 icon={<LibraryBooks />}
                 openSidebar={open}
-                path='/exercise'
+                path='/exercise/list'
+              />
+              <Navigation
+                text='Tạo mới bài tập'
+                icon={<PostAdd />}
+                openSidebar={open}
+                path='/exercise/create'
               />
               <Navigation
                 text='Làm bài tập'
-                icon={<FitnessCenter />}
+                icon={<SportsEsports />}
                 openSidebar={open}
-                path='/play'
+                path='/exercise/play'
               />
             </List>
           )}

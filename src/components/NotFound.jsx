@@ -10,7 +10,8 @@ const NotFound = () => {
   const auth = useAuth()
 
   const handleGoHome = () => {
-    if (auth.role === 'user') navigate('/') // Điều hướng trở về trang chủ
+    if (auth && auth.role === 'user')
+      navigate('/') // Điều hướng trở về trang chủ
     else navigate('/admin')
   }
 

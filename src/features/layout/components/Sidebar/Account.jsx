@@ -1,23 +1,27 @@
 import React, { useEffect } from 'react'
-import ReactAvatar from 'react-avatar'
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 
-import { AccountBox, DarkMode, ExitToApp } from '@mui/icons-material'
+import { DarkMode, ExitToApp, TrendingUp } from '@mui/icons-material'
 import {
+  Avatar,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
   ListItemText,
   Menu,
-  MenuItem
+  MenuItem,
+  Typography
 } from '@mui/material'
+import _ from 'lodash'
 
 import authApi from '~/features/auth/authApi'
-import { logout } from '~/features/auth/authSlice'
+import { logout } from '~/features/auth/slices/authSlice'
+import { addLevelWords } from '~/features/exercise/slices/levelSlice'
 
 const Account = ({ openSidebar }) => {
+  const level = useSelector((state) => state.level)
   const dispatch = useDispatch()
   const navigate = useNavigate()
   const [anchorEl, setAnchorEl] = React.useState(null)
@@ -41,7 +45,11 @@ const Account = ({ openSidebar }) => {
   // useEffect
   useEffect(() => {
     ;(async () => {
-      await authApi.getUser().then((user) => setUser(user))
+      try {
+        const user = await authApi.getUser()
+        setUser(user)
+        if (user.role === 'user') dispatch(addLevelWords(user.levelWords))
+      } catch (error) {}
     })()
   }, [])
 
@@ -85,19 +93,12 @@ const Account = ({ openSidebar }) => {
       transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
       anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
-      <MenuItem onClick={handleClose} sx={{ typography: 'body2' }}>
+      <MenuItem onClick={handleLogout} sx={{ typography: 'body2' }}>
         <ListItemIcon>
           <DarkMode fontSize='small' />
         </ListItemIcon>
-        Dark mode
+        Dark Mode
       </MenuItem>
-      <MenuItem onClick={handleClose} sx={{ typography: 'body2' }}>
-        <ListItemIcon>
-          <AccountBox fontSize='small' />
-        </ListItemIcon>
-        Account
-      </MenuItem>
-
       <MenuItem onClick={handleLogout} sx={{ typography: 'body2' }}>
         <ListItemIcon>
           <ExitToApp fontSize='small' />
@@ -123,7 +124,15 @@ const Account = ({ openSidebar }) => {
               justifyContent: 'center'
             }}
           >
-            <ReactAvatar name={user.name} size='24' round />
+            <Avatar
+              name={user.name}
+              src={
+                !_.isEmpty(user)
+                  ? `https://robohash.org/${user.id}?set=set4`
+                  : ''
+              }
+              sx={{ width: '24px', height: '24px' }}
+            />
           </ListItemIcon>
           <ListItemText
             primary={user.name}
@@ -139,6 +148,67 @@ const Account = ({ openSidebar }) => {
           />
         </ListItemButton>
       </ListItem>
+      {user.role === 'user' && (
+        <ListItem disablePadding sx={{ display: 'block' }}>
+          {openSidebar ? (
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                px: 2.5
+              }}
+            >
+              <ListItemIcon
+                sx={{
+                  minWidth: 0,
+                  mr: openSidebar ? 2 : 'auto',
+                  justifyContent: 'center'
+                }}
+              >
+                <TrendingUp sx={{ color: 'primary.main', fontSize: '24px' }} />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <Typography
+                    variant='body2'
+                    sx={{ color: 'success.main', fontWeight: '700' }}
+                  >
+                    {openSidebar && (
+                      <Typography variant='span'>EXP.</Typography>
+                    )}{' '}
+                    {level.words.length}
+                  </Typography>
+                }
+                primaryTypographyProps={{
+                  fontSize: '14px',
+                  overflow: 'hidden', // Ẩn nội dung tràn
+                  whiteSpace: 'nowrap', // Ngăn ngắt dòng
+                  textOverflow: 'ellipsis' // Hiển thị dấu "..."
+                }}
+                sx={{
+                  opacity: openSidebar ? 1 : 0
+                }}
+              />
+            </ListItemButton>
+          ) : (
+            <ListItemButton
+              sx={{
+                minHeight: 48,
+                p: 0,
+                display: 'flex',
+                justifyContent: 'center'
+              }}
+            >
+              <Typography
+                variant='body2'
+                sx={{ color: 'success.main', fontWeight: '700' }}
+              >
+                {openSidebar && <Typography variant='span'>EXP.</Typography>}{' '}
+                {level.words.length}
+              </Typography>
+            </ListItemButton>
+          )}
+        </ListItem>
+      )}
       {renderMenu}
     </List>
   )

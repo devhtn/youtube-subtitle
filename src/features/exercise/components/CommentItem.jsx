@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import ReactAvatar from 'react-avatar'
 
 import { ExpandLess, ExpandMore, ThumbUpAltOutlined } from '@mui/icons-material'
 import {
+  Avatar,
   Box,
   Button,
   Collapse,
@@ -10,6 +10,7 @@ import {
   Stack,
   Typography
 } from '@mui/material'
+import _ from 'lodash'
 
 import CommentForm from './CommentForm'
 
@@ -17,50 +18,40 @@ import exerciseApi from '../exerciseApi'
 import exerciseUtil from '../exerciseUtil'
 import useAuth from '~/hooks/useAuth'
 
-const CommentItem = ({ comment, setComments, subReply = false }) => {
+const CommentItem = ({
+  comment,
+  subReply = false,
+  handleCreate,
+  handleLikeChange,
+  onToggleLike
+}) => {
   const [reply, setReply] = useState(false)
   const [isShowReplies, setIsShowReplies] = useState(false)
   const auth = useAuth()
   const [isLiked, setIsLiked] = useState(comment.likes?.includes(auth.id))
 
   const handleToggleLike = async () => {
-    const updatedComment = await exerciseApi.toggleLikeComment({
-      commentId: comment.id
-    })
-
-    if (updatedComment) {
-      if (updatedComment.parentId === null) {
-        // Cập nhật nếu comment gốc
-        setComments((prevComments) =>
-          prevComments.map((cmt) =>
-            cmt.id === updatedComment.id ? updatedComment : cmt
-          )
-        )
-      } else {
-        // Cập nhật nếu comment là reply
-        setComments((prevComments) =>
-          prevComments.map((cmt) => {
-            if (cmt.id === updatedComment.parentId) {
-              return {
-                ...cmt,
-                replies: cmt.replies.map((reply) =>
-                  reply.id === updatedComment.id ? updatedComment : reply
-                )
-              }
-            }
-            return cmt
-          })
-        )
-      }
-      // Cập nhật trạng thái like
-      setIsLiked(updatedComment.likes.includes(auth.id))
-    }
+    try {
+      const updateComment = await exerciseApi.toggleLikeComment({
+        commentId: comment.id
+      })
+      setIsLiked(updateComment.likes.includes(auth.id))
+      onToggleLike(updateComment)
+    } catch (error) {}
   }
 
   return (
     <Box sx={{ width: '100%' }}>
       <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
-        <ReactAvatar size='40' round name={comment.userId?.name} />
+        <Avatar
+          size='40'
+          name={comment.userId?.name}
+          src={
+            !_.isEmpty(comment.userId)
+              ? `https://robohash.org/${comment.userId.id}?set=set4`
+              : ''
+          }
+        />
         <Box width={'100%'}>
           <Box display={'flex'} gap={1}>
             <Typography fontSize={'13px'} fontWeight={'600'}>
@@ -102,10 +93,10 @@ const CommentItem = ({ comment, setComments, subReply = false }) => {
               setReply={setReply}
               exerciseId={comment.exerciseId}
               parentId={comment.id}
-              setComments={setComments}
               subReply={subReply}
               replyName={comment.userId?.name}
               setIsShowReplies={setIsShowReplies}
+              onCreate={handleCreate}
             />
           )}
           {/* show replies */}
@@ -124,8 +115,9 @@ const CommentItem = ({ comment, setComments, subReply = false }) => {
                 <CommentItem
                   key={reply.id}
                   comment={reply}
-                  setComments={setComments}
                   subReply={true}
+                  handleCreate={handleCreate}
+                  onToggleLike={handleLikeChange}
                 />
               ))}
             </Box>
