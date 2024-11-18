@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react'
 
 import { Box, Chip, Popover } from '@mui/material'
+import _ from 'lodash'
 
 const sorts = [
   {
     label: 'Phổ biến',
-    property: 'completedUsersCount',
+    sort: 'completedUsersCount',
     orderOptions: [{ label: 'Phổ biến', order: 'desc' }]
   },
   {
     label: 'Tốc độ',
-    property: 'avgSpeed',
+    sort: 'avgSpeed',
     orderOptions: [
       { label: 'Tốc độ thấp - cao', order: 'asc' },
       { label: 'Tốc độ cao - thấp', order: 'desc' }
@@ -18,7 +19,7 @@ const sorts = [
   },
   {
     label: 'Độ khó',
-    property: 'difficult',
+    sort: 'difficult',
     orderOptions: [
       { label: 'Độ khó thấp - cao', order: 'asc' },
       { label: 'Độ khó cao - thấp', order: 'desc' }
@@ -26,7 +27,7 @@ const sorts = [
   },
   {
     label: 'Thời lượng',
-    property: 'duration',
+    sort: 'duration',
     orderOptions: [
       { label: 'Thời lượng thấp - cao', order: 'asc' },
       { label: 'Thời lượng cao - thấp', order: 'desc' }
@@ -34,28 +35,28 @@ const sorts = [
   }
 ]
 
-const SortMenu = ({ onChange = () => {} }) => {
+const SortMenu = ({ value = {}, onChange = () => {} }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedSort, setSelectedSort] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
-  const [result, setResult] = useState({
-    property: 'completedUsersCount',
+  const [resultSort, setResultSort] = useState({
+    sort: 'completedUsersCount',
     order: 'desc'
   })
 
   const open = Boolean(anchorEl)
 
-  const handleOpenPopover = (event, sort) => {
-    if (sort.orderOptions.length > 1) {
+  const handleOpenPopover = (event, el) => {
+    if (el.orderOptions.length > 1) {
       setAnchorEl(event.currentTarget)
-      setSelectedSort(sort)
+      setSelectedSort(el)
       setSelectedOrder(null) // Set default order value
     } else {
-      setSelectedSort(sort)
-      setSelectedOrder(sort.orderOptions[0])
+      setSelectedSort(el)
+      setSelectedOrder(el.orderOptions[0])
       onChange({
-        sort: sort.property,
-        order: sort.orderOptions[0].order
+        sort: el.sort,
+        order: el.orderOptions[0].order
       })
     }
   }
@@ -68,15 +69,19 @@ const SortMenu = ({ onChange = () => {} }) => {
     setSelectedOrder(orderOption)
     handleClosePopover()
     onChange({
-      sort: selectedSort.property,
+      sort: selectedSort.sort,
       order: orderOption.order
     })
   }
 
   useEffect(() => {
+    if (!_.isEmpty(value)) setResultSort(value)
+  }, [value])
+
+  useEffect(() => {
     if (selectedSort && selectedOrder) {
-      setResult({
-        property: selectedSort.property,
+      setResultSort({
+        sort: selectedSort.sort,
         order: selectedOrder.order
       })
     }
@@ -98,9 +103,9 @@ const SortMenu = ({ onChange = () => {} }) => {
       <Box display='flex' alignItems='center' gap={1}>
         {sorts.map((el) => (
           <Chip
-            key={el.property}
+            key={el.sort}
             label={
-              selectedSort && selectedSort.property === el.property
+              selectedSort && selectedSort.sort === el.sort
                 ? selectedOrder
                   ? selectedOrder.label
                   : el.label // Show order label if selected
@@ -111,8 +116,7 @@ const SortMenu = ({ onChange = () => {} }) => {
             sx={{
               border: 0,
               borderRadius: 1,
-              color:
-                result.property === el.property ? 'primary.main' : 'inherit' // Change text color if selected
+              color: resultSort.sort === el.sort ? 'primary.main' : 'inherit' // Change text color if selected
             }}
           />
         ))}

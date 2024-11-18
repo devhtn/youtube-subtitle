@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import {
   Button,
   Dialog,
@@ -8,16 +10,31 @@ import {
   Typography
 } from '@mui/material'
 
+import util from '~/utils'
+
 const ConfirmDialog = ({
-  open,
+  open = false,
   content = 'Bạn có chắc chắn muốn thực hiện hành động này?',
-  onConfirm,
-  onClose,
-  icon
+  onConfirm = () => {},
+  onClose = () => {},
+  icon = <></>
 }) => {
+  const [openDialog, setOpenDialog] = useState(false)
+  const handleClose = () => {
+    setOpenDialog(false)
+    onClose() // Call the onClose function if provided
+  }
+  const handleConfirm = () => {
+    setOpenDialog(false)
+    onConfirm() // Call the onClose function if provided
+  }
+
+  useEffect(() => {
+    setOpenDialog(open)
+  }, [open])
   return (
     <Dialog
-      open={open}
+      open={openDialog}
       onClose={onClose}
       aria-labelledby='confirm-dialog-title'
     >
@@ -26,18 +43,18 @@ const ConfirmDialog = ({
           {icon}
         </Stack>
       </DialogTitle>
-      <DialogContent sx={{ maxWidth: '500px', minWidth: '300px' }}>
+      <DialogContent sx={{ maxWidth: '600px', minWidth: '400px' }}>
         <Typography textAlign='center'>{content}</Typography>
       </DialogContent>
       <DialogActions>
-        {onClose && (
-          <Button onClick={onClose} variant='outlined'>
-            Hủy
+        <Button onClick={handleClose} variant='outlined'>
+          Đóng
+        </Button>
+        {!util.isEmptyFunction(onConfirm) && (
+          <Button onClick={handleConfirm} variant='contained'>
+            Xác nhận
           </Button>
         )}
-        <Button onClick={onConfirm} color='error' variant='contained'>
-          Xác nhận
-        </Button>
       </DialogActions>
     </Dialog>
   )

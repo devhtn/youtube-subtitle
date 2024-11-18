@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { Close, KeyboardArrowDown } from '@mui/icons-material'
-import { Box, Button, Chip, Grid, Stack, Typography } from '@mui/material'
+import { Box, Grid, Pagination } from '@mui/material'
 import _ from 'lodash'
 import queryString from 'query-string'
 
@@ -12,121 +12,127 @@ import SortMenu from '../components/SortMenu'
 import ScrollTopButton from '~/features/auth/components/ScrollTopBottom'
 
 import exerciseApi from '../exerciseApi'
+import exerciseUtil from '../exerciseUtil'
+import customToast from '~/config/toast'
 
 const ListExercises = () => {
+  const level = useSelector((state) => state.level)
   const navigate = useNavigate()
   const location = useLocation()
   const [exercises, setExercises] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(false)
-  const [remainingExercises, setRemainingExercises] = useState(0)
+  console.log(exercises)
   const [query, setQuery] = useState(
     location.search ? null : { sort: 'completedUsersCount', order: 'desc' }
   )
-  console.log(exercises)
-  console.log(query)
   const [page, setPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(0)
+  const [activeFilter, setActiveFilter] = useState({})
+  const [resultSort, setResultSort] = useState({})
+
+  const levelWords = useMemo(
+    () => level.words.map((item) => item.word),
+    [level.words]
+  )
+
+  const handleChangePage = async (event, value) => {
+    setPage(value)
+  }
   // Điều hướng đến trang xem trước
-  const handlePreview = (id) => {
+  const handlePreviewClick = (id) => {
     navigate(`/exercise/preview/${id}`)
   }
 
-  // Xử lý khi chọn category
-  const handleCategoryTag = (categoryName) => {
-    setExercises([]) // Xóa danh sách exercises để load lại
-    setRemainingExercises(0) // Đặt lại số bài tập còn lại
-    setQuery({
-      category: query.category === categoryName ? null : categoryName
-    })
+  const handleCreateClick = async (id) => {
+    try {
+      await exerciseApi.createDictation({
+        exerciseId: id
+      })
+      customToast.success('Bài tập được tạo thành công!')
+      navigate('/exercise/playlist')
+    } catch (error) {
+      customToast.error(error.data.message)
+    }
+  }
+
+  const handleChangeFilter = (filter) => {
+    setQuery({ ...filter, sort: 'completedUsersCount', order: 'desc' })
+    setPage(1)
+  }
+
+  const handleChangeSort = (result) => {
+    setQuery((prev) => ({ ...prev, ...result }))
     setPage(1)
   }
 
   // Hàm lọc exercises
   const filterExercises = async () => {
-    setLoading(true)
     try {
-      const {
-        exercises: newExercises,
-        totalExercises,
-        categories
-      } = await exerciseApi.getExercises({ ...query, page: 1 })
-      setPage(1)
-      setCategories(categories)
-      setExercises(newExercises)
-      setRemainingExercises(totalExercises - newExercises.length) // Cập nhật số bài tập còn lại
+      const { exercises: newExercises, totalPages } =
+        await exerciseApi.getExercises({ ...query, page: Number(page) })
+
+      const exercisesWithSimilarity = newExercises.map((exercise) => ({
+        ...exercise,
+        similarity: exerciseUtil.calculateIntersectionPercentage(
+          levelWords,
+          exercise.lemmaWords
+        )
+      }))
+      setTotalPages(totalPages)
+      setExercises(exercisesWithSimilarity)
     } catch (error) {
       console.error(error)
     }
-    setLoading(false)
-  }
-
-  // Hàm tải thêm exercises
-  const loadMore = async () => {
-    if (remainingExercises <= 0) return // Kiểm tra nếu không còn bài tập nào
-
-    setLoading(true)
-    try {
-      const { exercises: moreExercises } = await exerciseApi.getExercises({
-        ...query,
-        page: page + 1
-      })
-      setExercises((prevExercises) => [...prevExercises, ...moreExercises])
-      setRemainingExercises(
-        (prevRemaining) => prevRemaining - moreExercises.length
-      )
-      setPage((prevPage) => prevPage + 1)
-    } catch (error) {
-      console.error(error)
-    }
-    setLoading(false)
   }
 
   useEffect(() => {
     // Lấy category từ URL
-    const parsed = queryString.parse(location.search)
+    const parsed = queryString.parse(location.search, {
+      arrayFormat: 'bracket'
+    })
     // Cập nhật query với category mới
-    if (!_.isEmpty(parsed)) setQuery(parsed)
+    if (!_.isEmpty(parsed)) {
+      const { page, ...query } = parsed
+      setQuery(query)
+      setPage(Number(page))
+      const { page: _, sort, order, ...filterParsed } = parsed
+      setActiveFilter(filterParsed)
+      setResultSort({ sort, order })
+    }
   }, [])
 
   useEffect(() => {
+    if (page === 1) {
+      // Change url
+      navigate({
+        pathname: `/exercise/list`,
+        search: queryString.stringify(
+          { ...query, page },
+          { arrayFormat: 'bracket' }
+        )
+      })
+      filterExercises()
+    }
+  }, [query])
+
+  useEffect(() => {
+    // Change url
     navigate({
       pathname: `/exercise/list`,
-      search: queryString.stringify(query, { arrayFormat: 'bracket' })
+      search: queryString.stringify(
+        { ...query, page },
+        { arrayFormat: 'bracket' }
+      )
     })
-    if (query) filterExercises()
-  }, [query])
+    filterExercises()
+  }, [page])
 
   return (
     <Box pt={1}>
       <Box>
         <Box display='flex' gap={1.5}>
-          <Filter />
-          {categories.map((category) => (
-            <Chip
-              key={category.name}
-              label={
-                <Stack direction='row' alignItems='center' spacing={0.5}>
-                  <Typography variant='span'>{`${category.name} (${category.count})`}</Typography>
-                  {category.name === query.category && (
-                    <Close sx={{ color: 'error.main', fontSize: '14px' }} />
-                  )}
-                </Stack>
-              }
-              variant='outlined'
-              sx={{
-                borderRadius: 1,
-                borderColor:
-                  category.name === query.category ? 'secondary.main' : ''
-              }} // Khoảng cách giữa các tag
-              onClick={() => handleCategoryTag(category.name)}
-            />
-          ))}
+          <Filter onChange={handleChangeFilter} value={activeFilter} />
         </Box>
-        <SortMenu
-          onChange={(result) => {
-            setQuery((prev) => ({ ...prev, ...result }))
-          }}
-        />
+        <SortMenu onChange={handleChangeSort} value={resultSort} />
       </Box>
 
       <Grid container spacing={3}>
@@ -134,26 +140,24 @@ const ListExercises = () => {
           <Grid item xs={12} sm={6} md={3} key={exercise._id}>
             <CardItem
               exercise={exercise}
-              handlePreview={() => handlePreview(exercise.id)}
+              preview={{
+                onPreviewClick: () => handlePreviewClick(exercise._id),
+                onCreateClick: () => handleCreateClick(exercise._id),
+                progress: exercise.similarity
+              }}
             />
           </Grid>
         ))}
       </Grid>
-      {remainingExercises > 0 && (
-        <Box display='flex' justifyContent='center' mt={4}>
-          <Button
-            onClick={loadMore}
-            sx={{ textTransform: 'none', fontSize: '14px' }}
-            disabled={loading}
-            variant='outlined'
-            endIcon={<KeyboardArrowDown sx={{ color: 'primary.main' }} />}
-          >
-            {loading
-              ? 'Loading...'
-              : `Xem thêm ${remainingExercises} video khác`}
-          </Button>
-        </Box>
-      )}
+      <Box display='flex' justifyContent='center' mt={4}>
+        <Pagination
+          count={totalPages}
+          page={page}
+          onChange={handleChangePage}
+          color='primary'
+        />
+      </Box>
+
       <ScrollTopButton />
     </Box>
   )

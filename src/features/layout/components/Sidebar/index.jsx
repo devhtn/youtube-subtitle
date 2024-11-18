@@ -8,6 +8,7 @@ import {
   LibraryBooks,
   ManageAccounts,
   PostAdd,
+  Public,
   SportsEsports
 } from '@mui/icons-material'
 import { Box, Button, List } from '@mui/material'
@@ -117,38 +118,20 @@ const Sidebar = () => {
                 text='Dashboard'
                 icon={<Dashboard />}
                 openSidebar={open}
-                path='/admin'
-              />
-              <Navigation
-                text='Quản lý bài tập'
-                icon={<LibraryBooks />}
-                openSidebar={open}
-                path='/exercise/admin/manage'
-              />
-              <Navigation
-                text='Tạo mới bài tập'
-                icon={<PostAdd />}
-                openSidebar={open}
-                path='/exercise/admin/create'
-              />
-              <Navigation
-                text='Quản lý account'
-                icon={<ManageAccounts />}
-                openSidebar={open}
-                path='/user'
+                path='/statistic/admin'
               />
             </List>
           ) : (
             <List>
               <Navigation
-                text='Thống kê phát triển'
+                text='Thống kê kết quả'
                 icon={<AutoGraph />}
                 openSidebar={open}
-                path='/'
+                path='/statistic'
               />
               <Navigation
-                text='Danh sách bài tập'
-                icon={<LibraryBooks />}
+                text='Bài tập được chia sẻ'
+                icon={<Public />}
                 openSidebar={open}
                 path='/exercise/list'
               />
@@ -162,7 +145,7 @@ const Sidebar = () => {
                 text='Làm bài tập'
                 icon={<SportsEsports />}
                 openSidebar={open}
-                path='/exercise/play'
+                path='/exercise/playlist'
               />
             </List>
           )}

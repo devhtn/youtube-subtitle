@@ -10,6 +10,9 @@ const exerciseApi = {
   getDictation(id) {
     return privateAxios.get(`/exercise/dictation/${id}`)
   },
+  updateDictation(id, body) {
+    return privateAxios.patch(`/exercise/dictation/${id}`, body)
+  },
   updateDictationSegment(dictationId, segmentId, body) {
     return privateAxios.patch(
       `/exercise/dictation/${dictationId}/segment/${segmentId}`,
@@ -19,23 +22,17 @@ const exerciseApi = {
   getExercise(videoId) {
     return privateAxios.get(`/exercise/${videoId}`)
   },
-  getUserList() {
-    return privateAxios.get(`/exercise/user-list`)
-  },
-  createComment(body) {
-    return privateAxios.post(`/exercise/comment`, body)
-  },
   getExerciseComments(exerciseId) {
-    return privateAxios.get(`/exercise/${exerciseId}/comment`)
-  },
-  toggleLikeComment(body) {
-    return privateAxios.post(`/exercise/comment/toggle-like`, body)
+    return privateAxios.get(`/exercise/${exerciseId}/comments`)
   },
   toggleLike(body) {
     return privateAxios.post(`/exercise/toggle-like`, body)
   },
   getExercises(query) {
     return privateAxios.get('/exercise', { params: query })
+  },
+  getCategories() {
+    return privateAxios.get('/exercise/categories')
   },
   getUserDictations(query) {
     return privateAxios.get('/exercise/user-dictation', { params: query })

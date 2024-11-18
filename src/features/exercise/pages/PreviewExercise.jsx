@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Clear, LibraryAdd } from '@mui/icons-material'
+import { ArrowBack, Clear, LibraryAdd } from '@mui/icons-material'
 import { Box, IconButton, Stack, Typography } from '@mui/material'
 
 import PlayVideo from '../components/PlayVideo'
@@ -21,19 +21,14 @@ const PreviewExercise = () => {
   const handleSegmentChange = (newSegment) => {
     setCurrentSegment(newSegment)
   }
-
-  const handleCreateDictation = async () => {
-    const totalValidSegments = exercise.segments.filter(
-      (segment) => segment.dictationWords.length > 0
-    ).length
+  const handleCreateClick = async (id) => {
     try {
       await exerciseApi.createDictation({
-        exerciseId: exercise.id,
-        totalSegments: totalValidSegments
+        exerciseId: id
       })
-      customToast.success('Bài tập được lưu thành công!')
-    } catch {
-      customToast.error('Bạn cần xóa đi bài tập hiện tại để lưu mới')
+      customToast.success('Bài tập được tạo thành công!')
+    } catch (error) {
+      customToast.error(error.data.message)
     }
   }
 
@@ -137,8 +132,8 @@ const PreviewExercise = () => {
           >
             {/* action */}
             <Stack direction='row' gap={2}>
-              <IconButton onClick={handleCreateDictation}>
-                <LibraryAdd />
+              <IconButton onClick={() => handleCreateClick(exercise._id)}>
+                <LibraryAdd sx={{ color: 'primary.main' }} />
               </IconButton>
             </Stack>
             <Typography variant='body2'>
@@ -148,7 +143,7 @@ const PreviewExercise = () => {
               {exercise.segments?.length}
             </Typography>
             <IconButton onClick={() => navigate(-1)}>
-              <Clear sx={{ color: 'error.main' }} />
+              <ArrowBack sx={{ color: 'error.main' }} />
             </IconButton>
           </Stack>
         </Box>

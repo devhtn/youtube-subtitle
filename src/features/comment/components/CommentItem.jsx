@@ -14,9 +14,9 @@ import _ from 'lodash'
 
 import CommentForm from './CommentForm'
 
-import exerciseApi from '../exerciseApi'
-import exerciseUtil from '../exerciseUtil'
+import commentApi from '~/features/comment/commentApi'
 import useAuth from '~/hooks/useAuth'
+import util from '~/utils'
 
 const CommentItem = ({
   comment,
@@ -32,7 +32,7 @@ const CommentItem = ({
 
   const handleToggleLike = async () => {
     try {
-      const updateComment = await exerciseApi.toggleLikeComment({
+      const updateComment = await commentApi.toggleLikeComment({
         commentId: comment.id
       })
       setIsLiked(updateComment.likes.includes(auth.id))
@@ -58,7 +58,7 @@ const CommentItem = ({
               {comment.userId?.name}
             </Typography>
             <Typography fontSize={'12px'}>
-              {exerciseUtil.getTimeSince(comment.createdAt)}
+              {util.getTimeSince(comment.createdAt)}
             </Typography>
           </Box>
           <Typography variant='body2'>

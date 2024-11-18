@@ -1,12 +1,17 @@
 import { RouterProvider } from 'react-router-dom'
 
+import CommentSocketProvider from './contexts/CommentSocketProvider'
+
+import useAuth from './hooks/useAuth'
 import router from './router'
 
-router
 function App() {
+  const auth = useAuth()
   return (
     <>
-      <RouterProvider router={router} />
+      <CommentSocketProvider userId={auth.id}>
+        <RouterProvider router={router} />
+      </CommentSocketProvider>
     </>
   )
 }

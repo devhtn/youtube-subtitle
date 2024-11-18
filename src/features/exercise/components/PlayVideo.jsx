@@ -1,13 +1,20 @@
 import { useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 
-import { Box, Skeleton, Typography } from '@mui/material'
+import { Box, Fade, Skeleton, Typography } from '@mui/material'
 import _ from 'lodash'
 
-import Comment from './Comment'
+import Comment from '~/features/comment/components/Comment'
+
+const hints = [
+  'Video tạm thời được ẩn cho đến khi bạn trả lời hoặc đầu hàng',
+  'Đừng quên chú ý đến phát âm, nghe và phát âm lại những gì nghe được!',
+  'Bạn chỉ cần nhập từ và dấu cách, không cần quan tâm dấu câu và in hoa'
+  // Thêm các gợi ý khác
+]
 
 const PlayVideo = ({
-  onSegmentChange,
+  onSegmentIndexChange,
   onTimeChange,
   timePlay,
   volume = 100,
@@ -24,6 +31,8 @@ const PlayVideo = ({
   const [currentSegment, setCurrentSegment] = useState({
     transText: '...'
   })
+  const [hintIndex, setHintIndex] = useState(0)
+  const [fadeKey, setFadeKey] = useState(0)
 
   const playerRef = useRef(null)
 
@@ -43,7 +52,7 @@ const PlayVideo = ({
     if (findIndex !== -1) {
       const newSegment = exercise.segments[findIndex]
       setCurrentSegment(newSegment)
-      onSegmentChange && onSegmentChange(newSegment) // Thông báo cho component cha
+      onSegmentIndexChange && onSegmentIndexChange(findIndex) // Thông báo cho component cha
     }
     onTimeChange && onTimeChange(currentTime)
   }
@@ -61,6 +70,17 @@ const PlayVideo = ({
   useEffect(() => {
     onPlayingChange && onPlayingChange(playing)
   }, [playing])
+
+  useEffect(() => {
+    if (isHidden) {
+      const interval = setInterval(() => {
+        setHintIndex((prevIndex) => (prevIndex + 1) % hints.length)
+        setFadeKey((prevKey) => prevKey + 1)
+      }, 10000) // Thay đổi gợi ý sau mỗi 10 giây
+
+      return () => clearInterval(interval) // Xóa interval khi `isHidden` thay đổi
+    }
+  }, [isHidden])
 
   return (
     <>
@@ -94,7 +114,9 @@ const PlayVideo = ({
             color: '#fff'
           }}
         >
-          Để bạn tập trung lắng nghe, video tạm thời được ẩn
+          <Fade in={isHidden} timeout={1000} key={fadeKey}>
+            <Typography variant='body1'>{hints[hintIndex]}</Typography>
+          </Fade>
         </Box>
         {exercise.videoId && (
           <ReactPlayer

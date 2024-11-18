@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   Comment,
@@ -13,6 +13,7 @@ import _ from 'lodash'
 import exerciseApi from '../exerciseApi'
 import exerciseUtil from '../exerciseUtil'
 import useAuth from '~/hooks/useAuth'
+import util from '~/utils'
 
 const CardAction = ({ inCard = true, exercise, newComment }) => {
   const auth = useAuth()
@@ -49,12 +50,12 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
         <Stack direction='row' gap={2}>
           <Stack
             direction='row'
-            gap={3}
+            gap={2}
             border={(theme) => theme.app.border}
             padding='2px 10px'
             borderRadius='10px'
           >
-            <Stack direction='row' gap='4px'>
+            <Stack direction='row' gap='2px'>
               <ThumbUpOffAlt
                 sx={{
                   fontSize: '20px',
@@ -65,7 +66,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
               />
               <Typography variant='body2'>{likedUsers.length}</Typography>
             </Stack>
-            <Stack direction='row' gap='4px'>
+            <Stack direction='row' gap='2px'>
               <Comment
                 sx={{
                   fontSize: '20px',
@@ -74,7 +75,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
               />
               <Typography variant='body2'>{commentedCount || 0}</Typography>
             </Stack>
-            <Stack direction='row' gap='4px'>
+            <Stack direction='row' gap='2px'>
               <HowToReg
                 sx={{
                   fontSize: '20px',
@@ -104,7 +105,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
           )}
         </Stack>
         <Typography variant='body2'>
-          {exerciseUtil.getTimeSince(exercise.createdAt)}
+          {util.getTimeSince(exercise.createdAt)}
         </Typography>
       </Box>
 
@@ -115,17 +116,16 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
             Thể loại: {exercise.category}
           </Typography>
           <Typography variant='body2' sx={{ mt: '2px' }}>
-            Từ vựng bài tập: {exercise.totalDictationWords} words
+            Từ vựng cần chép: {exercise.totalDictationWords} words
           </Typography>
           <Typography variant='body2' sx={{ mt: '2px' }}>
             Từ vựng gốc: {exercise.lemmaWords?.length} words
           </Typography>
           <Typography variant='body2' sx={{ mt: '2px' }}>
-            Độ khó:{' '}
-            {exercise.lemmaWords?.length - exercise.checkList?.[0].match}
+            Độ khó: {exercise.difficult}
           </Typography>
           <Typography variant='body2' sx={{ mt: '2px' }}>
-            Tốc độ nói: {exercise.avgSpeed} WPM
+            Tốc độ: {exercise.avgSpeed} WPM
           </Typography>
         </Box>
       </Collapse>

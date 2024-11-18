@@ -5,7 +5,7 @@ import queryString from 'query-string'
 import env from '~/config/env'
 
 const privateAxios = axios.create({
-  baseURL: env.API_URL,
+  baseURL: `${env.API_URL}/v1`,
   paramsSerializer: (params) => queryString.stringify(params),
   headers: {
     'Content-Type': 'application/json'

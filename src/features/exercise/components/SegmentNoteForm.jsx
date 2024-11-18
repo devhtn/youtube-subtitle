@@ -24,7 +24,7 @@ const SegmentNoteForm = ({
   setOpen,
   selectedSegment,
   dictation,
-  setDictation,
+  onChangeNote = () => {},
   segmentNote,
   setSegmentNote,
   resultSegment
@@ -41,7 +41,7 @@ const SegmentNoteForm = ({
         selectedSegment.id,
         data
       )
-      setDictation(updateDictation)
+      onChangeNote(updateDictation)
       setSegmentNote(data.note)
       customToast.success('Bạn đã tạo ghi chú thành công')
       setOpen(false)

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
-import { Close, LibraryAdd, WarningAmber } from '@mui/icons-material'
+import { Close, Info, LibraryAdd, WarningAmber } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -27,11 +27,8 @@ const CreateExercise = () => {
   const auth = useAuth()
   const { control, handleSubmit, reset } = useForm()
   const [exercise, setExercise] = useState({})
-  const [isExistDictation, setIsExistDictation] = useState(false)
+  const [dictation, setDictation] = useState({})
   const [timePlay, setTimePlay] = useState({})
-  const [currentSegment, setCurrentSegment] = useState({
-    transText: '...'
-  })
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
 
   const onSubmit = async (data) => {
@@ -39,7 +36,9 @@ const CreateExercise = () => {
     try {
       const exercise = await exerciseApi.checkVideo(data)
       if (exercise) setExercise(exercise)
-    } catch (error) {}
+    } catch (error) {
+      customToast.error(error.data.message)
+    }
     customToast.stop(id)
   }
 
@@ -47,22 +46,16 @@ const CreateExercise = () => {
     const id = customToast.loading()
     try {
       await exerciseApi.createExercise(exercise)
-      if (auth.role === 'user') {
-        navigate('/exercise/play')
-        customToast.success(`Lưu bài tập thành công! Chăm chỉ bạn nhé!`)
-      } else {
-        setExercise({})
-        customToast.success(`Bài tập đã được tạo thành công!`)
-        reset()
-      }
+      navigate('/exercise/playlist')
+      customToast.success(`Lưu bài tập thành công! Chăm chỉ bạn nhé!`)
     } catch (error) {
       customToast.error(error.data.message)
     }
     customToast.stop(id)
   }
 
-  const handleSegmentChange = (newSegment) => {
-    setCurrentSegment(newSegment)
+  const handleSegmentIndexChange = (segmentIndex) => {
+    setCurrentSegmentIndex(segmentIndex)
   }
 
   const handleSegmentClick = useCallback((segment) => {
@@ -77,31 +70,28 @@ const CreateExercise = () => {
 
   // effect currentSegment change
   useEffect(() => {
-    if (currentSegment) {
-      setCurrentSegmentIndex(
-        (exercise.segments?.findIndex(
-          (segment) => segment === currentSegment
-        ) ?? -1) + 1
-      )
+    if (exercise.segments) {
       // scrollIntoView
-      const element = document.getElementById(`segment-${currentSegment.start}`)
+      const element = document.getElementById(
+        `segment-${exercise.segments[currentSegmentIndex].start}`
+      )
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [currentSegment])
+  }, [currentSegmentIndex, exercise.segments])
 
   useEffect(() => {
     ;(async () => {
       if (auth.role === 'user') {
         try {
-          const dictation = await exerciseApi.getUserDictations({
+          const dictations = await exerciseApi.getUserDictations({
             isCompleted: false
           })
-          if (dictation[0]) {
-            setIsExistDictation(true)
-          }
-        } catch {}
+          if (dictations[0]) setDictation(dictations[0])
+        } catch (error) {
+          console.log(error)
+        }
       }
     })()
   }, [])
@@ -109,10 +99,9 @@ const CreateExercise = () => {
   return (
     <Box>
       <ConfirmDialog
-        open={isExistDictation}
+        open={!_.isEmpty(dictation)}
         icon={<WarningAmber sx={{ fontSize: '48px', color: 'warning.main' }} />}
-        content='Bạn cần hoàn thành bài tập đang dang dở của mình hoặc xóa nó đi để tạo bài tập mới. Đi đến bài tập hiện tại của bạn ?'
-        onConfirm={() => navigate('/exercise/play')}
+        content='Bạn chỉ được tạo mới tối đa 1 bài tập!'
         onClose={() => navigate(-1)}
       />
       {!_.isEmpty(exercise) ? (
@@ -121,7 +110,7 @@ const CreateExercise = () => {
             <PlayVideo
               exercise={exercise}
               timePlay={timePlay}
-              onSegmentChange={handleSegmentChange}
+              onSegmentIndexChange={handleSegmentIndexChange}
             />
             {/* video info */}
             <Box mt={2}>
@@ -129,17 +118,16 @@ const CreateExercise = () => {
                 Thể loại: {exercise.category}
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
-                Từ vựng bài tập: {exercise.totalDictationWords} words
+                Từ vựng cần chép: {exercise.totalDictationWords} words
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
                 Từ vựng gốc: {exercise.lemmaWords?.length} words
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
-                Độ khó từ vựng:{' '}
-                {exercise.lemmaWords?.length - exercise.checkList[0].match}
+                Độ khó: {exercise.difficult}
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
-                Độ khó nghe: {exercise.avgSpeed} WPM
+                Tốc độ: {exercise.avgSpeed} WPM
               </Typography>
             </Box>
           </Box>
@@ -170,7 +158,7 @@ const CreateExercise = () => {
                       <Box key={index}>
                         <Segment
                           segment={segment}
-                          isCurrent={currentSegment === segment}
+                          isCurrent={currentSegmentIndex === index}
                           onClick={handleSegmentClick}
                         />
                       </Box>
@@ -193,7 +181,7 @@ const CreateExercise = () => {
                 {/* action */}
                 <Stack direction='row' gap={2}>
                   <IconButton onClick={handleCreateExercise}>
-                    <LibraryAdd />
+                    <LibraryAdd sx={{ color: 'primary.main' }} />
                   </IconButton>
                 </Stack>
                 <Typography variant='body2'>
@@ -216,34 +204,67 @@ const CreateExercise = () => {
           </Box>
         </Box>
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <Stack direction={'row'} gap={2}>
-            <TextField
-              label='Link to video on YouTube'
-              name='link'
-              control={control}
-              rules={{
-                required: 'Link to video on YouTube is required' // Thông báo lỗi khi field này bị bỏ trống
-              }}
-              autoComplete='off'
-            />
-            <FormControl margin='normal'>
-              <Button
-                sx={{
-                  textTransform: 'none',
-                  textWrap: 'nowrap',
-                  px: 4,
-                  height: '40px'
+        <Box>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <Stack direction={'row'} gap={2}>
+              <TextField
+                label='Link to video on YouTube'
+                name='link'
+                control={control}
+                rules={{
+                  required: 'Link to video on YouTube is required' // Thông báo lỗi khi field này bị bỏ trống
                 }}
-                variant='contained'
-                color='primary'
-                type='submit'
-              >
-                Kiểm tra
-              </Button>
-            </FormControl>
-          </Stack>
-        </form>
+                autoComplete='off'
+              />
+              <FormControl margin='normal'>
+                <Button
+                  sx={{
+                    textTransform: 'none',
+                    textWrap: 'nowrap',
+                    px: 4,
+                    height: '40px'
+                  }}
+                  variant='contained'
+                  color='primary'
+                  type='submit'
+                >
+                  Kiểm tra
+                </Button>
+              </FormControl>
+            </Stack>
+          </form>
+          <Box
+            sx={{
+              mt: 2,
+              p: 2,
+              borderRadius: 1,
+              bgcolor: 'grey.100', // Nền nhẹ để làm nổi bật
+              alignItems: 'flex-start'
+            }}
+          >
+            <Stack direction='row' gap={1}>
+              <Info sx={{ color: '#1976d2' }} />
+              <Box>
+                <Typography
+                  variant='body2'
+                  color='text.primary'
+                  fontWeight='bold'
+                  component='span'
+                >
+                  Lưu ý:
+                </Typography>
+                <Typography variant='body2' color='text.secondary'>
+                  <br />
+                  1. Bạn chỉ được tạo tối đa một bài tập cho đến khi bạn hoàn
+                  thành hoặc xóa bài tập đó. <br />
+                  2. Bài tập sau khi hoàn thành sẽ được chia sẻ cho mọi người.{' '}
+                  <br />
+                  3. Chỉ hỗ trợ video có phụ đề.
+                </Typography>
+              </Box>
+            </Stack>
+          </Box>
+        </Box>
       )}
     </Box>
   )

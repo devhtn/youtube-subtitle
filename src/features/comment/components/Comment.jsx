@@ -1,16 +1,22 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { Box, Typography } from '@mui/material'
+import { Box } from '@mui/material'
 
-import CardAction from './CardAction'
 import CommentForm from './CommentForm'
 import CommentItem from './CommentItem'
+import CardAction from '~/features/exercise/components/CardAction'
 
-import exerciseApi from '../exerciseApi'
+import useCommentSocketContext from '~/contexts/useCommentSocketContext'
+import exerciseApi from '~/features/exercise/exerciseApi'
+
+// import useCommentSocket from '~/hooks/useCommentSocket'
 
 const Comment = ({ exercise }) => {
+  const { newNotify } = useCommentSocketContext()
+
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState({})
+  // const { newNotify } = useCommentSocket(auth.id)
 
   const handleCreate = (newComment) => {
     setNewComment(newComment)
@@ -58,11 +64,19 @@ const Comment = ({ exercise }) => {
   }
 
   useEffect(() => {
+    if (newNotify) {
+      handleCreate(newNotify)
+    }
+  }, [newNotify])
+
+  useEffect(() => {
     ;(async () => {
       try {
         const comments = await exerciseApi.getExerciseComments(exercise.id)
         setComments(comments)
-      } catch (error) {}
+      } catch (error) {
+        console.log(error)
+      }
     })()
   }, [])
 

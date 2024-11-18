@@ -1,22 +1,36 @@
-import { useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
 
-import { Visibility } from '@mui/icons-material'
+import {
+  Delete,
+  FitnessCenter,
+  LibraryAdd,
+  PlayArrow,
+  Visibility
+} from '@mui/icons-material'
 import {
   Avatar,
   Box,
+  Button,
   Card,
   CardContent,
   CardMedia,
   Skeleton,
+  Stack,
   Typography
 } from '@mui/material'
 import _ from 'lodash'
 
 import CardAction from './CardAction'
+import Progress from './Progress'
 
 import exerciseUtil from '../exerciseUtil'
 
-const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
+const CardItem = ({
+  exercise = {},
+  isCheckInfo = false,
+  play = null,
+  preview = null
+}) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   return (
     <>
@@ -30,6 +44,35 @@ const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
             }
           }}
         >
+          {play && (!play.isCompleted || (play.isCompleted && play.replay)) && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: 10,
+                right: -30,
+                backgroundColor: !play.isCompleted
+                  ? 'secondary.main'
+                  : 'success.main',
+                width: '100px',
+                height: '20px',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                transform: 'rotate(45deg)',
+                zIndex: 1
+              }}
+            >
+              {play.isCompleted ? (
+                <FitnessCenter sx={{ fontSize: '20px', color: 'white' }} />
+              ) : (
+                <Typography
+                  sx={{ fontSize: '12px', fontWeight: 'bold', color: 'white' }}
+                >
+                  NEW
+                </Typography>
+              )}
+            </Box>
+          )}
           {/* Card Media (Image) */}
           {!isImageLoaded && (
             <Skeleton
@@ -80,7 +123,6 @@ const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
           {!isCheckInfo && (
             <Box
               className='media-icons'
-              onClick={() => handlePreview(exercise.videoId)}
               sx={{
                 position: 'absolute',
                 top: 0,
@@ -93,11 +135,37 @@ const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
                 gap: 2,
                 opacity: 0, // Ẩn các biểu tượng khi không hover
                 transition: 'opacity 0.3s ease',
-                backgroundColor: 'rgba(0, 0, 0, 0.5)', // Tạo nền mờ phía sau các biểu tượng
-                cursor: 'pointer'
+                backgroundColor: 'rgba(0, 0, 0, 0.5)' // Tạo nền mờ phía sau các biểu tượng
               }}
             >
-              <Visibility sx={{ color: 'warning.main', fontSize: '32px' }} />
+              {play ? (
+                <Stack direction='row' gap={2}>
+                  {(!play.isCompleted || play.replay) && (
+                    <>
+                      <Button onClick={play.onPlayClick} variant='contained'>
+                        <PlayArrow sx={{ color: 'white' }} />
+                      </Button>
+                      <Button onClick={play.onDelClick} variant='contained'>
+                        <Delete sx={{ color: 'white' }} />
+                      </Button>
+                    </>
+                  )}
+                  {play.isCompleted && !play.replay && (
+                    <Button onClick={play.onReplayClick} variant='contained'>
+                      <FitnessCenter sx={{ color: 'white' }} />
+                    </Button>
+                  )}
+                </Stack>
+              ) : (
+                <Stack direction='row' gap={2}>
+                  <Button onClick={preview.onPreviewClick} variant='contained'>
+                    {<Visibility sx={{ color: 'white' }} />}
+                  </Button>
+                  <Button onClick={preview.onCreateClick} variant='contained'>
+                    {<LibraryAdd sx={{ color: 'white' }} />}
+                  </Button>
+                </Stack>
+              )}
             </Box>
           )}
         </Box>
@@ -123,11 +191,11 @@ const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
               <Avatar
                 src={
-                  !_.isEmpty(exercise.firstUser)
-                    ? `https://robohash.org/${exercise.firstUser._id}?set=set4`
+                  !_.isEmpty(exercise.firstUserId)
+                    ? `https://robohash.org/${exercise.firstUserId.id}?set=set4`
                     : ''
                 }
-                name={exercise.firstUser?.name}
+                name={exercise.firstUserId?.name}
                 size='40'
               />
               <Box>
@@ -135,14 +203,32 @@ const CardItem = ({ exercise, isCheckInfo = false, handlePreview }) => {
                   First completed by
                 </Typography>
                 <Typography variant='body2' color='text.secondary'>
-                  {exercise.firstUser?.name || '? ? ?'}
+                  {exercise.firstUserId?.name || '? ? ?'}
                 </Typography>
               </Box>
             </Box>
           )}
           {/* action */}
-
           {!isCheckInfo && <CardAction exercise={exercise} />}
+          {play && play.score && (
+            <Typography textAlign='center' variant='body2' color='primary'>
+              Điểm số: {play.score}/100
+            </Typography>
+          )}
+          {play && (
+            <Progress
+              variant='liner'
+              value={play.progress}
+              tooltip='Tiến độ đã thực hiện'
+            />
+          )}
+          {preview && (
+            <Progress
+              variant='liner'
+              value={preview.progress}
+              tooltip='Mức độ quen thuộcs'
+            />
+          )}
         </CardContent>
       </Card>
     </>

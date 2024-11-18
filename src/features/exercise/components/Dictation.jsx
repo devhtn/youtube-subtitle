@@ -5,12 +5,13 @@ import { useNavigate } from 'react-router-dom'
 
 import {
   Celebration,
+  Done,
   Flag,
   NoteAlt,
   Replay,
   SkipNext
 } from '@mui/icons-material'
-import { Box, Button, FormControl, Typography } from '@mui/material'
+import { Box, Button, FormControl, Stack, Typography } from '@mui/material'
 import _ from 'lodash'
 
 import SeekBarDictation from './SeekBarDictation'
@@ -20,22 +21,23 @@ import SegmentNoteForm from './SegmentNoteForm'
 import TextField from '~/components/fields/TextField'
 import ConfirmDialog from '~/features/auth/components/ConfirmDialog'
 
+import { addLevelWords } from '../../auth/slices/levelSlice'
 import exerciseApi from '../exerciseApi'
-import { addLevelWords } from '../slices/levelSlice'
 import customToast from '~/config/toast'
+import statisticApi from '~/features/statistic/statisticApi'
 
 const Dictation = ({
-  exercise,
-  dictation,
-  setDictation,
-  handlePlay,
-  currentTime,
-  onSegmentChange,
-  onCheckChange
+  exercise = {},
+  dictation = {},
+  onChangeDictation = () => {},
+  handlePlay = () => {},
+  currentTime = {},
+  onSegmentChange = () => {},
+  onCheckChange = () => {}
 }) => {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const [validSegments, setValidSegments] = useState([])
+  const [validSegmentIndexs, setValidSegmentIndexs] = useState(0)
   const [segmentIndex, setSegmentIndex] = useState(null)
   const [resultSegment, setResultSegment] = useState({})
   const [isCheck, setIsCheck] = useState(false)
@@ -50,6 +52,10 @@ const Dictation = ({
   const handleCheck = (newCheckValue) => {
     setIsCheck(newCheckValue)
     onCheckChange(newCheckValue) // Gọi callback khi trạng thái thay đổi
+  }
+
+  const handleChangeNote = (updateDictation) => {
+    onChangeDictation(updateDictation)
   }
 
   const onSubmit = async (data) => {
@@ -91,16 +97,26 @@ const Dictation = ({
           segments[segmentIndex].id,
           { isCompleted }
         )
-      setDictation(updateDictation)
-      dispatch(addLevelWords(newLevelWords))
 
-      if (isCompleted)
-        setValidSegments((prevValidSegments) =>
-          prevValidSegments.filter(
-            (segment) => segment.id !== segments[segmentIndex].id
-          )
+      onChangeDictation(updateDictation)
+
+      // Trường hợp segment đã hoàn thành
+      if (isCompleted) {
+        setValidSegmentIndexs((prev) =>
+          prev.filter((_, index) => index !== segmentIndex)
         )
-    } catch (error) {}
+        dispatch(addLevelWords(newLevelWords))
+        // Thống kê trường hợp segment hoàn thành
+        await statisticApi.updateDay({
+          totalCorrectedWords,
+          newLevelWordsCount: newLevelWords.length
+        })
+      } else if (totalCorrectedWords > 0)
+        // Thống kê trường hợp không hoàn thành segment
+        await statisticApi.updateDay({ totalCorrectedWords })
+    } catch (error) {
+      console.log(error)
+    }
 
     if (isCompleted) customToast.success(`Chúc mừng! Bạn đã trả lời chính xác!`)
     else customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
@@ -117,8 +133,10 @@ const Dictation = ({
         segments[segmentIndex].id,
         { isCompleted: false }
       )
-      setDictation(updateDictation)
-    } catch (error) {}
+      onChangeDictation(updateDictation)
+    } catch (error) {
+      console.log(error)
+    }
     customToast.stop(id)
     customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
   }
@@ -135,44 +153,41 @@ const Dictation = ({
   // get random segment
   const getRandomSegment = () => {
     // Lấy ngẫu nhiên một phần tử từ mảng validSegments
-    const randomValidSegment =
-      validSegments[Math.floor(Math.random() * validSegments.length)]
-    const randomIndex = segments.findIndex(
-      (segment) => segment.id === randomValidSegment.id
-    )
+    const randomValidSegmentIndex =
+      validSegmentIndexs[Math.floor(Math.random() * validSegmentIndexs.length)]
 
     // Tìm kiếm segment được lưu trữ trong dictation thõa mãn segment đã random
     const findSegmentNote =
-      dictation.segments.find((el) => el.segmentId === randomValidSegment.id)
+      dictation.segments.find((el, index) => index === randomValidSegmentIndex)
         ?.note || null
 
     setSegmentNote(findSegmentNote)
 
     // Tìm chỉ số của phần tử này trong mảng gốc segments
 
-    const playTime = handlePlayTime(randomIndex)
+    const playTime = handlePlayTime(randomValidSegmentIndex)
     setPlayTime(playTime)
 
     // Cập nhật trạng thái
-    setSegmentIndex(randomIndex)
+    setSegmentIndex(randomValidSegmentIndex)
     handleCheck(false)
-    setResultSegment(randomValidSegment)
+    setResultSegment(segments[randomValidSegmentIndex])
     handlePlay(playTime.start, playTime.end)
     setDuration(playTime.end - playTime.start)
     setMarkers([
       {
         value:
-          randomValidSegment.start -
-          (randomIndex !== 0
-            ? segments[randomIndex - 1].start
-            : randomValidSegment.start)
+          segments[randomValidSegmentIndex].start -
+          (randomValidSegmentIndex !== 0
+            ? segments[randomValidSegmentIndex - 1].start
+            : segments[randomValidSegmentIndex].start)
       },
       {
         value:
-          randomValidSegment.end -
-          (randomIndex !== 0
-            ? segments[randomIndex - 1].start
-            : segments[randomIndex].start)
+          segments[randomValidSegmentIndex].end -
+          (randomValidSegmentIndex !== 0
+            ? segments[randomValidSegmentIndex - 1].start
+            : segments[randomValidSegmentIndex].start)
       }
     ])
   }
@@ -189,22 +204,20 @@ const Dictation = ({
   }
 
   const handleStart = () => {
-    getRandomSegment()
+    if (!_.isEmpty(validSegmentIndexs)) getRandomSegment()
+    else customToast.info('Bài tập đã được hoàn thành!')
   }
 
   // effect
   useEffect(() => {
-    const validSegmentIds = exercise.segments
-      .filter(
-        (segment) => !segment.isCompleted && segment.dictationWords.length > 0
-      ) // Lọc ra các segment đã hoàn thành
-      .map((segment) => segment.id)
+    const validSegmentIndexs = []
+    dictation.segments.forEach((segment, index) => {
+      // do index của của segments trong dictation và exercise là giống nhau
+      if (!segment.isCompleted && segments[index].dictationWords.length > 0)
+        validSegmentIndexs.push(index)
+    }) // Lọc ra các segment đã hoàn thành
     // Lọc ra các phần tử có ít nhất một dictationWord với isCompleted là false
-    const validSegments = segments.filter((segment) =>
-      validSegmentIds.includes(segment.id)
-    )
-    setValidSegments(validSegments)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setValidSegmentIndexs(validSegmentIndexs)
   }, [])
 
   useEffect(() => {
@@ -312,46 +325,47 @@ const Dictation = ({
                 />
               </Button>
             </Box>
-            <TextField
-              name='inputWords'
-              control={control}
-              rules={{
-                required: 'Bạn cần nhập từ để kiểm tra câu trả lời  ' // Thông báo lỗi khi field này bị bỏ trống
-              }}
-              placeholder='Nhập tất cả những gì bạn nghe được!'
-              autoComplete='off'
-              disabled={isCheck}
-              sx={{
-                '& .MuiInputBase-input': {
-                  fontSize: '14px' // Điều chỉnh fontSize tại đây
-                }
-              }}
-            />
-
-            <FormControl margin='normal' fullWidth>
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <Button
-                  style={{ textTransform: 'none' }}
-                  variant='contained'
-                  color='primary'
-                  type='submit'
-                  fullWidth
-                  disabled={isCheck}
-                >
-                  Kiểm tra kết quả
-                </Button>
-                <ConfirmDialog
-                  open={dictation.isCompleted}
-                  icon={
-                    <Celebration
-                      sx={{ fontSize: '48px', color: 'primary.main' }}
-                    />
+            <Stack direction='row' gap={2}>
+              <TextField
+                name='inputWords'
+                control={control}
+                rules={{
+                  required: 'Bạn cần nhập từ để kiểm tra câu trả lời  ' // Thông báo lỗi khi field này bị bỏ trống
+                }}
+                placeholder='Nhập câu trả lời của bạn ở đây!'
+                autoComplete='off'
+                disabled={isCheck}
+                sx={{
+                  '& .MuiInputBase-input': {
+                    fontSize: '14px' // Điều chỉnh fontSize tại đây
                   }
-                  content='Chúc mừng ! Bạn đã hoàn thành tất cả bài tập của mình !'
-                  onConfirm={() => navigate('/exercise/list')}
-                />
-              </Box>
-            </FormControl>
+                }}
+              />
+
+              <FormControl margin='normal'>
+                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                  <Button
+                    style={{ textTransform: 'none' }}
+                    variant='contained'
+                    color='primary'
+                    type='submit'
+                    disabled={isCheck}
+                  >
+                    <Done sx={{ color: 'white' }} />
+                  </Button>
+                  <ConfirmDialog
+                    open={dictation.isCompleted && !dictation.replay}
+                    icon={
+                      <Celebration
+                        sx={{ fontSize: '48px', color: 'primary.main' }}
+                      />
+                    }
+                    content='Chúc mừng ! Bạn đã hoàn thành bài tập này!'
+                    onConfirm={() => navigate('/exercise/playlist')}
+                  />
+                </Box>
+              </FormControl>
+            </Stack>
           </form>
           {/* note */}
           {isCheck && segmentNote && <SegmentNote note={segmentNote} />}
@@ -362,7 +376,7 @@ const Dictation = ({
             open={openSegmentNoteForm}
             setOpen={setOpenSegmentNoteForm}
             dictation={dictation}
-            setDictation={setDictation}
+            onChangeNote={handleChangeNote}
             resultSegment={resultSegment}
           />
         </Box>

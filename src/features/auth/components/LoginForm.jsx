@@ -58,7 +58,7 @@ const LoginForm = ({ goToForget }) => {
       const { role } = jwtDecode(token)
       if (pathname === '/login') {
         if (['admin'].includes(role)) navigate('/admin')
-        else navigate('/')
+        else navigate('/exercise/playlist')
       } else window.close()
     } catch (error) {
       customToast.update(id, error.message, 'error')

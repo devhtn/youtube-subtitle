@@ -1,7 +1,7 @@
 import { combineReducers } from '@reduxjs/toolkit'
 
 import auth from '~/features/auth/slices/authSlice'
-import level from '~/features/exercise/slices/levelSlice'
+import level from '~/features/auth/slices/levelSlice'
 
 // Phải đảm bảo tên của
 const rootReducer = combineReducers({

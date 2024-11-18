@@ -1,13 +1,7 @@
 import { Box } from '@mui/material'
 
-import MenuTabs from '../components/MenuTabs'
+import MenuTabs from '../../../components/MenuTabs'
 import SideBar from '../components/Sidebar'
-
-// format of tabItems
-// tabItems={[
-//   { label: 'Exercises', pathname: '/admin/exercise' },
-//   { label: 'Create', pathname: '/admin/exercise/create' }
-// ]}
 
 const ExtraLayout = ({ tabItems }) => {
   return (

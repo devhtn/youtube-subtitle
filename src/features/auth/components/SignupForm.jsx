@@ -36,15 +36,13 @@ const SignupForm = ({ gobackToSignIn }) => {
   const onSubmit = async (data) => {
     const id = customToast.loading()
     try {
-      await authApi.register(data).catch((err) => {
-        customToast.stop(id)
-        customToast.error(err.data.message)
-      })
+      await authApi.register(data)
       customToast.stop(id)
       customToast.success('Đăng ký thành công')
       gobackToSignIn()
     } catch (error) {
-      customToast.update(id, error.message, 'error')
+      console.log(error)
+      customToast.update(id, error.data.message, 'error')
     }
   }
   return (
@@ -113,7 +111,7 @@ const SignupForm = ({ gobackToSignIn }) => {
             )
           }}
         />
-        <TextField
+        {/* <TextField
           name='email'
           control={control}
           rules={{
@@ -127,7 +125,7 @@ const SignupForm = ({ gobackToSignIn }) => {
               </InputAdornment>
             )
           }}
-        />
+        /> */}
 
         <FormControl margin='normal' fullWidth>
           <Button

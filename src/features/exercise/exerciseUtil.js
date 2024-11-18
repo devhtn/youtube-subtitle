@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 const formatTime = (totalSeconds) => {
   const minutes = Math.floor((totalSeconds % 3600) / 60)
   const seconds = totalSeconds % 60
@@ -8,34 +10,18 @@ const formatTime = (totalSeconds) => {
   return `${formattedMinutes}:${formattedSeconds}`
 }
 
-const getTimeSince = (date) => {
-  const seconds = Math.floor((new Date() - new Date(date)) / 1000)
-
-  let interval = Math.floor(seconds / 31536000)
-  if (interval >= 1) {
-    return `${interval} năm trước`
-  }
-  interval = Math.floor(seconds / 2592000)
-  if (interval >= 1) {
-    return `${interval} tháng trước`
-  }
-  interval = Math.floor(seconds / 86400)
-  if (interval >= 1) {
-    return `${interval} ngày trước`
-  }
-  interval = Math.floor(seconds / 3600)
-  if (interval >= 1) {
-    return `${interval} giờ trước`
-  }
-  interval = Math.floor(seconds / 60)
-  if (interval >= 1) {
-    return `${interval} phút trước`
-  }
-  return `${Math.floor(seconds)} giây trước`
+const calculateIntersectionPercentage = (array1, array2) => {
+  const set1 = new Set(array1)
+  const set2 = new Set(array2)
+  const intersectionCount = _.intersection(
+    Array.from(set1),
+    Array.from(set2)
+  ).length
+  return array2.length === 0 ? 0 : (intersectionCount * 100) / array2.length
 }
 
 const exerciseUtil = {
-  getTimeSince,
+  calculateIntersectionPercentage,
   formatTime
 }
 export default exerciseUtil

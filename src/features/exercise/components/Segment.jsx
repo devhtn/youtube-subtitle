@@ -1,6 +1,6 @@
-import { memo, useMemo } from 'react'
+import { memo } from 'react'
 
-import { Done, WarningAmber } from '@mui/icons-material'
+import { Done } from '@mui/icons-material'
 import { Box, Stack, Typography } from '@mui/material'
 
 import util from '~/utils'
@@ -9,7 +9,7 @@ const Segment = memo(
   ({
     isCurrent,
     segment,
-    onClick,
+    onClick = () => {},
     isDictation = false,
     isCheck = false,
     dictationSegment = {}
@@ -73,7 +73,7 @@ const Segment = memo(
           })}
         </Box>
 
-        {/* show start of segment */}
+        {/* hiển thị số lần gặp segment */}
         <Stack
           direction='row'
           alignItems='center'
@@ -82,13 +82,7 @@ const Segment = memo(
           {dictationSegment.isCompleted && (
             <Done sx={{ color: 'success.main' }} />
           )}
-          <Typography
-            sx={{
-              color: dictationSegment.isCompleted
-                ? 'success.main'
-                : 'warning.main'
-            }}
-          >
+          <Typography color='warning.main'>
             {dictationSegment.attemptsCount > 0 &&
               dictationSegment.attemptsCount}
           </Typography>

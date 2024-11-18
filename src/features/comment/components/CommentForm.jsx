@@ -15,8 +15,8 @@ import _ from 'lodash'
 
 import TextField from '~/components/fields/TextField'
 
-import exerciseApi from '../exerciseApi'
 import authApi from '~/features/auth/authApi'
+import commentApi from '~/features/comment/commentApi'
 
 const CommentForm = ({
   exerciseId,
@@ -39,7 +39,7 @@ const CommentForm = ({
     data.parentId = parentId
     data.exerciseId = exerciseId
     try {
-      const newComment = await exerciseApi.createComment(data)
+      const newComment = await commentApi.createComment(data)
       if (reply) {
         setReply(false)
         setIsShowReplies(true)

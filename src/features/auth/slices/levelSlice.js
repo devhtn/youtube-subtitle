@@ -10,7 +10,7 @@ const levelSlice = createSlice({
     addLevelWords: (state, action) => {
       const newWords = action.payload // Nhận array từ làm payload
       // Kết hợp levelWords với newWords và loại bỏ các giá trị trùng lặp
-      state.words = _.uniq([...state.words, ...newWords])
+      state.words = [...state.words, ...newWords]
     }
   }
 })

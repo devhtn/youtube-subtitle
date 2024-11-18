@@ -14,6 +14,9 @@ const defaultToastConfig = {
   }
 }
 
+const info = (message = 'Info!') => {
+  toast.info(message, defaultToastConfig)
+}
 const success = (message = 'Success!') => {
   toast.success(message, defaultToastConfig)
 }
@@ -50,6 +53,7 @@ const stop = (id) => {
 }
 
 const customToast = {
+  info,
   success,
   warning,
   error,
