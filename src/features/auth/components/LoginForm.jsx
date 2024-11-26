@@ -57,7 +57,7 @@ const LoginForm = ({ goToForget }) => {
       customToast.stop()
       const { role } = jwtDecode(token)
       if (pathname === '/login') {
-        if (['admin'].includes(role)) navigate('/admin')
+        if (['admin'].includes(role)) navigate('/statistic/admin')
         else navigate('/exercise/playlist')
       } else window.close()
     } catch (error) {
@@ -70,7 +70,7 @@ const LoginForm = ({ goToForget }) => {
       const response = await authApi.googleLogin(googleResponse)
       dispatch(login(response))
       customToast.stop()
-      if (pathname === '/login') navigate('/')
+      if (pathname === '/login') navigate('/exercise/playlist')
       else window.close()
     } catch (error) {
       customToast.update(id, error.message, 'error')

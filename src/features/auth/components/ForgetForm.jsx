@@ -1,10 +1,8 @@
-import React from 'react'
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 
 import {
   ArrowBack,
-  BackHand,
   MailOutline,
   PersonOutline,
   Subtitles
@@ -34,7 +32,6 @@ const ForgetForm = ({ gobackToSignIn }) => {
       email: ''
     }
   })
-  console.log(errors)
 
   const onSubmit = (data) => {
     console.log(data)
@@ -110,7 +107,7 @@ const ForgetForm = ({ gobackToSignIn }) => {
                 Lấy lại mật khẩu
               </Button>
             </FormControl>
-					</form>
+          </form>
         </Box>
       </DialogContent>
     </Dialog>

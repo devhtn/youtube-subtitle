@@ -1,7 +1,7 @@
 import { memo } from 'react'
 
 import { Done } from '@mui/icons-material'
-import { Box, Stack, Typography } from '@mui/material'
+import { Box, Stack, Tooltip, Typography } from '@mui/material'
 
 import util from '~/utils'
 
@@ -35,7 +35,7 @@ const Segment = memo(
 
     return (
       <Box
-        id={`segment-${segment.start}`} // Đặt id cho mỗi segment
+        id={!isDictation && `segment-${segment.start}`} // Đặt id cho mỗi segment
         sx={{
           p: '10px 16px 26px 16px',
           borderBottom: (theme) => theme.app.border,
@@ -51,24 +51,26 @@ const Segment = memo(
           {arrayWords.map((word, index) => {
             const match = findWord(word, segment.dictationWords)
             return (
-              <Typography
-                key={index}
-                fontSize='14px'
-                color={
-                  match
-                    ? match.isCorrected
-                      ? 'success.main'
-                      : isCheck
-                        ? 'error.main'
-                        : ''
-                    : 'secondary.main'
-                }
-                variant='span'
-              >
-                {isDictation && !isCheck && match && !segment.isCompleted
-                  ? '____' + ' '
-                  : word + ' '}
-              </Typography>
+              <Tooltip title={segment.tags[index] || ''} key={index}>
+                <Typography
+                  key={index}
+                  fontSize='14px'
+                  color={
+                    match
+                      ? match.isCorrected
+                        ? 'success.main'
+                        : isCheck
+                          ? 'error.main'
+                          : ''
+                      : 'secondary.main'
+                  }
+                  variant='span'
+                >
+                  {isDictation && !isCheck && match && !segment.isCompleted
+                    ? '____' + ' '
+                    : word + ' '}
+                </Typography>
+              </Tooltip>
             )
           })}
         </Box>
@@ -82,7 +84,7 @@ const Segment = memo(
           {dictationSegment.isCompleted && (
             <Done sx={{ color: 'success.main' }} />
           )}
-          <Typography color='warning.main'>
+          <Typography color='secondary'>
             {dictationSegment.attemptsCount > 0 &&
               dictationSegment.attemptsCount}
           </Typography>

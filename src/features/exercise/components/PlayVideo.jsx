@@ -21,7 +21,7 @@ const PlayVideo = ({
   rate = 1,
   isHidden = false,
   isPlaying,
-  selectedSegment = {},
+  selectedSegmentIndex = null,
   onPlayingChange,
   exercise = {},
   comment
@@ -35,6 +35,7 @@ const PlayVideo = ({
   const [fadeKey, setFadeKey] = useState(0)
 
   const playerRef = useRef(null)
+  const segments = exercise.segments
 
   const handleReady = () => {
     setLoading(false) // Ẩn Skeleton khi video sẵn sàng
@@ -143,15 +144,16 @@ const PlayVideo = ({
           textAlign: 'center',
           width: '100%',
           px: 2,
+          py: '4px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          boxShadow: '0px 1px 5px rgba(0, 0, 0, 0.5)'
+          borderBottom: '1px solid #ddd'
         }}
       >
-        <Typography fontSize={20}>
-          {selectedSegment.transText
-            ? selectedSegment.transText
+        <Typography fontSize={18} color='secondary'>
+          {selectedSegmentIndex
+            ? segments[selectedSegmentIndex].transText
             : currentSegment.transText}
         </Typography>
       </Box>

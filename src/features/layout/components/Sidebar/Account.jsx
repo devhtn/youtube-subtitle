@@ -29,6 +29,7 @@ import { logout } from '~/features/auth/slices/authSlice'
 import { addLevelWords } from '~/features/auth/slices/levelSlice'
 import statisticApi from '~/features/statistic/statisticApi'
 import usePrevious from '~/hooks/usePrevious'
+import util from '~/utils'
 
 const ShakyBadge = styled(Badge, {
   shouldForwardProp: (prop) => prop !== 'shake' && prop !== 'invisibled'
@@ -203,11 +204,7 @@ const Account = ({ openSidebar }) => {
             >
               <Avatar
                 name={user.name}
-                src={
-                  !_.isEmpty(user)
-                    ? `https://robohash.org/${user.id}?set=set4`
-                    : ''
-                }
+                src={!_.isEmpty(user) ? util.getRoboHashUrl(user.id) : ''}
                 sx={{ width: '24px', height: '24px' }}
               />
             </ListItemIcon>

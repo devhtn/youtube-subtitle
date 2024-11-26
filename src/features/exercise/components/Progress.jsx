@@ -15,8 +15,8 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
   }
 
   return variant === 'circular' ? (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <Tooltip title={tooltip} arrow>
+    <Tooltip title={tooltip} arrow>
+      <Box sx={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
         <CircularProgress
           variant='determinate'
           value={100} // Giá trị cố định để giữ cho vòng tròn nền đầy
@@ -26,32 +26,35 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
           variant='determinate'
           value={value}
           sx={{
+            top: 0,
+            left: 0,
+            bottom: 0,
+            right: 0,
             position: 'absolute',
             color: getColor(value) // Màu sắc tiến trình động
           }}
         />
         <Box
           sx={{
-            top: 0,
-            left: 0,
-            bottom: 0,
-            right: 0,
+            top: '50%', // Điều chỉnh để căn giữa theo chiều dọc
+            left: '50%', // Điều chỉnh để căn giữa theo chiều ngang
             position: 'absolute',
+            transform: 'translate(-50%, -50%)', // Dịch chuyển chính giữa
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center'
           }}
         >
           <Typography
-            variant='caption'
+            variant='body2'
             component='div'
-            sx={{ color: 'text.secondary' }}
+            sx={{ color: 'text.secondary', fontSize: '13px' }}
           >
             {`${Math.round(value)}%`}
           </Typography>
         </Box>
-      </Tooltip>
-    </Box>
+      </Box>
+    </Tooltip>
   ) : (
     <Box sx={{ width: '100%', position: 'relative', mt: 2 }}>
       <Tooltip title={tooltip} arrow>

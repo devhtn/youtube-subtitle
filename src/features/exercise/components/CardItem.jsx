@@ -24,6 +24,7 @@ import CardAction from './CardAction'
 import Progress from './Progress'
 
 import exerciseUtil from '../exerciseUtil'
+import util from '~/utils'
 
 const CardItem = ({
   exercise = {},
@@ -192,7 +193,7 @@ const CardItem = ({
               <Avatar
                 src={
                   !_.isEmpty(exercise.firstUserId)
-                    ? `https://robohash.org/${exercise.firstUserId.id}?set=set4`
+                    ? util.getRoboHashUrl(exercise.firstUserId.id)
                     : ''
                 }
                 name={exercise.firstUserId?.name}
@@ -226,7 +227,7 @@ const CardItem = ({
             <Progress
               variant='liner'
               value={preview.progress}
-              tooltip='Mức độ quen thuộcs'
+              tooltip='Tỉ lệ từ đã học'
             />
           )}
         </CardContent>

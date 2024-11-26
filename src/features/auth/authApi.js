@@ -13,6 +13,9 @@ const authApi = {
   },
   getUser() {
     return privateAxios.get('/auth')
+  },
+  getRankingUser() {
+    return privateAxios.get('/auth/ranking')
   }
 }
 

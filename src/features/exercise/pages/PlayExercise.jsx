@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 import {
@@ -29,15 +29,20 @@ const PlayExercise = () => {
   const [volume, setVolume] = useState(100)
   const [rate, setRate] = useState(1)
   const [currentTime, setCurrentTime] = useState(0)
-  const [currentSegment, setCurrentSegment] = useState({
-    transText: '...'
-  })
-  const [selectedSegment, setSelectedSegment] = useState({})
+  const [selectedSegmentIndex, setSelectedSegmentIndex] = useState(null)
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
   const [isCheck, setIsCheck] = useState(true)
   const [end, setEnd] = useState(null)
   const [timePlay, setTimePlay] = useState({})
   const [isPreview, setIsPreview] = useState(false)
+
+  console.log(currentSegmentIndex)
+
+  const segments = exercise.segments
+
+  const handleSegmentIndexChange = (value) => {
+    setCurrentSegmentIndex(value)
+  }
 
   const handleSegmentClick = useCallback((segment) => {
     const selection = window.getSelection().toString()
@@ -48,6 +53,10 @@ const PlayExercise = () => {
 
     setTimePlay({ start: segment.start })
   }, [])
+
+  const handleSelectedSegmentIndex = (index) => {
+    setSelectedSegmentIndex(index)
+  }
 
   const handlePreview = () => {
     setIsPreview(!isPreview)
@@ -89,7 +98,8 @@ const PlayExercise = () => {
       setEnd(null)
     }
     if (isPreview) {
-      setCurrentSegment({})
+      setSelectedSegmentIndex(null)
+      if (selectedSegmentIndex) setCurrentSegmentIndex(selectedSegmentIndex)
       setIsCheck(true)
     }
   }, [isCheck, isPreview])
@@ -107,38 +117,37 @@ const PlayExercise = () => {
   }, [])
 
   useEffect(() => {
-    if (currentSegment) {
-      setCurrentSegmentIndex(
-        (exercise.segments?.findIndex(
-          (segment) => segment === currentSegment
-        ) ?? -1) + 1
+    if (currentSegmentIndex && isPreview) {
+      const element = document.getElementById(
+        `segment-${segments[currentSegmentIndex].start}`
       )
-      // scrollIntoView
-      const element = document.getElementById(`segment-${currentSegment.start}`)
       if (element) {
+        console.log(element)
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [currentSegment, exercise.segments])
+  }, [currentSegmentIndex, isPreview])
 
   return (
     <>
       <Box>
         <Box sx={{ display: 'flex' }}>
           <Box width={2 / 3}>
-            <PlayVideo
-              exercise={exercise}
-              isHidden={!isCheck}
-              volume={volume}
-              rate={rate}
-              isPlaying={playing}
-              onTimeChange={(value) => setCurrentTime(value)}
-              selectedSegment={selectedSegment}
-              timePlay={timePlay}
-              onPlayingChange={(value) => setPlaying(value)}
-              onSegmentChange={(value) => setCurrentSegment(value)}
-              comment
-            />
+            {!_.isEmpty(exercise) && (
+              <PlayVideo
+                exercise={exercise}
+                isHidden={!isCheck}
+                volume={volume}
+                rate={rate}
+                isPlaying={playing}
+                onTimeChange={(value) => setCurrentTime(value)}
+                selectedSegmentIndex={selectedSegmentIndex}
+                timePlay={timePlay}
+                onPlayingChange={(value) => setPlaying(value)}
+                onSegmentIndexChange={handleSegmentIndexChange}
+                comment
+              />
+            )}
           </Box>
           <Box width={1 / 3}>
             <Box
@@ -177,9 +186,7 @@ const PlayExercise = () => {
                           onChangeDictation={(update) => setDictation(update)}
                           currentTime={currentTime}
                           onCheckChange={handleCheckChange}
-                          onSegmentChange={(segment) =>
-                            setSelectedSegment(segment)
-                          }
+                          onSelectedSegmentIndex={handleSelectedSegmentIndex}
                         />
                       )}
                     </Box>
@@ -187,14 +194,14 @@ const PlayExercise = () => {
                     <Box
                       sx={{
                         display:
-                          _.isEmpty(exercise) || isPreview ? 'block' : 'none'
+                          !_.isEmpty(exercise) && isPreview ? 'block' : 'none'
                       }}
                     >
                       {exercise.segments?.map((segment, index) => (
                         <Box key={index}>
                           <Segment
                             segment={segment}
-                            isCurrent={currentSegment === segment}
+                            isCurrent={currentSegmentIndex === index}
                             onClick={handleSegmentClick}
                             dictationSegment={dictation.segments[index]}
                           />
@@ -204,61 +211,66 @@ const PlayExercise = () => {
                   </Box>
                 </Box>
                 {/* control */}
-                <Stack
-                  direction='row'
-                  alignItems='center'
-                  justifyContent='space-between'
-                  gap={2}
-                  sx={{
-                    borderLeft: '1px solid #f5f5f5eb',
-                    borderRight: '1px solid #f5f5f5eb',
-                    py: 1,
-                    px: 2
-                  }}
-                >
-                  {/* action */}
-                  {!isPreview && (
-                    <Progress
-                      value={
-                        (dictation.completedSegmentsCount * 100) /
-                        dictation.totalCompletedSegments
-                      }
-                    />
-                  )}
-                  {isPreview && (
-                    <Typography variant='body2'>
-                      <Typography color={'primary.main'} variant='span'>
-                        {currentSegmentIndex || '?'}
-                      </Typography>
-                      {' / '}
-                      {exercise.segments?.length}
-                    </Typography>
-                  )}
-                  {/* Nút Play/Pause */}
-                  <Stack direction='row' gap={2}>
-                    <IconButton onClick={handlePlayPause}>
-                      {playing ? <Pause /> : <PlayArrow />}
-                    </IconButton>
-                    {/* Control Volume */}
-                    <Volume setVolume={memoizedSetVolume} />
-                    {/* Control play rate */}
-                    <PlayRate setPlayRate={memoizedSetPlayRate} />
-                    {/* Preview */}
-                    {isCheck && (
-                      <IconButton onClick={handlePreview}>
-                        {!isPreview ? (
-                          <Preview />
-                        ) : (
-                          <Close sx={{ color: 'error.main' }} />
-                        )}
-                      </IconButton>
+                {!_.isEmpty(exercise) && (
+                  <Stack
+                    direction='row'
+                    alignItems='center'
+                    justifyContent='space-between'
+                    gap={2}
+                    sx={{
+                      borderLeft: '1px solid #f5f5f5eb',
+                      borderRight: '1px solid #f5f5f5eb',
+                      py: 1,
+                      px: 2
+                    }}
+                  >
+                    {/* action */}
+                    {!isPreview && (
+                      <Progress
+                        tooltip='Tiến độ hoàn thành bài tập'
+                        value={
+                          (dictation.completedSegmentsCount * 100) /
+                          dictation.totalCompletedSegments
+                        }
+                      />
                     )}
-                  </Stack>
+                    {isPreview && (
+                      <Typography variant='body2'>
+                        <Typography color={'primary.main'} variant='span'>
+                          {currentSegmentIndex !== null
+                            ? currentSegmentIndex + 1
+                            : '?'}
+                        </Typography>
+                        {' / '}
+                        {exercise.segments?.length}
+                      </Typography>
+                    )}
+                    {/* Nút Play/Pause */}
+                    <Stack direction='row' gap={2}>
+                      <IconButton onClick={handlePlayPause}>
+                        {playing ? <Pause /> : <PlayArrow />}
+                      </IconButton>
+                      {/* Control Volume */}
+                      <Volume setVolume={memoizedSetVolume} />
+                      {/* Control play rate */}
+                      <PlayRate setPlayRate={memoizedSetPlayRate} />
+                      {/* Preview */}
+                      {isCheck && (
+                        <IconButton onClick={handlePreview}>
+                          {!isPreview ? (
+                            <Preview />
+                          ) : (
+                            <Close sx={{ color: 'error.main' }} />
+                          )}
+                        </IconButton>
+                      )}
+                    </Stack>
 
-                  <IconButton onClick={handleClose}>
-                    <ArrowBack sx={{ color: 'error.main' }} />
-                  </IconButton>
-                </Stack>
+                    <IconButton onClick={handleClose}>
+                      <ArrowBack sx={{ color: 'error.main' }} />
+                    </IconButton>
+                  </Stack>
+                )}
               </Box>
             </Box>
           </Box>

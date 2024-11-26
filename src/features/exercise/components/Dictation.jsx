@@ -32,7 +32,7 @@ const Dictation = ({
   onChangeDictation = () => {},
   handlePlay = () => {},
   currentTime = {},
-  onSegmentChange = () => {},
+  onSelectedSegmentIndex = () => {},
   onCheckChange = () => {}
 }) => {
   const navigate = useNavigate()
@@ -122,6 +122,14 @@ const Dictation = ({
     else customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
 
     customToast.stop(id)
+  }
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      // Ngăn hành vi mặc định (xuống dòng mới khi nhấn Enter)
+      e.preventDefault()
+      handleSubmit(onSubmit)()
+    }
   }
 
   const handleLose = async () => {
@@ -221,7 +229,7 @@ const Dictation = ({
   }, [])
 
   useEffect(() => {
-    if (segments[segmentIndex]) onSegmentChange(segments[segmentIndex])
+    if (segmentIndex) onSelectedSegmentIndex(segmentIndex)
   }, [segmentIndex])
 
   return (
@@ -325,8 +333,9 @@ const Dictation = ({
                 />
               </Button>
             </Box>
-            <Stack direction='row' gap={2}>
+            <Stack>
               <TextField
+                onKeyDown={handleKeyPress}
                 name='inputWords'
                 control={control}
                 rules={{
@@ -335,6 +344,8 @@ const Dictation = ({
                 placeholder='Nhập câu trả lời của bạn ở đây!'
                 autoComplete='off'
                 disabled={isCheck}
+                multiline
+                rows={2}
                 sx={{
                   '& .MuiInputBase-input': {
                     fontSize: '14px' // Điều chỉnh fontSize tại đây
@@ -345,11 +356,11 @@ const Dictation = ({
               <FormControl margin='normal'>
                 <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                   <Button
-                    style={{ textTransform: 'none' }}
                     variant='contained'
                     color='primary'
                     type='submit'
                     disabled={isCheck}
+                    fullWidth
                   >
                     <Done sx={{ color: 'white' }} />
                   </Button>

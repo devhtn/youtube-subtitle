@@ -15,9 +15,12 @@ import ForgetForm from '../components/ForgetForm'
 import AdminLoginForm from '../components/LoginForm'
 import SignupForm from '../components/SignupForm'
 
+import useAuth from '~/hooks/useAuth'
+
 const Auth = () => {
   const navigate = useNavigate()
   const [authIndex, setAuthIndex] = React.useState(0)
+  const auth = useAuth()
 
   const tabChange = (event, tabValue) => {
     event.preventDefault()
@@ -32,6 +35,12 @@ const Auth = () => {
   const gobackToSignIn = () => {
     setAuthIndex(0)
   }
+  React.useEffect(() => {
+    if (auth) {
+      if (auth.role === 'admin') navigate('/statistic/admin')
+      else navigate('/exercise/playlist')
+    }
+  }, [auth, navigate])
   if (authIndex === 2) return <ForgetForm {...{ gobackToSignIn }} />
   return (
     <Dialog maxWidth='xs' fullWidth open={true} aria-labelledby='auth dialog'>

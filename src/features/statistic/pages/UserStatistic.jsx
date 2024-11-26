@@ -13,8 +13,6 @@ import { useTheme } from '@mui/material/styles'
 import dayjs from 'dayjs/esm'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Label,
   Legend,
@@ -187,9 +185,6 @@ const UserStatistic = () => {
       <Box sx={{ height: 'calc(100vh - 100px)' }}>
         <ResponsiveContainer width='100%' height='100%'>
           <LineChart data={daysInMonth} margin={{ bottom: 50 }}>
-            {/* Lưới kẻ */}
-            <CartesianGrid stroke='#eee' />
-
             {/* Trục X */}
             <XAxis dataKey='day' tick={{ fontSize: 14 }}>
               <Label

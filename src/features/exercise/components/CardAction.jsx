@@ -5,15 +5,15 @@ import {
   ExpandLess,
   ExpandMore,
   HowToReg,
-  ThumbUpOffAlt
+  ThumbDownOutlined,
+  ThumbUpOutlined
 } from '@mui/icons-material'
 import { Box, Button, Collapse, Stack, Typography } from '@mui/material'
 import _ from 'lodash'
 
 import exerciseApi from '../exerciseApi'
-import exerciseUtil from '../exerciseUtil'
+import customToast from '~/config/toast'
 import useAuth from '~/hooks/useAuth'
-import util from '~/utils'
 
 const CardAction = ({ inCard = true, exercise, newComment }) => {
   const auth = useAuth()
@@ -23,15 +23,31 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
   )
   const [commentedCount, setCommentedCount] = useState(exercise.commentedCount)
   const [likedUsers, setLikedUsers] = useState(exercise.likedUsers)
+  const [dislikedUsers, setDislikedUsers] = useState(exercise.dislikedUsers)
 
   const isLiked = likedUsers.includes(auth.id)
+  const isDisliked = dislikedUsers.includes(auth.id)
   const isCompleted = exercise.completedUsers.includes(auth.id)
 
   const handleToggleLike = async () => {
-    const likedUsers = await exerciseApi.toggleLike({
-      exerciseId: exercise.id
-    })
-    setLikedUsers(likedUsers)
+    try {
+      const likedUsers = await exerciseApi.toggleLike({
+        exerciseId: exercise.id
+      })
+      setLikedUsers(likedUsers)
+    } catch (error) {
+      customToast.error(error.data.message)
+    }
+  }
+  const handleToggleDislike = async () => {
+    try {
+      const dislikedUsers = await exerciseApi.toggleDislike({
+        exerciseId: exercise.id
+      })
+      setDislikedUsers(dislikedUsers)
+    } catch (error) {
+      customToast.error(error.data.message)
+    }
   }
 
   useEffect(() => {
@@ -50,13 +66,13 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
         <Stack direction='row' gap={2}>
           <Stack
             direction='row'
-            gap={2}
+            gap={3}
             border={(theme) => theme.app.border}
             padding='2px 10px'
             borderRadius='10px'
           >
             <Stack direction='row' gap='2px'>
-              <ThumbUpOffAlt
+              <ThumbUpOutlined
                 sx={{
                   fontSize: '20px',
                   color: isLiked ? 'warning.main' : '',
@@ -65,6 +81,17 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
                 onClick={handleToggleLike}
               />
               <Typography variant='body2'>{likedUsers.length}</Typography>
+            </Stack>
+            <Stack direction='row' gap='2px'>
+              <ThumbDownOutlined
+                sx={{
+                  fontSize: '20px',
+                  color: isDisliked ? 'error.main' : '',
+                  cursor: 'pointer'
+                }}
+                onClick={handleToggleDislike}
+              />
+              <Typography variant='body2'>{dislikedUsers.length}</Typography>
             </Stack>
             <Stack direction='row' gap='2px'>
               <Comment
@@ -104,11 +131,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
             </Button>
           )}
         </Stack>
-        <Typography variant='body2'>
-          {util.getTimeSince(exercise.createdAt)}
-        </Typography>
       </Box>
-
       {/*  */}
       <Collapse in={showMoreInfo}>
         <Box mt={2}>

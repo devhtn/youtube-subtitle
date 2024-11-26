@@ -48,7 +48,7 @@ const CommentItem = ({
           name={comment.userId?.name}
           src={
             !_.isEmpty(comment.userId)
-              ? `https://robohash.org/${comment.userId.id}?set=set4`
+              ? util.getRoboHashUrl(comment.userId.id)
               : ''
           }
         />

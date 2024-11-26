@@ -23,7 +23,7 @@ const Intro = () => {
       {/* Container để giữ nội dung */}
       {/* Tiêu đề chính */}
       <Typography variant='h3' sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-        Ứng dụng học tiếng Anh với video trên YouTube
+        Ứng dụng hỗ trợ học tiếng Anh qua video trực tuyến
       </Typography>
 
       {/* Mô tả ngắn */}

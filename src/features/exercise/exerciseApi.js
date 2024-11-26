@@ -28,6 +28,9 @@ const exerciseApi = {
   toggleLike(body) {
     return privateAxios.post(`/exercise/toggle-like`, body)
   },
+  toggleDislike(body) {
+    return privateAxios.post(`/exercise/toggle-dislike`, body)
+  },
   getExercises(query) {
     return privateAxios.get('/exercise', { params: query })
   },

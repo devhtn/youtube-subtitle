@@ -1,3 +1,5 @@
+import constants from '~/config/constants'
+
 const isEmptyFunction = (fn) => {
   return (
     fn.toString().replace(/\s+/g, '') ===
@@ -31,5 +33,10 @@ const getTimeSince = (date) => {
   return `${Math.floor(seconds)} giây trước`
 }
 
-const util = { isEmptyFunction, getTimeSince }
+const getRoboHashUrl = (userId, set = 'set4') => {
+  if (!userId) throw new Error('User ID is required to generate RoboHash URL')
+  return `${constants.ROBOHASH_URL}${userId}?set=${set}`
+}
+
+const util = { isEmptyFunction, getTimeSince, getRoboHashUrl }
 export default util

@@ -17,6 +17,7 @@ import TextField from '~/components/fields/TextField'
 
 import authApi from '~/features/auth/authApi'
 import commentApi from '~/features/comment/commentApi'
+import util from '~/utils'
 
 const CommentForm = ({
   exerciseId,
@@ -66,11 +67,7 @@ const CommentForm = ({
           <Box>
             <Avatar
               name={user.name}
-              src={
-                !_.isEmpty(user)
-                  ? `https://robohash.org/${user.id}?set=set4`
-                  : ''
-              }
+              src={!_.isEmpty(user) ? util.getRoboHashUrl(user.id) : ''}
             />
           </Box>
 

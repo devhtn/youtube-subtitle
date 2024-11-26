@@ -1,8 +1,10 @@
 import { useState } from 'react'
 
 import {
+  Assessment,
   AutoGraph,
   Dashboard,
+  EmojiEvents,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
   LibraryBooks,
@@ -115,8 +117,8 @@ const Sidebar = () => {
           {auth && auth.role === 'admin' ? (
             <List>
               <Navigation
-                text='Dashboard'
-                icon={<Dashboard />}
+                text='Thống kê tốc độ phát triển'
+                icon={<Assessment />}
                 openSidebar={open}
                 path='/statistic/admin'
               />
@@ -124,7 +126,7 @@ const Sidebar = () => {
           ) : (
             <List>
               <Navigation
-                text='Thống kê kết quả'
+                text='Thống kê quá trình học'
                 icon={<AutoGraph />}
                 openSidebar={open}
                 path='/statistic'
@@ -146,6 +148,12 @@ const Sidebar = () => {
                 icon={<SportsEsports />}
                 openSidebar={open}
                 path='/exercise/playlist'
+              />
+              <Navigation
+                text='Bảng xếp hạng'
+                icon={<EmojiEvents />}
+                openSidebar={open}
+                path='/user/ranking'
               />
             </List>
           )}

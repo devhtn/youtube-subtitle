@@ -26,7 +26,7 @@ const CreateExercise = () => {
   const navigate = useNavigate()
   const auth = useAuth()
   const { control, handleSubmit, reset } = useForm()
-  const [exercise, setExercise] = useState({})
+  const [exercise, setExercise] = useState(null)
   const [dictation, setDictation] = useState({})
   const [timePlay, setTimePlay] = useState({})
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
@@ -40,6 +40,11 @@ const CreateExercise = () => {
       customToast.error(error.data.message)
     }
     customToast.stop(id)
+  }
+
+  const handleClose = () => {
+    setExercise(null)
+    reset()
   }
 
   const handleCreateExercise = async () => {
@@ -70,7 +75,7 @@ const CreateExercise = () => {
 
   // effect currentSegment change
   useEffect(() => {
-    if (exercise.segments) {
+    if (exercise && exercise.segments) {
       // scrollIntoView
       const element = document.getElementById(
         `segment-${exercise.segments[currentSegmentIndex].start}`
@@ -79,7 +84,7 @@ const CreateExercise = () => {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [currentSegmentIndex, exercise.segments])
+  }, [currentSegmentIndex, exercise])
 
   useEffect(() => {
     ;(async () => {
@@ -104,7 +109,7 @@ const CreateExercise = () => {
         content='Bạn chỉ được tạo mới tối đa 1 bài tập!'
         onClose={() => navigate(-1)}
       />
-      {!_.isEmpty(exercise) ? (
+      {exercise ? (
         <Box sx={{ display: 'flex' }}>
           <Box width={2 / 3}>
             <PlayVideo
@@ -191,12 +196,7 @@ const CreateExercise = () => {
                   {' / '}
                   {exercise.segments?.length}
                 </Typography>
-                <IconButton
-                  onClick={() => {
-                    setExercise({})
-                    reset()
-                  }}
-                >
+                <IconButton onClick={handleClose}>
                   <Close sx={{ color: 'error.main' }} />
                 </IconButton>
               </Stack>
@@ -219,7 +219,6 @@ const CreateExercise = () => {
               <FormControl margin='normal'>
                 <Button
                   sx={{
-                    textTransform: 'none',
                     textWrap: 'nowrap',
                     px: 4,
                     height: '40px'
@@ -228,7 +227,7 @@ const CreateExercise = () => {
                   color='primary'
                   type='submit'
                 >
-                  Kiểm tra
+                  Xem trước
                 </Button>
               </FormControl>
             </Stack>
@@ -257,9 +256,12 @@ const CreateExercise = () => {
                   <br />
                   1. Bạn chỉ được tạo tối đa một bài tập cho đến khi bạn hoàn
                   thành hoặc xóa bài tập đó. <br />
-                  2. Bài tập sau khi hoàn thành sẽ được chia sẻ cho mọi người.{' '}
+                  2. Bài tập sau khi hoàn thành sẽ được chia sẻ cho mọi người.
                   <br />
-                  3. Chỉ hỗ trợ video có phụ đề.
+                  3. Bài tập sau khi được chia sẻ nếu có quá nhiều lượt dislike
+                  sẽ xóa khỏi danh sách chia sẻ
+                  <br />
+                  4. Chỉ hỗ trợ video có phụ đề.
                 </Typography>
               </Box>
             </Stack>

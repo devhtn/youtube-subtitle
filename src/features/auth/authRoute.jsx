@@ -1,6 +1,6 @@
 import MainLayout from '../layout/layouts/MainLayout'
 import Auth from './pages/Auth'
-import ManageUser from './pages/ManageUser'
+import Ranking from './pages/Ranking'
 import RequireAuth from '~/components/RequireAuth'
 
 const authRoutes = [
@@ -20,10 +20,10 @@ const authRoutes = [
         path: 'user',
         children: [
           {
-            path: 'manage',
+            path: 'ranking',
             element: (
-              <RequireAuth allowedRoles={['admin']}>
-                <ManageUser />
+              <RequireAuth>
+                <Ranking />
               </RequireAuth>
             )
           }

@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
-import { Close } from '@mui/icons-material'
+import { Close, Info } from '@mui/icons-material'
 import {
   Box,
   Button,
@@ -36,7 +36,7 @@ const SegmentNoteForm = ({
   const onSubmit = async (data) => {
     const id = customToast.loading()
     try {
-      const updateDictation = await exerciseApi.updateDictationSegment(
+      const { updateDictation } = await exerciseApi.updateDictationSegment(
         dictation.id,
         selectedSegment.id,
         data
@@ -98,6 +98,26 @@ const SegmentNoteForm = ({
             </FormControl>
           </Stack>
         </form>
+        <Box>
+          <Stack direction='row' gap={1}>
+            <Info sx={{ color: '#1976d2' }} />
+            <Box>
+              <Typography
+                variant='body2'
+                color='text.primary'
+                fontWeight='bold'
+                component='span'
+              >
+                Chú ý:
+              </Typography>
+              <Typography variant='body2' color='text.secondary'>
+                <br />
+                Ghi chú sẽ được hiển thị ở lần tiếp theo bạn gặp câu này
+                <br />
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
       </DialogContent>
     </Dialog>
   )

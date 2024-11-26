@@ -9,6 +9,12 @@ const statisticApi = {
   },
   getDays(query) {
     return privateAxios.get('/statistic', { params: query })
+  },
+  getUserStatistic() {
+    return privateAxios.get('/auth/statistic')
+  },
+  getExerciseStatistic() {
+    return privateAxios.get('/exercise/statistic')
   }
 }
 

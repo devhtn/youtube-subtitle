@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 
 import { Box } from '@mui/material'
 
@@ -11,7 +11,7 @@ import exerciseApi from '~/features/exercise/exerciseApi'
 
 // import useCommentSocket from '~/hooks/useCommentSocket'
 
-const Comment = ({ exercise }) => {
+const Comment = memo(({ exercise }) => {
   const { newNotify } = useCommentSocketContext()
 
   const [comments, setComments] = useState([])
@@ -98,6 +98,6 @@ const Comment = ({ exercise }) => {
       </Box>
     </>
   )
-}
+})
 
 export default Comment
