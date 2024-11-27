@@ -67,10 +67,7 @@ const CommentForm = ({
           <Box>
             <Avatar
               name={user.name}
-              src={
-                !_.isEmpty(user) &&
-                (user.picture || util.getRoboHashUrl(user.id))
-              }
+              src={user.picture || util.getRoboHashUrl(user.id)}
             />
           </Box>
 

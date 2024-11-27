@@ -58,36 +58,38 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
   ) : (
     <Box sx={{ width: '100%', position: 'relative', mt: 2 }}>
       <Tooltip title={tooltip} arrow>
-        <LinearProgress
-          variant='determinate'
-          value={value}
-          sx={{
-            height: 12,
-            borderRadius: 5,
-            backgroundColor: 'grey.300',
-            '& .MuiLinearProgress-bar': {
-              backgroundColor: getColor(value)
-            }
-          }}
-        />
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
-        >
-          <Typography
-            variant='caption'
-            sx={{ color: 'text.secondary', fontSize: '13px' }}
+        <Box>
+          <LinearProgress
+            variant='determinate'
+            value={value}
+            sx={{
+              height: 12,
+              borderRadius: 5,
+              backgroundColor: 'grey.300',
+              '& .MuiLinearProgress-bar': {
+                backgroundColor: getColor(value)
+              }
+            }}
+          />
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           >
-            {`${Math.round(value)}%`}
-          </Typography>
+            <Typography
+              variant='caption'
+              sx={{ color: 'text.secondary', fontSize: '13px' }}
+            >
+              {`${Math.round(value)}%`}
+            </Typography>
+          </Box>
         </Box>
       </Tooltip>
     </Box>

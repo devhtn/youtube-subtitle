@@ -25,16 +25,18 @@ import useAuth from '~/hooks/useAuth'
 const CreateExercise = () => {
   const navigate = useNavigate()
   const auth = useAuth()
-  const { control, handleSubmit, reset } = useForm()
   const [exercise, setExercise] = useState(null)
   const [dictation, setDictation] = useState({})
   const [timePlay, setTimePlay] = useState({})
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
 
+  const { control, handleSubmit, reset } = useForm()
+
   const onSubmit = async (data) => {
     const id = customToast.loading()
     try {
       const exercise = await exerciseApi.checkVideo(data)
+      console.log(exercise)
       if (exercise) setExercise(exercise)
     } catch (error) {
       customToast.error(error.data.message)
@@ -51,8 +53,14 @@ const CreateExercise = () => {
     const id = customToast.loading()
     try {
       await exerciseApi.createExercise(exercise)
-      navigate('/exercise/playlist')
-      customToast.success(`Lưu bài tập thành công! Chăm chỉ bạn nhé!`)
+      if (auth.role === 'admin') {
+        setExercise(null)
+        customToast.success(`Bài tập đã được chia sẻ thành công!`)
+        reset()
+      } else {
+        navigate('/exercise/playlist')
+        customToast.success(`Lưu bài tập thành công! Chăm chỉ bạn nhé!`)
+      }
     } catch (error) {
       customToast.error(error.data.message)
     }
@@ -242,34 +250,54 @@ const CreateExercise = () => {
           >
             <Stack direction='row' gap={1}>
               <Info sx={{ color: '#1976d2' }} />
-              <Box>
-                <Typography
-                  variant='body2'
-                  color='text.primary'
-                  fontWeight='bold'
-                  component='span'
-                >
-                  Lưu ý:
-                </Typography>
-                <Typography variant='body1' color='text.secondary'>
-                  <br />
-                  1. Bạn chỉ được tạo tối đa một bài tập cho đến khi bạn hoàn
-                  thành hoặc xóa bài tập đó. <br />
-                  2. Bài tập sau khi hoàn thành sẽ được chia sẻ cho mọi người.
-                  <br />
-                  3. Nếu có quá nhiều lượt dislike, bài tập sẽ xóa khỏi danh
-                  sách chia sẻ
-                  <br />
-                  4. Khi tìm kiếm video trên các nền tảng trực tuyến, hãy lọc
-                  các video có phụ đề ( Subtitles / CC ) và thời lượng phù hợp
-                  <br />
-                  5. Cần đạt ít nhất level 1000 để có thể xem có video trên 4
-                  phút
-                  <br />
-                  6. Chỉ hỗ trợ video có phụ đề tiếng Anh và thời lượng nhỏ hơn
-                  20 phút
-                </Typography>
-              </Box>
+              {auth && auth.role === 'admin' ? (
+                <Box>
+                  <Typography
+                    variant='body2'
+                    color='text.primary'
+                    fontWeight='bold'
+                    component='span'
+                  >
+                    Lưu ý:
+                  </Typography>
+                  <Typography variant='body1' color='text.secondary'>
+                    1. Khi tìm kiếm video trên các nền tảng trực tuyến, hãy lọc
+                    các video có phụ đề ( Subtitles / CC ) và thời lượng phù hợp
+                    <br />
+                    2. Chỉ hỗ trợ video có phụ đề tiếng Anh và thời lượng nhỏ
+                    hơn 20 phút
+                  </Typography>
+                </Box>
+              ) : (
+                <Box>
+                  <Typography
+                    variant='body2'
+                    color='text.primary'
+                    fontWeight='bold'
+                    component='span'
+                  >
+                    Lưu ý:
+                  </Typography>
+                  <Typography variant='body1' color='text.secondary'>
+                    <br />
+                    1. Bạn chỉ được tạo tối đa một bài tập cho đến khi bạn hoàn
+                    thành hoặc xóa bài tập đó. <br />
+                    2. Bài tập sau khi hoàn thành sẽ được chia sẻ cho mọi người.
+                    <br />
+                    3. Nếu có quá nhiều lượt dislike, bài tập sẽ xóa khỏi danh
+                    sách chia sẻ
+                    <br />
+                    4. Khi tìm kiếm video trên các nền tảng trực tuyến, hãy lọc
+                    các video có phụ đề ( Subtitles / CC ) và thời lượng phù hợp
+                    <br />
+                    5. Cần đạt ít nhất level 1000 để có thể xem có video trên 4
+                    phút
+                    <br />
+                    6. Chỉ hỗ trợ video có phụ đề tiếng Anh và thời lượng nhỏ
+                    hơn 20 phút
+                  </Typography>
+                </Box>
+              )}
             </Stack>
           </Box>
         </Box>

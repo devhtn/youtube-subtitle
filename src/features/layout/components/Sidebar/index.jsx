@@ -122,6 +122,12 @@ const Sidebar = () => {
                 openSidebar={open}
                 path='/statistic/admin'
               />
+              <Navigation
+                text='Tạo bài tập mẫu'
+                icon={<PostAdd />}
+                openSidebar={open}
+                path='/exercise/admin/create'
+              />
             </List>
           ) : (
             <List>

@@ -61,7 +61,7 @@ const LoginForm = ({ goToForget }) => {
         else navigate('/exercise/playlist')
       } else window.close()
     } catch (error) {
-      customToast.update(id, error.message, 'error')
+      customToast.update(id, error.data.message, 'error')
     }
   }
   const handleSuccess = async (googleResponse) => {
@@ -73,7 +73,8 @@ const LoginForm = ({ goToForget }) => {
       if (pathname === '/login') navigate('/exercise/playlist')
       else window.close()
     } catch (error) {
-      customToast.update(id, error.message, 'error')
+      console.log(error)
+      customToast.update(id, error.data.message, 'error')
     }
   }
   return (

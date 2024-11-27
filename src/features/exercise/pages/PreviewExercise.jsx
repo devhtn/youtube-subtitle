@@ -14,12 +14,13 @@ const PreviewExercise = () => {
   const navigate = useNavigate()
   const { id } = useParams()
   const [exercise, setExercise] = useState({})
-  const [currentSegment, setCurrentSegment] = useState({})
   const [timePlay, setTimePlay] = useState({})
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
 
-  const handleSegmentChange = (newSegment) => {
-    setCurrentSegment(newSegment)
+  const segments = exercise.segments
+
+  const handleSegmentIndexChange = (index) => {
+    setCurrentSegmentIndex(index)
   }
   const handleCreateClick = async (id) => {
     try {
@@ -57,26 +58,22 @@ const PreviewExercise = () => {
 
   // effect currentSegment change
   useEffect(() => {
-    if (currentSegment) {
-      setCurrentSegmentIndex(
-        (exercise.segments?.findIndex(
-          (segment) => segment === currentSegment
-        ) ?? -1) + 1
+    if (currentSegmentIndex) {
+      const element = document.getElementById(
+        `segment-${segments[currentSegmentIndex].start}`
       )
-      // scrollIntoView
-      const element = document.getElementById(`segment-${currentSegment.start}`)
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-  }, [currentSegment])
+  }, [currentSegmentIndex])
 
   return (
     <Box sx={{ display: 'flex' }}>
       <Box width={2 / 3}>
         <PlayVideo
           exercise={exercise}
-          onSegmentChange={handleSegmentChange}
+          onSegmentIndexChange={handleSegmentIndexChange}
           timePlay={timePlay}
           comment
         />
@@ -108,7 +105,7 @@ const PreviewExercise = () => {
                   <Box key={index}>
                     <Segment
                       segment={segment}
-                      isCurrent={currentSegment === segment}
+                      isCurrent={currentSegmentIndex === index}
                       onClick={handleSegmentClick}
                     />
                   </Box>
@@ -138,8 +135,9 @@ const PreviewExercise = () => {
             </Stack>
             <Typography variant='body2'>
               <Typography color={'primary.main'} variant='span'>
-                {currentSegmentIndex || '?'} {' / '}
+                {currentSegmentIndex !== null ? currentSegmentIndex + 1 : '?'}
               </Typography>
+              {' / '}
               {exercise.segments?.length}
             </Typography>
             <IconButton onClick={() => navigate(-1)}>

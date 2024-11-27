@@ -192,9 +192,8 @@ const CardItem = ({
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 2 }}>
               <Avatar
                 src={
-                  !_.isEmpty(exercise.firstUserId) &&
-                  (exercise.firstUserId.picture ||
-                    util.getRoboHashUrl(exercise.firstUserId.id))
+                  exercise.firstUserId?.picture ||
+                  util.getRoboHashUrl(exercise.firstUserId?.id)
                 }
                 name={exercise.firstUserId?.name}
                 size='40'

@@ -34,7 +34,7 @@ const getTimeSince = (date) => {
 }
 
 const getRoboHashUrl = (userId, set = 'set4') => {
-  if (!userId) throw new Error('User ID is required to generate RoboHash URL')
+  if (!userId) return ''
   return `${constants.ROBOHASH_URL}${userId}?set=${set}`
 }
 

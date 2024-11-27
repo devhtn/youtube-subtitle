@@ -207,10 +207,7 @@ const Account = ({ openSidebar }) => {
             >
               <Avatar
                 name={user.name}
-                src={
-                  !_.isEmpty(user) &&
-                  (user.picture || util.getRoboHashUrl(user.id))
-                }
+                src={user.picture || util.getRoboHashUrl(user.id)}
                 sx={{ width: '24px', height: '24px' }}
               />
             </ListItemIcon>

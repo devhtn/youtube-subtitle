@@ -21,8 +21,8 @@ const FILTER = [
     label: 'Thời lượng',
     items: [
       { label: 'Dưới 2 phút', value: '0-120' },
-      { label: '2-5 phút', value: '120-300' },
-      { label: '5-10 phút', value: '300-600' },
+      { label: '2-4 phút', value: '120-240' },
+      { label: '4-10 phút', value: '240-600' },
       { label: 'Trên 10 phút', value: '600-' }
     ]
   },
@@ -52,7 +52,6 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
   const [selectedFilter, setSelectedFilter] = useState({})
   const [activeFilter, setActiveFilter] = useState({})
   const [resultTotalExercises, setResultTotalExercises] = useState(0)
-  console.log(activeFilter)
 
   const open = Boolean(anchorEl)
 
@@ -131,6 +130,7 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
 
   useEffect(() => {
     if (!_.isEmpty(selectedFilter)) {
+      console.log(selectedFilter)
       ;(async () => {
         try {
           const { totalExercises } =

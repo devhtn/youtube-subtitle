@@ -29,7 +29,7 @@ const error = (message = 'Error!') => {
   toast.error(message, defaultToastConfig)
 }
 
-const loading = (message = 'Please wait...') => {
+const loading = (message = 'Vui lòng chờ...') => {
   const id = toast.loading(message, {
     ...defaultToastConfig,
     autoClose: false,

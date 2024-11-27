@@ -36,10 +36,11 @@ const Auth = () => {
     setAuthIndex(0)
   }
   React.useEffect(() => {
-    if (auth.token) {
-      if (auth.role === 'admin') navigate('/statistic/admin')
-      else navigate('/exercise/playlist')
-    }
+    if (!auth.token) return
+
+    if (auth.role === 'admin') {
+      navigate('/statistic/admin')
+    } else navigate('/exercise/playlist')
   }, [])
   if (authIndex === 2) return <ForgetForm {...{ gobackToSignIn }} />
   return (

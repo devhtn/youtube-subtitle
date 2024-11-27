@@ -40,8 +40,8 @@ const PlayExercise = () => {
 
   const segments = exercise.segments
 
-  const handleSegmentIndexChange = (value) => {
-    setCurrentSegmentIndex(value)
+  const handleSegmentIndexChange = (index) => {
+    setCurrentSegmentIndex(index)
   }
 
   const handleSegmentClick = useCallback((segment) => {
@@ -122,7 +122,6 @@ const PlayExercise = () => {
         `segment-${segments[currentSegmentIndex].start}`
       )
       if (element) {
-        console.log(element)
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
