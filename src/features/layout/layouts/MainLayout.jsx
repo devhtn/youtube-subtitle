@@ -7,7 +7,7 @@ import SideBar from '../components/Sidebar'
 
 const MainLayout = () => {
   return (
-    <Box>
+    <Box sx={{ backgroundColor: 'background.default' }}>
       {/* <Header /> */}
       <SideBar />
       <Box

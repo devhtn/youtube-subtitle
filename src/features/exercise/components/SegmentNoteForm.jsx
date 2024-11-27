@@ -93,7 +93,7 @@ const SegmentNoteForm = ({
                 fullWidth
                 type='submit'
               >
-                Lưu ghi chú vào subtitle
+                Lưu ghi chú vào phụ đề
               </Button>
             </FormControl>
           </Stack>

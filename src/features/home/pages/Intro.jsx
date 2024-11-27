@@ -32,7 +32,7 @@ const Intro = () => {
         sx={{ marginBottom: 3, color: 'text.secondary' }}
       >
         Ứng dụng giúp bạn học từ vựng tiếng Anh hiệu quả, theo dõi tiến độ học
-        qua các video trên nền tảng YouTube.
+        qua các video trực tuyến.
       </Typography>
 
       {/* Giới thiệu về tính năng */}
@@ -56,7 +56,7 @@ const Intro = () => {
               📚 Học từ vựng
             </Typography>
             <Typography variant='body2' sx={{ color: 'text.secondary' }}>
-              Chép từ vựng từ các video học tiếng Anh trên YouTube.
+              Chép chính tả phụ đề của các video yêu thích
             </Typography>
           </Box>
         </Grid>

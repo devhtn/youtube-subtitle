@@ -18,8 +18,8 @@ import SeekBarDictation from './SeekBarDictation'
 import Segment from './Segment'
 import SegmentNote from './SegmentNote'
 import SegmentNoteForm from './SegmentNoteForm'
+import ConfirmDialog from '~/components/ConfirmDialog'
 import TextField from '~/components/fields/TextField'
-import ConfirmDialog from '~/features/auth/components/ConfirmDialog'
 
 import { addLevelWords } from '../../auth/slices/levelSlice'
 import exerciseApi from '../exerciseApi'
@@ -133,7 +133,7 @@ const Dictation = ({
   }
 
   const handleLose = async () => {
-    const id = customToast.loading()
+    customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
     handleCheck(true)
     try {
       const { updateDictation } = await exerciseApi.updateDictationSegment(
@@ -145,8 +145,6 @@ const Dictation = ({
     } catch (error) {
       console.log(error)
     }
-    customToast.stop(id)
-    customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
   }
 
   const handlePlayTime = (segmentIndex) => {

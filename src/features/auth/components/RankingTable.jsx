@@ -10,6 +10,7 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
+import _ from 'lodash'
 
 import util from '~/utils'
 
@@ -17,7 +18,6 @@ const RankingTable = ({ users, targetUser, targetUserRef }) => {
   // Kiểm tra nếu targetUser không nằm trong danh sách users
   const isTargetUserInList =
     users.some((user) => user.id === targetUser.id) || null
-
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -41,12 +41,13 @@ const RankingTable = ({ users, targetUser, targetUserRef }) => {
                   <Box display='flex' alignItems='center' gap={1}>
                     <Avatar
                       alt={user.name}
-                      src={util.getRoboHashUrl(user.id)}
+                      src={
+                        !_.isEmpty(user) &&
+                        (user.picture || util.getRoboHashUrl(user.id))
+                      }
                     />
                     <Typography
-                      color={
-                        user.id === targetUser.id ? 'primary' : 'secondary'
-                      }
+                      color={user.id === targetUser.id ? 'primary' : ''}
                     >
                       {user.name}
                     </Typography>
@@ -74,11 +75,13 @@ const RankingTable = ({ users, targetUser, targetUserRef }) => {
                   <Box display='flex' alignItems='center' gap={1}>
                     <Avatar
                       alt={targetUser.name}
-                      src={util.getRoboHashUrl(targetUser.id)}
+                      src={
+                        !_.isEmpty(targetUser) &&
+                        (targetUser.picture ||
+                          util.getRoboHashUrl(targetUser.id))
+                      }
                     />
-                    <Typography
-                      color={isTargetUserInList ? 'primary' : 'secondary'}
-                    >
+                    <Typography color={isTargetUserInList ? 'primary' : ''}>
                       {targetUser.name}
                     </Typography>
                   </Box>

@@ -1,9 +1,18 @@
 import { memo } from 'react'
 
+import styled from '@emotion/styled'
 import { Done } from '@mui/icons-material'
-import { Box, Stack, Tooltip, Typography } from '@mui/material'
+import { Box, Stack, Tooltip, tooltipClasses, Typography } from '@mui/material'
 
 import util from '~/utils'
+
+const CustomTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    fontSize: '14px' // Kích thước chữ
+  }
+}))
 
 const Segment = memo(
   ({
@@ -51,7 +60,7 @@ const Segment = memo(
           {arrayWords.map((word, index) => {
             const match = findWord(word, segment.dictationWords)
             return (
-              <Tooltip title={segment.tags[index] || ''} key={index}>
+              <CustomTooltip title={segment.tags[index] || ''} key={index}>
                 <Typography
                   key={index}
                   fontSize='14px'
@@ -65,12 +74,18 @@ const Segment = memo(
                       : 'secondary.main'
                   }
                   variant='span'
+                  fontFamily='Nunito, sans-serif'
+                  sx={{
+                    '&:hover': {
+                      color: 'primary.main' // Đổi màu khi hover
+                    }
+                  }}
                 >
                   {isDictation && !isCheck && match && !segment.isCompleted
                     ? '____' + ' '
                     : word + ' '}
                 </Typography>
-              </Tooltip>
+              </CustomTooltip>
             )
           })}
         </Box>

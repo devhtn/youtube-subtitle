@@ -46,8 +46,6 @@ const ForgetForm = ({ gobackToSignIn }) => {
           onClick={() => navigate('/')}
           sx={{ display: 'flex', justifyContent: 'center', cursor: 'pointer' }}
         >
-          <Subtitles sx={{ fontSize: 30, color: '#ff0000' }} />
-
           <Typography
             variant='h6'
             noWrap
@@ -57,7 +55,7 @@ const ForgetForm = ({ gobackToSignIn }) => {
               fontWeight: 'bold'
             }}
           >
-            YTNOTE
+            ENGLISH IS EASY
           </Typography>
         </Box>
         <Box p={2}>

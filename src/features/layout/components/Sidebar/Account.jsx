@@ -65,8 +65,8 @@ const Account = ({ openSidebar }) => {
   const [highlight, setHighlight] = useState(false)
   const [notifyAnchorEl, setNotifyAnchorEl] = useState(null)
   const [newNotifies, setNewNotifies] = useState([])
-
   const open = Boolean(anchorEl)
+
   // handle notify
   const handleNewNotifiesChange = (newNotifies) => {
     setNewNotifies(newNotifies)
@@ -127,6 +127,9 @@ const Account = ({ openSidebar }) => {
 
   return (
     <>
+      {/* Dialog */}
+
+      {/* Item */}
       <List sx={{ p: 0 }}>
         {/* Notification */}
         <ListItem disablePadding sx={{ display: 'block' }}>
@@ -204,7 +207,10 @@ const Account = ({ openSidebar }) => {
             >
               <Avatar
                 name={user.name}
-                src={!_.isEmpty(user) ? util.getRoboHashUrl(user.id) : ''}
+                src={
+                  !_.isEmpty(user) &&
+                  (user.picture || util.getRoboHashUrl(user.id))
+                }
                 sx={{ width: '24px', height: '24px' }}
               />
             </ListItemIcon>
@@ -260,9 +266,7 @@ const Account = ({ openSidebar }) => {
                       }}
                     >
                       {openSidebar && (
-                        <Typography variant='span'>
-                          Tổng từ vựng đang nhớ:{' '}
-                        </Typography>
+                        <Typography variant='span'>Level: </Typography>
                       )}{' '}
                       <Typography
                         variant='span'

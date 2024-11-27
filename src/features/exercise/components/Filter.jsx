@@ -184,7 +184,6 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
           onClick={handleOpenPopover}
           sx={{
             cursor: 'pointer',
-            backgroundColor: 'white',
             borderRadius: 1,
             zIndex: (theme) => (open ? theme.zIndex.drawer : '') // Đảm bảo Chip luôn hiển thị trên Backdrop
           }}

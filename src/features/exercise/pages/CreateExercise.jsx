@@ -15,8 +15,8 @@ import _ from 'lodash'
 
 import PlayVideo from '../components/PlayVideo'
 import Segment from '../components/Segment'
+import ConfirmDialog from '~/components/ConfirmDialog'
 import TextField from '~/components/fields/TextField'
-import ConfirmDialog from '~/features/auth/components/ConfirmDialog'
 
 import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'
@@ -208,11 +208,11 @@ const CreateExercise = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack direction={'row'} gap={2}>
               <TextField
-                label='Link to video on YouTube'
+                label='Link to online video'
                 name='link'
                 control={control}
                 rules={{
-                  required: 'Link to video on YouTube is required' // Thông báo lỗi khi field này bị bỏ trống
+                  required: 'Link to online video is required' // Thông báo lỗi khi field này bị bỏ trống
                 }}
                 autoComplete='off'
               />
@@ -237,7 +237,6 @@ const CreateExercise = () => {
               mt: 2,
               p: 2,
               borderRadius: 1,
-              bgcolor: 'grey.100', // Nền nhẹ để làm nổi bật
               alignItems: 'flex-start'
             }}
           >
@@ -252,16 +251,23 @@ const CreateExercise = () => {
                 >
                   Lưu ý:
                 </Typography>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant='body1' color='text.secondary'>
                   <br />
                   1. Bạn chỉ được tạo tối đa một bài tập cho đến khi bạn hoàn
                   thành hoặc xóa bài tập đó. <br />
                   2. Bài tập sau khi hoàn thành sẽ được chia sẻ cho mọi người.
                   <br />
-                  3. Bài tập sau khi được chia sẻ nếu có quá nhiều lượt dislike
-                  sẽ xóa khỏi danh sách chia sẻ
+                  3. Nếu có quá nhiều lượt dislike, bài tập sẽ xóa khỏi danh
+                  sách chia sẻ
                   <br />
-                  4. Chỉ hỗ trợ video có phụ đề.
+                  4. Khi tìm kiếm video trên các nền tảng trực tuyến, hãy lọc
+                  các video có phụ đề ( Subtitles / CC ) và thời lượng phù hợp
+                  <br />
+                  5. Cần đạt ít nhất level 1000 để có thể xem có video trên 4
+                  phút
+                  <br />
+                  6. Chỉ hỗ trợ video có phụ đề tiếng Anh và thời lượng nhỏ hơn
+                  20 phút
                 </Typography>
               </Box>
             </Stack>

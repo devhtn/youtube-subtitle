@@ -6,7 +6,7 @@ import { Box, Grid } from '@mui/material'
 import _ from 'lodash'
 
 import CardItem from './CardItem'
-import ConfirmDialog from '~/features/auth/components/ConfirmDialog'
+import ConfirmDialog from '~/components/ConfirmDialog'
 
 import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'

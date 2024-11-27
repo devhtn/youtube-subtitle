@@ -16,6 +16,13 @@ const authApi = {
   },
   getRankingUser() {
     return privateAxios.get('/auth/ranking')
+  },
+  updateInfo(body) {
+    return privateAxios.patch('/auth', body, {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      }
+    })
   }
 }
 

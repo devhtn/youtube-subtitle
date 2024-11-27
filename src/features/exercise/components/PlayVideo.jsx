@@ -9,7 +9,8 @@ import Comment from '~/features/comment/components/Comment'
 const hints = [
   'Video tạm thời được ẩn cho đến khi bạn trả lời hoặc đầu hàng',
   'Đừng quên chú ý đến phát âm, nghe và phát âm lại những gì nghe được!',
-  'Bạn chỉ cần nhập từ và dấu cách, không cần quan tâm dấu câu và in hoa'
+  'Bạn chỉ cần nhập từ và dấu cách, không cần quan tâm dấu câu và in hoa',
+  'Bạn có thể đưa chuột vào từ bị ẩn để xem gợi ý'
   // Thêm các gợi ý khác
 ]
 

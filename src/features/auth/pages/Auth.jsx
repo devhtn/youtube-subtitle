@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { Subtitles } from '@mui/icons-material'
 import {
   Box,
   Dialog,
@@ -21,6 +20,7 @@ const Auth = () => {
   const navigate = useNavigate()
   const [authIndex, setAuthIndex] = React.useState(0)
   const auth = useAuth()
+  console.log(auth)
 
   const tabChange = (event, tabValue) => {
     event.preventDefault()
@@ -36,20 +36,22 @@ const Auth = () => {
     setAuthIndex(0)
   }
   React.useEffect(() => {
-    if (auth) {
+    if (auth.token) {
       if (auth.role === 'admin') navigate('/statistic/admin')
       else navigate('/exercise/playlist')
     }
-  }, [auth, navigate])
+  }, [])
   if (authIndex === 2) return <ForgetForm {...{ gobackToSignIn }} />
   return (
     <Dialog maxWidth='xs' fullWidth open={true} aria-labelledby='auth dialog'>
       <DialogContent sx={{ py: 5 }}>
         <Box
-          sx={{ display: 'flex', justifyContent: 'center', cursor: 'pointer' }}
+          sx={{
+            display: 'flex',
+            justifyContent: 'center',
+            cursor: 'pointer'
+          }}
         >
-          <Subtitles sx={{ fontSize: 30, color: 'primary.main' }} />
-
           <Typography
             variant='h6'
             noWrap
@@ -59,7 +61,7 @@ const Auth = () => {
               fontWeight: 'bold'
             }}
           >
-            YTNOTE
+            ENGLISH IS EASY
           </Typography>
         </Box>
         <Tabs

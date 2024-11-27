@@ -47,9 +47,8 @@ const CommentItem = ({
           size='40'
           name={comment.userId?.name}
           src={
-            !_.isEmpty(comment.userId)
-              ? util.getRoboHashUrl(comment.userId.id)
-              : ''
+            !_.isEmpty(comment.userId) &&
+            (comment.userId.picture || util.getRoboHashUrl(comment.userId.id))
           }
         />
         <Box width={'100%'}>

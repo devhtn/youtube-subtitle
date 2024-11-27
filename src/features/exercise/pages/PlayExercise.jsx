@@ -154,8 +154,7 @@ const PlayExercise = () => {
               sx={{
                 position: 'sticky',
                 top: '0',
-                height: 'calc(100vh)',
-                backgroundColor: 'background.secondary' // Đặt màu nền sidebar
+                height: 'calc(100vh)'
               }}
             >
               {/* show subtitle */}
