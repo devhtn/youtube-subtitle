@@ -36,7 +36,7 @@ const Auth = () => {
     setAuthIndex(0)
   }
   React.useEffect(() => {
-    if (!auth.token) return
+    if (auth.token === null) return
 
     if (auth.role === 'admin') {
       navigate('/statistic/admin')

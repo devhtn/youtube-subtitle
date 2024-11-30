@@ -17,7 +17,7 @@ const PreviewExercise = () => {
   const [timePlay, setTimePlay] = useState({})
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
 
-  const segments = exercise.segments
+  const segments = exercise?.segments
 
   const handleSegmentIndexChange = (index) => {
     setCurrentSegmentIndex(index)
@@ -48,13 +48,14 @@ const PreviewExercise = () => {
     ;(async () => {
       try {
         const exercise = await exerciseApi.getExercise(id)
-        setExercise(exercise)
+        if (!exercise) navigate('/not-found')
+        else setExercise(exercise)
       } catch {
         navigate('/not-found')
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [id])
 
   // effect currentSegment change
   useEffect(() => {

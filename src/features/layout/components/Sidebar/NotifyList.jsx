@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { Comment, Info, NotificationsNone } from '@mui/icons-material'
 import { Box, List, Popover, Stack, Typography } from '@mui/material'
@@ -20,8 +21,24 @@ const NotifyList = ({
   onNewNotifiesChange,
   newNotifies
 }) => {
+  const navigate = useNavigate()
+
   const { newNotify } = useCommentSocketContext()
   const [notifies, setNotifies] = useState([])
+
+  const handleClick = (notify) => {
+    if (notify.type === 'Comment') {
+      const exerciseId = notify.relatedId.exerciseId
+      const relatedId = notify.relatedId.id
+      navigate(`/exercise/preview/${exerciseId}/?commentId=${relatedId}`)
+    }
+    if (notify.type === 'Info') {
+      navigate(`/exercise/playlist?tab=1`)
+    }
+    if (!notify.seen) handleMarkAsRead(notify.id)
+
+    onClose()
+  }
 
   const handleMarkAsRead = async (id) => {
     try {
@@ -92,14 +109,15 @@ const NotifyList = ({
         {notifies.length > 0 ? (
           <List>
             {notifies.map((el, index) => (
-              <NotifyItem
-                key={index}
-                message={el.message}
-                icon={notifyIcons[el.type]}
-                seen={el.seen}
-                time={el.createdAt}
-                onMarkAsRead={() => handleMarkAsRead(el.id)}
-              />
+              <Box key={index} onClick={() => handleClick(el)}>
+                <NotifyItem
+                  message={el.message}
+                  icon={notifyIcons[el.type]}
+                  seen={el.seen}
+                  time={el.createdAt}
+                  onMarkAsRead={() => handleMarkAsRead(el.id)}
+                />
+              </Box>
             ))}
           </List>
         ) : (

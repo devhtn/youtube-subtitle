@@ -37,7 +37,7 @@ const CompletedList = ({ onEmpty = () => {} }) => {
       } catch (error) {
         console.log(error)
       }
-    } else customToast.info('Bạn chưa cần ôn tập bài tập này!')
+    } else customToast.info('Bạn đã nhớ 100% bài tập này!')
   }
 
   const handleDelReplay = async (id) => {

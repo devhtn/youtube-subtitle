@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { Box } from '@mui/material'
 
@@ -8,7 +9,12 @@ import PlayingList from '../components/PlayingList'
 import MenuTabs from '~/components/MenuTabs'
 
 const PlayListExercise = () => {
+  const [searchParams] = useSearchParams()
+
   const [isShowEmpty, setIsShowEmpty] = useState(false)
+
+  //  Lấy giá trị tab từ search params, mặc định là tab 0
+  const tabFromUrl = parseInt(searchParams.get('tab')) || 0
 
   const handleEmpty = (isEmpty) => {
     setIsShowEmpty(isEmpty)
@@ -17,6 +23,7 @@ const PlayListExercise = () => {
   return (
     <Box>
       <MenuTabs
+        tab={tabFromUrl}
         tabItems={[
           {
             label: 'Bài tập của tôi',

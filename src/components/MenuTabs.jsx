@@ -9,14 +9,15 @@ function a11yProps(index) {
   }
 }
 
-function MenuTabs({ tabItems }) {
+function MenuTabs({ tabItems, tab = null }) {
   // Tạo index tabItems chỉ khi tabItems thay đổi
   const tabItemsMemo = useMemo(() => tabItems, [tabItems])
 
   // Xác định giá trị mặc định cho `Tabs` dựa trên pathname
-  const currentTabIndex = tabItemsMemo.findIndex(
-    (item) => location.pathname === item.pathname
-  )
+  const currentTabIndex =
+    tab !== null
+      ? tab
+      : tabItemsMemo.findIndex((item) => location.pathname === item.pathname)
 
   const [value, setValue] = useState(
     currentTabIndex !== -1 ? currentTabIndex : 0

@@ -67,12 +67,6 @@ const AccountMenu = ({ anchorEl, open, onClose, onLogout }) => {
         transformOrigin={{ horizontal: 'right', vertical: 'bottom' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
       >
-        <MenuItem sx={{ typography: 'body2' }}>
-          <ListItemIcon>
-            <Help fontSize='small' />
-          </ListItemIcon>
-          Góp ý hoặc yêu cầu hỗ trợ
-        </MenuItem>
         <MenuItem onClick={handleOpenForm} sx={{ typography: 'body2' }}>
           <ListItemIcon>
             <Info fontSize='small' />

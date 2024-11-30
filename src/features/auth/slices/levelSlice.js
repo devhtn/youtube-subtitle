@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import _ from 'lodash' // Import lodash
 
 const levelSlice = createSlice({
   name: 'level',
@@ -11,9 +10,13 @@ const levelSlice = createSlice({
       const newWords = action.payload // Nhận array từ làm payload
       // Kết hợp levelWords với newWords và loại bỏ các giá trị trùng lặp
       state.words = [...state.words, ...newWords]
+    },
+    resetLevelWords: (state) => {
+      // Đặt lại mảng words về rỗng
+      state.words = []
     }
   }
 })
 
-export const { addLevelWords } = levelSlice.actions
+export const { addLevelWords, resetLevelWords } = levelSlice.actions
 export default levelSlice.reducer

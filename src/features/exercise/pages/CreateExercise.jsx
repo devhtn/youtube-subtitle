@@ -114,8 +114,17 @@ const CreateExercise = () => {
       <ConfirmDialog
         open={!_.isEmpty(dictation)}
         icon={<WarningAmber sx={{ fontSize: '48px', color: 'warning.main' }} />}
-        content='Bạn chỉ được tạo mới tối đa 1 bài tập!'
+        content={
+          <>
+            Bạn đã tạo bài tập trước đó!
+            <Typography color='warning.main'>
+              {' '}
+              Đến trang làm bài tập ?
+            </Typography>
+          </>
+        }
         onClose={() => navigate(-1)}
+        onConfirm={() => navigate('/exercise/playlist')}
       />
       {exercise ? (
         <Box sx={{ display: 'flex' }}>
@@ -137,7 +146,7 @@ const CreateExercise = () => {
                 Từ vựng gốc: {exercise.lemmaWords?.length} words
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
-                Độ khó: {exercise.difficult}
+                Số lượng từ nâng cao: {exercise.difficult}
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
                 Tốc độ: {exercise.avgSpeed} WPM
@@ -235,7 +244,7 @@ const CreateExercise = () => {
                   color='primary'
                   type='submit'
                 >
-                  Xem trước
+                  Xem video
                 </Button>
               </FormControl>
             </Stack>

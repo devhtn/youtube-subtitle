@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ExpandLess, ExpandMore, ThumbUpAltOutlined } from '@mui/icons-material'
 import {
@@ -15,7 +15,6 @@ import _ from 'lodash'
 import CommentForm from './CommentForm'
 
 import commentApi from '~/features/comment/commentApi'
-import useAuth from '~/hooks/useAuth'
 import util from '~/utils'
 
 const CommentItem = ({
@@ -23,37 +22,76 @@ const CommentItem = ({
   subReply = false,
   handleCreate,
   handleLikeChange,
-  onToggleLike
+  onToggleLike,
+  userId,
+  targetCommentId = null
 }) => {
   const [reply, setReply] = useState(false)
-  const [isShowReplies, setIsShowReplies] = useState(false)
-  const auth = useAuth()
-  const [isLiked, setIsLiked] = useState(comment.likes?.includes(auth.id))
+  const [isShowReplies, setIsShowReplies] = useState(
+    targetCommentId ? true : false
+  )
+  const [isLiked, setIsLiked] = useState(comment.likes?.includes(userId))
+
+  const commentRef = useRef()
+
+  const isSelfComment = comment.userId.id === userId
 
   const handleToggleLike = async () => {
     try {
       const updateComment = await commentApi.toggleLikeComment({
         commentId: comment.id
       })
-      setIsLiked(updateComment.likes.includes(auth.id))
+      setIsLiked(updateComment.likes.includes(userId))
       onToggleLike(updateComment)
     } catch (error) {}
   }
 
+  const scrollToComment = () => {
+    // Cuộn tới comment nếu đúng
+    if (commentRef.current) {
+      commentRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+
+  useEffect(() => {
+    if (comment.id === targetCommentId) {
+      setIsShowReplies(true)
+      setReply(true)
+      scrollToComment()
+    }
+  }, [targetCommentId])
+
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box
+      ref={commentRef}
+      sx={{
+        width: '100%'
+      }}
+    >
       <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
-        <Avatar
-          size='40'
-          name={comment.userId?.name}
-          src={
-            !_.isEmpty(comment.userId) &&
-            (comment.userId.picture || util.getRoboHashUrl(comment.userId.id))
-          }
-        />
+        <Box sx={{ position: 'relative', display: 'inline-block' }}>
+          {/* <StyledBadge
+            overlap='circular'
+            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+            variant='dot'
+          > */}
+          <Avatar
+            sx={{ width: 40, height: 40 }}
+            name={comment.userId?.name}
+            src={
+              !_.isEmpty(comment.userId) &&
+              (comment.userId.picture || util.getRoboHashUrl(comment.userId.id))
+            }
+          />
+          {/* </StyledBadge> */}
+        </Box>
         <Box width={'100%'}>
           <Box display={'flex'} gap={1}>
-            <Typography fontSize={'13px'} fontWeight={'600'}>
+            <Typography
+              fontSize={'13px'}
+              fontWeight={'600'}
+              color={isSelfComment && 'primary'}
+            >
               {comment.userId?.name}
             </Typography>
             <Typography fontSize={'12px'}>
@@ -62,7 +100,7 @@ const CommentItem = ({
           </Box>
           <Typography variant='body2'>
             {comment.mentionUserId?.name && (
-              <Typography variant='span' color={'text.hightlight'}>
+              <Typography variant='span' color='secondary'>
                 @{comment.mentionUserId?.name}{' '}
               </Typography>
             )}
@@ -78,12 +116,14 @@ const CommentItem = ({
               </IconButton>
               <Typography variant='body2'>{comment.likes?.length}</Typography>
             </Box>
-            <Button
-              onClick={() => setReply(true)}
-              sx={{ textTransform: 'none', fontSize: '13px' }}
-            >
-              Trả lời
-            </Button>
+            {!isSelfComment && (
+              <Button
+                onClick={() => setReply(true)}
+                sx={{ textTransform: 'none', fontSize: '13px' }}
+              >
+                Trả lời
+              </Button>
+            )}
           </Box>
           {/* reply form */}
           {reply && (
@@ -117,6 +157,8 @@ const CommentItem = ({
                   subReply={true}
                   handleCreate={handleCreate}
                   onToggleLike={handleLikeChange}
+                  userId={userId}
+                  targetCommentId={targetCommentId} // Truyền ID cần tìm xuống các reply
                 />
               ))}
             </Box>

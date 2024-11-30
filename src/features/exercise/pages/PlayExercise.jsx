@@ -36,8 +36,6 @@ const PlayExercise = () => {
   const [timePlay, setTimePlay] = useState({})
   const [isPreview, setIsPreview] = useState(false)
 
-  console.log(currentSegmentIndex)
-
   const segments = exercise.segments
 
   const handleSegmentIndexChange = (index) => {
@@ -144,7 +142,7 @@ const PlayExercise = () => {
                 timePlay={timePlay}
                 onPlayingChange={(value) => setPlaying(value)}
                 onSegmentIndexChange={handleSegmentIndexChange}
-                comment
+                comment={exercise.isPublic}
               />
             )}
           </Box>

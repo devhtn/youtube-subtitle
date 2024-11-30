@@ -48,7 +48,6 @@ const Dictation = ({
   const [segmentNote, setSegmentNote] = useState(null)
   const segments = exercise.segments
   const { control, handleSubmit, reset } = useForm({})
-
   const handleCheck = (newCheckValue) => {
     setIsCheck(newCheckValue)
     onCheckChange(newCheckValue) // Gọi callback khi trạng thái thay đổi
@@ -88,6 +87,8 @@ const Dictation = ({
     setResultSegment(resultSegment)
     const isCompleted =
       totalCorrectedWords === segments[segmentIndex].dictationWords.length
+    console.log(totalCorrectedWords)
+    console.log(segments[segmentIndex].dictationWords.length)
 
     try {
       // update completed segment
@@ -102,8 +103,10 @@ const Dictation = ({
 
       // Trường hợp segment đã hoàn thành
       if (isCompleted) {
+        // validSegmentIndexs chứa danh sách index hợp lệ thuộc về exercise.segments hoặc dictation.segments
+        // el chính là index thuộc về segments
         setValidSegmentIndexs((prev) =>
-          prev.filter((_, index) => index !== segmentIndex)
+          prev.filter((el) => el !== segmentIndex)
         )
         dispatch(addLevelWords(newLevelWords))
         // Thống kê trường hợp segment hoàn thành
@@ -369,7 +372,16 @@ const Dictation = ({
                         sx={{ fontSize: '48px', color: 'primary.main' }}
                       />
                     }
-                    content='Chúc mừng ! Bạn đã hoàn thành bài tập này!'
+                    content={
+                      <>
+                        <Typography>
+                          Chúc mừng ! Bạn đã hoàn thành bài tập với số điểm
+                        </Typography>
+                        <Typography variant='h6' color='secondary'>
+                          {dictation.score || 0}
+                        </Typography>
+                      </>
+                    }
                     onConfirm={() => navigate('/exercise/playlist')}
                   />
                 </Box>

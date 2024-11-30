@@ -55,7 +55,7 @@ const Intro = () => {
             <Typography variant='body1' sx={{ fontWeight: 'bold' }}>
               📚 Học từ vựng
             </Typography>
-            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+            <Typography variant='body1' sx={{ color: 'text.secondary' }}>
               Chép chính tả phụ đề của các video yêu thích
             </Typography>
           </Box>
@@ -71,7 +71,7 @@ const Intro = () => {
             <Typography variant='body1' sx={{ fontWeight: 'bold' }}>
               🧠 Ghi nhớ lâu
             </Typography>
-            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+            <Typography variant='body1' sx={{ color: 'text.secondary' }}>
               Theo dõi từ vựng đã học và dễ dàng ôn lại.
             </Typography>
           </Box>
@@ -87,7 +87,7 @@ const Intro = () => {
             <Typography variant='body1' sx={{ fontWeight: 'bold' }}>
               🎯 Tiến độ học
             </Typography>
-            <Typography variant='body2' sx={{ color: 'text.secondary' }}>
+            <Typography variant='body1' sx={{ color: 'text.secondary' }}>
               Xem báo cáo tiến độ học và cải thiện hiệu quả.
             </Typography>
           </Box>

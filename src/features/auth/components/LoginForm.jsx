@@ -59,6 +59,7 @@ const LoginForm = ({ goToForget }) => {
       if (pathname === '/login') {
         if (['admin'].includes(role)) navigate('/statistic/admin')
         else navigate('/exercise/playlist')
+        customToast.success('Bạn đã đăng nhập thành công!')
       } else window.close()
     } catch (error) {
       customToast.update(id, error.data.message, 'error')
@@ -73,7 +74,6 @@ const LoginForm = ({ goToForget }) => {
       if (pathname === '/login') navigate('/exercise/playlist')
       else window.close()
     } catch (error) {
-      console.log(error)
       customToast.update(id, error.data.message, 'error')
     }
   }

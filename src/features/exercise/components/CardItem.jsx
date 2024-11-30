@@ -16,6 +16,7 @@ import {
   CardMedia,
   Skeleton,
   Stack,
+  Tooltip,
   Typography
 } from '@mui/material'
 import _ from 'lodash'
@@ -173,19 +174,21 @@ const CardItem = ({
         {/* Card Content */}
         <CardContent>
           {/* Name of the Content */}
-          <Typography
-            variant='body1'
-            component='div'
-            mb={2}
-            sx={{
-              overflow: 'hidden',
-              textOverflow: 'ellipsis',
-              whiteSpace: 'nowrap',
-              maxWidth: '100%' // Đặt chiều rộng tối đa nếu cần thiết
-            }}
-          >
-            {exercise.title}
-          </Typography>
+          <Tooltip title={exercise.title} arrow>
+            <Typography
+              variant='body1'
+              component='div'
+              mb={2}
+              sx={{
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+                maxWidth: '100%' // Đặt chiều rộng tối đa nếu cần thiết
+              }}
+            >
+              {exercise.title}
+            </Typography>
+          </Tooltip>
 
           {/* Avatar and Shared By */}
           {!isCheckInfo && (
@@ -219,7 +222,7 @@ const CardItem = ({
             <Progress
               variant='liner'
               value={play.progress}
-              tooltip='Tiến độ đã thực hiện'
+              tooltip='Khả năng nhớ, cần ôn lại nếu < 100%'
             />
           )}
           {preview && (

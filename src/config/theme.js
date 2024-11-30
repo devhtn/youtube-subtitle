@@ -7,7 +7,8 @@ const getTheme = (mode) =>
     app: {
       headerHeight: '56px',
       sidebarWidth: '300px',
-      border: '1px solid #ddd'
+      border: '1px solid #ddd',
+      highlight: '#fffad2'
     },
     typography: {
       fontFamily: 'Nunito, sans-serif'
@@ -19,6 +20,9 @@ const getTheme = (mode) =>
       },
       secondary: {
         main: '#11a5ff'
+      },
+      background: {
+        highlight: '#ededed'
       }
       // text: {
       //   primary: '#2e2e2e',

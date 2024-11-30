@@ -18,7 +18,6 @@ import {
   ListItemText,
   Typography
 } from '@mui/material'
-import _ from 'lodash'
 
 import AccountMenu from './AccountMenu'
 import NotifyList from './NotifyList'
@@ -26,7 +25,10 @@ import NotifyList from './NotifyList'
 import customToast from '~/config/toast'
 import authApi from '~/features/auth/authApi'
 import { logout } from '~/features/auth/slices/authSlice'
-import { addLevelWords } from '~/features/auth/slices/levelSlice'
+import {
+  addLevelWords,
+  resetLevelWords
+} from '~/features/auth/slices/levelSlice'
 import statisticApi from '~/features/statistic/statisticApi'
 import usePrevious from '~/hooks/usePrevious'
 import util from '~/utils'
@@ -50,6 +52,42 @@ const ShakyBadge = styled(Badge, {
     },
     '100%': {
       transform: 'rotate(0deg)'
+    }
+  }
+}))
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    width: 8, // Điều chỉnh kích thước Badge nhỏ hơn
+    height: 8,
+    borderRadius: '50%',
+    position: 'absolute', // Đảm bảo vị trí tuyệt đối
+    top: 0, // Căn chỉnh đúng vị trí
+    right: 0,
+    transform: 'translate(50%, -50%)', // Căn chỉnh ở góc trên bên phải
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      // animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""'
+    }
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0
     }
   }
 }))
@@ -82,6 +120,7 @@ const Account = ({ openSidebar }) => {
 
   //
   const handleLogout = () => {
+    dispatch(resetLevelWords())
     dispatch(logout())
     handleClose
     navigate('/')
@@ -205,11 +244,17 @@ const Account = ({ openSidebar }) => {
                 justifyContent: 'center'
               }}
             >
-              <Avatar
-                name={user.name}
-                src={user.picture || util.getRoboHashUrl(user.id)}
-                sx={{ width: '24px', height: '24px' }}
-              />
+              <StyledBadge
+                overlap='circular'
+                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                variant='dot'
+              >
+                <Avatar
+                  name={user.name}
+                  src={user.picture || util.getRoboHashUrl(user.id)}
+                  sx={{ width: '24px', height: '24px' }}
+                />
+              </StyledBadge>
             </ListItemIcon>
             <ListItemText
               primary={user.name}

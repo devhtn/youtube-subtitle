@@ -19,8 +19,9 @@ const ListExercises = () => {
   const level = useSelector((state) => state.level)
   const navigate = useNavigate()
   const location = useLocation()
+
+  const [isScrolled, setIsScrolled] = useState(false)
   const [exercises, setExercises] = useState([])
-  console.log(exercises)
   const [query, setQuery] = useState(
     location.search ? null : { sort: 'completedUsersCount', order: 'desc' }
   )
@@ -126,9 +127,31 @@ const ListExercises = () => {
     filterExercises()
   }, [page])
 
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        // Thay đổi 100 thành giá trị phù hợp
+        setIsScrolled(true)
+      } else {
+        setIsScrolled(false)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+    }
+  }, [])
+
   return (
-    <Box pt={1}>
-      <Box>
+    <Box>
+      <Box
+        p={1}
+        position='sticky'
+        top={0}
+        zIndex={1000}
+        bgcolor={isScrolled ? 'background.highlight' : 'background.paper'}
+      >
         <Box display='flex' gap={1.5}>
           <Filter onChange={handleChangeFilter} value={activeFilter} />
         </Box>
@@ -137,7 +160,7 @@ const ListExercises = () => {
 
       <Grid container spacing={3}>
         {exercises.map((exercise) => (
-          <Grid item xs={12} sm={6} md={3} key={exercise._id}>
+          <Grid item xs={12} sm={6} md={4} lg={3} key={exercise._id}>
             <CardItem
               exercise={exercise}
               preview={{
@@ -149,7 +172,7 @@ const ListExercises = () => {
           </Grid>
         ))}
       </Grid>
-      <Box display='flex' justifyContent='center' mt={4}>
+      <Box display='flex' justifyContent='center' my={4}>
         <Pagination
           count={totalPages}
           page={page}

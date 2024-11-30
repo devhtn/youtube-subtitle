@@ -34,7 +34,7 @@ const EmptyList = ({ show }) => {
         Danh sách đang trống
       </Typography>
       <Typography variant='body1' color='textSecondary' paragraph>
-        Hãy tìm bài tập phù hợp và quay trở lại nhé!
+        Hãy bắt đầu bài tập đầu tiên của mình!
       </Typography>
 
       <Box display='flex' gap={2} mt={2}>

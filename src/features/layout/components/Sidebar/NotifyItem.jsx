@@ -28,7 +28,6 @@ const NotifyItem = ({ message, icon, seen, onMarkAsRead, time }) => {
           }
         }
       }}
-      onClick={() => {}}
     >
       <ListItemIcon>
         {cloneElement(icon, { sx: { color: seen ? '' : 'primary.main' } })}

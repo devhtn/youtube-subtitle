@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-import { FitnessCenter, People } from '@mui/icons-material'
+import { FitnessCenter, MenuBook, People } from '@mui/icons-material'
 import { Box, IconButton, Paper, Stack, Typography } from '@mui/material'
 import {
   Label,
@@ -48,7 +48,7 @@ const AdminStatistic = () => {
     {
       label: 'Tổng bài tập',
       value: totalExercises,
-      icon: <FitnessCenter sx={{ color: 'white' }} />,
+      icon: <MenuBook sx={{ color: 'white' }} />,
       color: '#3399FF'
     }
   ]

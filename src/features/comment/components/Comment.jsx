@@ -1,4 +1,5 @@
 import { memo, useEffect, useState } from 'react'
+import { useLocation, useParams, useSearchParams } from 'react-router-dom'
 
 import { Box } from '@mui/material'
 
@@ -8,15 +9,23 @@ import CardAction from '~/features/exercise/components/CardAction'
 
 import useCommentSocketContext from '~/contexts/useCommentSocketContext'
 import exerciseApi from '~/features/exercise/exerciseApi'
-
-// import useCommentSocket from '~/hooks/useCommentSocket'
+import useAuth from '~/hooks/useAuth'
 
 const Comment = memo(({ exercise }) => {
   const { newNotify } = useCommentSocketContext()
+  const [searchParams] = useSearchParams()
+  const commentId = searchParams.get('commentId')
+  const auth = useAuth()
+
+  const location = useLocation()
+  const [currentKey, setCurrentKey] = useState(location.key)
+
+  useEffect(() => {
+    setCurrentKey(location.key) // Buộc component được re-render mỗi khi URL thay đổi, kể cả khi nhấn lại cùng URL
+  }, [location.key])
 
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState({})
-  // const { newNotify } = useCommentSocket(auth.id)
 
   const handleCreate = (newComment) => {
     setNewComment(newComment)
@@ -65,7 +74,7 @@ const Comment = memo(({ exercise }) => {
 
   useEffect(() => {
     if (newNotify) {
-      handleCreate(newNotify)
+      handleCreate(newNotify.relatedId)
     }
   }, [newNotify])
 
@@ -78,21 +87,23 @@ const Comment = memo(({ exercise }) => {
         console.log(error)
       }
     })()
-  }, [])
+  }, [exercise])
 
   return (
     <>
       <CardAction inCard={false} exercise={exercise} newComment={newComment} />
       <CommentForm exerciseId={exercise.id} onCreate={handleCreate} />
       {/* show comment */}
-      <Box mt={4}>
+      <Box mt={4} key={currentKey}>
         {comments.map((comment) => (
           <CommentItem
             key={comment.id}
             comment={comment}
+            userId={auth.id}
             onToggleLike={handleLikeChange}
             handleCreate={handleCreate}
             handleLikeChange={handleLikeChange}
+            targetCommentId={commentId}
           />
         ))}
       </Box>

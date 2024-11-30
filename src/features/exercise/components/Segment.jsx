@@ -16,7 +16,7 @@ const CustomTooltip = styled(({ className, ...props }) => (
 
 const Segment = memo(
   ({
-    isCurrent,
+    isCurrent = false,
     segment,
     onClick = () => {},
     isDictation = false,
@@ -44,12 +44,12 @@ const Segment = memo(
 
     return (
       <Box
-        id={!isDictation && `segment-${segment.start}`} // Đặt id cho mỗi segment
+        id={`segment-${segment.start}`} // Đặt id cho mỗi segment
         sx={{
           p: '10px 16px 26px 16px',
           borderBottom: (theme) => theme.app.border,
           backgroundColor: isCurrent
-            ? '#94b1bc4d' // Màu nền khác khi segment đang kích hoạt
+            ? 'background.highlight' // Màu nền khác khi segment đang kích hoạt
             : 'transparent',
           cursor: !util.isEmptyFunction(onClick) && 'pointer',
           position: 'relative'
@@ -76,13 +76,14 @@ const Segment = memo(
                   variant='span'
                   fontFamily='Nunito, sans-serif'
                   sx={{
+                    // pr: isSelec && !isCheck && 5,
                     '&:hover': {
                       color: 'primary.main' // Đổi màu khi hover
                     }
                   }}
                 >
                   {isDictation && !isCheck && match && !segment.isCompleted
-                    ? '____' + ' '
+                    ? `_${word.length}_` + ' '
                     : word + ' '}
                 </Typography>
               </CustomTooltip>
