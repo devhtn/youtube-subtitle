@@ -31,6 +31,9 @@ const exerciseApi = {
   toggleDislike(body) {
     return privateAxios.post(`/exercise/toggle-dislike`, body)
   },
+  toggleLockExercise(body) {
+    return privateAxios.patch(`/exercise/toggle-lock`, body)
+  },
   getExercises(query) {
     return privateAxios.get('/exercise', { params: query })
   },

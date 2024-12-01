@@ -34,7 +34,7 @@ const exerciseRoutes = [
           {
             path: 'preview/:id',
             element: (
-              <RequireAuth>
+              <RequireAuth allowedRoles={['admin', 'user']}>
                 <PreviewExercise />
               </RequireAuth>
             )

@@ -1,6 +1,4 @@
-import { cloneElement } from 'react'
-
-import { MarkEmailRead } from '@mui/icons-material'
+import { MarkEmailRead, ReportProblem } from '@mui/icons-material'
 import {
   Box,
   IconButton,
@@ -12,7 +10,15 @@ import {
 
 import util from '~/utils'
 
-const NotifyItem = ({ message, icon, seen, onMarkAsRead, time }) => {
+const NotifyItem = ({
+  message,
+  seen,
+  onMarkAsRead,
+  time,
+  image,
+  type,
+  subText
+}) => {
   return (
     <ListItem
       disablePadding
@@ -29,14 +35,39 @@ const NotifyItem = ({ message, icon, seen, onMarkAsRead, time }) => {
         }
       }}
     >
-      <ListItemIcon>
-        {cloneElement(icon, { sx: { color: seen ? '' : 'primary.main' } })}
-      </ListItemIcon>
+      {image ? (
+        <Box
+          component='img'
+          src={image} // Nếu không có src thì dùng ảnh mặc định
+          alt='Notification Icon'
+          sx={{
+            width: 40,
+            height: 40,
+            borderRadius: type === 'Exercise' ? '' : '50%',
+            objectFit: 'cover',
+            border: (theme) =>
+              `2px solid ${seen ? theme.palette.grey[300] : theme.palette.primary.main}`,
+            mr: 2
+          }}
+        />
+      ) : (
+        <ListItemIcon>
+          <ReportProblem sx={{ fontSize: '40px', color: 'error.main' }} />
+        </ListItemIcon>
+      )}
       <ListItemText
         primary={message}
+        secondary={subText}
         primaryTypographyProps={{
           fontSize: '14px',
           fontWeight: seen ? '' : 'bold'
+        }}
+        secondaryTypographyProps={{
+          fontSize: '12px',
+          color: 'text.secondary',
+          whiteSpace: 'nowrap', // Giữ văn bản trên một dòng
+          overflow: 'hidden', // Ẩn phần văn bản vượt quá
+          textOverflow: 'ellipsis' // Hiển thị dấu ba chấm khi bị cắt
         }}
       />
       {/* IconButton đánh dấu đã xem */}
@@ -46,7 +77,10 @@ const NotifyItem = ({ message, icon, seen, onMarkAsRead, time }) => {
         sx={{
           visibility: 'hidden' // Ẩn IconButton mặc định
         }}
-        onClick={onMarkAsRead}
+        onClick={(e) => {
+          e.stopPropagation() // Ngăn chặn sự kiện lan truyền
+          onMarkAsRead() // Gọi hàm xử lý khi đánh dấu đã đọc
+        }}
       >
         <MarkEmailRead />
       </IconButton>

@@ -1,14 +1,22 @@
 import { useCallback, useContext, useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { ArrowBack, Clear, LibraryAdd } from '@mui/icons-material'
-import { Box, IconButton, Stack, Typography } from '@mui/material'
+import {
+  ArrowBack,
+  Clear,
+  LibraryAdd,
+  Lock,
+  Public,
+  VpnLock
+} from '@mui/icons-material'
+import { Box, Checkbox, IconButton, Stack, Typography } from '@mui/material'
 
 import PlayVideo from '../components/PlayVideo'
 import Segment from '../components/Segment'
 
 import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'
+import useAuth from '~/hooks/useAuth'
 
 const PreviewExercise = () => {
   const navigate = useNavigate()
@@ -16,6 +24,9 @@ const PreviewExercise = () => {
   const [exercise, setExercise] = useState({})
   const [timePlay, setTimePlay] = useState({})
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
+  const auth = useAuth()
+
+  const [isPublic, setIsPublic] = useState(null)
 
   const segments = exercise?.segments
 
@@ -28,6 +39,18 @@ const PreviewExercise = () => {
         exerciseId: id
       })
       customToast.success('Bài tập được tạo thành công!')
+    } catch (error) {
+      customToast.error(error.data.message)
+    }
+  }
+  const toggleLockClick = async (id) => {
+    try {
+      const isPublic = await exerciseApi.toggleLockExercise({
+        exerciseId: id
+      })
+      setIsPublic(isPublic)
+      if (!isPublic) customToast.success('Video được khóa thành công!')
+      else customToast.success('Video đã được mở lại thành công')
     } catch (error) {
       customToast.error(error.data.message)
     }
@@ -49,7 +72,10 @@ const PreviewExercise = () => {
       try {
         const exercise = await exerciseApi.getExercise(id)
         if (!exercise) navigate('/not-found')
-        else setExercise(exercise)
+        else {
+          setExercise(exercise)
+          setIsPublic(exercise.isPublic)
+        }
       } catch {
         navigate('/not-found')
       }
@@ -130,9 +156,15 @@ const PreviewExercise = () => {
           >
             {/* action */}
             <Stack direction='row' gap={2}>
-              <IconButton onClick={() => handleCreateClick(exercise._id)}>
-                <LibraryAdd sx={{ color: 'primary.main' }} />
-              </IconButton>
+              {auth.role !== 'admin' ? (
+                <IconButton onClick={() => handleCreateClick(exercise.id)}>
+                  <LibraryAdd sx={{ color: 'primary.main' }} />
+                </IconButton>
+              ) : (
+                <IconButton onClick={() => toggleLockClick(exercise.id)}>
+                  <Public sx={{ color: isPublic ? 'primary.main' : '' }} />
+                </IconButton>
+              )}
             </Stack>
             <Typography variant='body2'>
               <Typography color={'primary.main'} variant='span'>

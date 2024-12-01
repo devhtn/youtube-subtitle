@@ -221,7 +221,6 @@ const Account = ({ openSidebar }) => {
               anchorEl={notifyAnchorEl}
               open={isNotifyOpen}
               onClose={handleNotifyClose}
-              newNotifies={newNotifies}
               onNewNotifiesChange={handleNewNotifiesChange}
               userId={user.id}
             />

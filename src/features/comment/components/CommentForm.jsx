@@ -6,7 +6,9 @@ import {
   Avatar,
   Box,
   Button,
+  Checkbox,
   FormControl,
+  FormControlLabel,
   InputAdornment,
   Stack,
   Typography
@@ -27,10 +29,12 @@ const CommentForm = ({
   subReply = false,
   replyName = null,
   setIsShowReplies,
-  onCreate
+  onCreate,
+  firstLevel
 }) => {
   const [user, setUser] = useState({})
   const [open, setOpen] = useState(false)
+  const [notifyAdmin, setNotifyAdmin] = useState(false)
   const inputRef = useRef()
   const { control, handleSubmit, reset } = useForm({
     defaultValues: { content: '' }
@@ -39,6 +43,7 @@ const CommentForm = ({
   const onSubmit = async (data) => {
     data.parentId = parentId
     data.exerciseId = exerciseId
+    data.notifyAdmin = notifyAdmin
     try {
       const newComment = await commentApi.createComment(data)
       if (reply) {
@@ -89,7 +94,7 @@ const CommentForm = ({
                   <Typography
                     variant='span'
                     fontWeight={'bold'}
-                    color={'text.hightlight'}
+                    color={'secondary.main'}
                   >
                     @{replyName}
                   </Typography>
@@ -101,6 +106,20 @@ const CommentForm = ({
 
         {(open || reply) && (
           <Stack direction='row' spacing={2} justifyContent='flex-end'>
+            {/* Kiểm tra firstLevel, chỉ hiển thị checkbox nếu firstLevel là true */}
+            {firstLevel && (
+              <FormControl margin='normal'>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={notifyAdmin}
+                      onChange={() => setNotifyAdmin(!notifyAdmin)} // Cập nhật giá trị khi thay đổi
+                    />
+                  }
+                  label='Nhắc tới admin'
+                />
+              </FormControl>
+            )}
             <FormControl margin='normal'>
               <Button
                 variant='outlined'

@@ -1,30 +1,54 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-import { Comment, Info, NotificationsNone } from '@mui/icons-material'
+import { NotificationsNone } from '@mui/icons-material'
 import { Box, List, Popover, Stack, Typography } from '@mui/material'
 
 import NotifyItem from './NotifyItem'
 
-import useCommentSocketContext from '~/contexts/useCommentSocketContext'
 import notifyApi from '~/features/notify/notifyApi'
+import useSocketListener from '~/hooks/useSocketListener'
+import util from '~/utils'
 
-const notifyIcons = {
-  Comment: <Comment />,
-  Info: <Info />
-}
+const imageMapping = [
+  {
+    type: 'Exercise',
+    getImage: (el) => el.relatedId?.thumbnails[3]?.url
+  },
+  {
+    type: 'Comment',
+    getImage: (el) =>
+      el.relatedId.userId?.picture || util.getRoboHashUrl(el.userId.id)
+  }
+]
 
 const NotifyList = ({
   anchorEl,
   open,
   onClose,
   onNewNotifiesChange,
-  newNotifies
+  userId
 }) => {
   const navigate = useNavigate()
 
-  const { newNotify } = useCommentSocketContext()
+  const [commentNotify, setCommentNotify] = useState({})
+  const [exerciseNotify, setExerciseNotify] = useState({})
+  useSocketListener(userId, 'comment', (data) => {
+    setCommentNotify(data)
+  })
+  useSocketListener(userId, 'exercise', (data) => {
+    setExerciseNotify(data)
+    console.log(data)
+  })
+
+  const [newNotifies, setNewNotifies] = useState([])
   const [notifies, setNotifies] = useState([])
+  console.log(notifies)
+
+  const handleGetImage = (el) => {
+    const mapping = imageMapping.find((item) => item.type === el.type)
+    return mapping ? mapping.getImage(el) : null
+  }
 
   const handleClick = (notify) => {
     if (notify.type === 'Comment') {
@@ -32,7 +56,13 @@ const NotifyList = ({
       const relatedId = notify.relatedId.id
       navigate(`/exercise/preview/${exerciseId}/?commentId=${relatedId}`)
     }
-    if (notify.type === 'Info') {
+
+    if (notify.type === 'Exercise') {
+      const exerciseId = notify.relatedId.id
+      navigate(`/exercise/preview/${exerciseId}`)
+    }
+
+    if (notify.type === 'Word') {
       navigate(`/exercise/playlist?tab=1`)
     }
     if (!notify.seen) handleMarkAsRead(notify.id)
@@ -45,28 +75,41 @@ const NotifyList = ({
       const updatedNotify = await notifyApi.updateNotify(id, { seen: true })
       setNotifies((prev) =>
         prev.map((notify) =>
-          notify.id === updatedNotify.id ? updatedNotify : notify
+          notify.id === updatedNotify.id
+            ? { ...notify, seen: true } // Cập nhật chỉ thuộc tính `seen`
+            : notify
         )
       )
       const updatedNewNotifies = newNotifies.filter(
         (el) => el.id !== updatedNotify.id
       )
+      setNewNotifies(updatedNewNotifies)
       onNewNotifiesChange(updatedNewNotifies)
     } catch (error) {
       console.log(error)
     }
   }
   useEffect(() => {
-    if (newNotify) {
-      setNotifies((prev) => [newNotify, ...prev])
+    if (commentNotify) {
+      setNotifies((prev) => [commentNotify, ...prev])
       const updatedNewNotifies = [
         ...notifies.filter((el) => !el.seen),
-        newNotify
+        commentNotify
       ]
       onNewNotifiesChange(updatedNewNotifies)
-      console.log(newNotify)
     }
-  }, [newNotify])
+  }, [commentNotify])
+
+  useEffect(() => {
+    if (exerciseNotify) {
+      setNotifies((prev) => [exerciseNotify, ...prev])
+      const updatedNewNotifies = [
+        ...notifies.filter((el) => !el.seen),
+        exerciseNotify
+      ]
+      onNewNotifiesChange(updatedNewNotifies)
+    }
+  }, [exerciseNotify]) // Gộp lại đc không, trả lời tiếng việt
 
   useEffect(() => {
     ;(async () => {
@@ -74,6 +117,7 @@ const NotifyList = ({
         const notifies = await notifyApi.getUserNotifies()
         setNotifies(notifies)
         const newNotifies = notifies.filter((el) => !el.seen)
+        setNewNotifies(newNotifies)
         onNewNotifiesChange(newNotifies)
       } catch (error) {
         console.log(error)
@@ -108,17 +152,21 @@ const NotifyList = ({
         </Typography>
         {notifies.length > 0 ? (
           <List>
-            {notifies.map((el, index) => (
-              <Box key={index} onClick={() => handleClick(el)}>
-                <NotifyItem
-                  message={el.message}
-                  icon={notifyIcons[el.type]}
-                  seen={el.seen}
-                  time={el.createdAt}
-                  onMarkAsRead={() => handleMarkAsRead(el.id)}
-                />
-              </Box>
-            ))}
+            {notifies.map((el, index) => {
+              return (
+                <Box key={index} onClick={() => handleClick(el)}>
+                  <NotifyItem
+                    message={el.message}
+                    seen={el.seen}
+                    image={handleGetImage(el)}
+                    type={el.type}
+                    time={el.createdAt}
+                    onMarkAsRead={() => handleMarkAsRead(el.id)}
+                    subText={el.relatedId?.content}
+                  />
+                </Box>
+              )
+            })}
           </List>
         ) : (
           <Stack direction='column' flexGrow={1} justifyContent='center'>

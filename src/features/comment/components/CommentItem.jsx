@@ -24,7 +24,8 @@ const CommentItem = ({
   handleLikeChange,
   onToggleLike,
   userId,
-  targetCommentId = null
+  targetCommentId = null,
+  role
 }) => {
   const [reply, setReply] = useState(false)
   const [isShowReplies, setIsShowReplies] = useState(
@@ -33,6 +34,7 @@ const CommentItem = ({
   const [isLiked, setIsLiked] = useState(comment.likes?.includes(userId))
 
   const commentRef = useRef()
+  console.log(comment)
 
   const isSelfComment = comment.userId.id === userId
 
@@ -70,11 +72,6 @@ const CommentItem = ({
     >
       <Stack direction='row' spacing={2} sx={{ width: '100%' }}>
         <Box sx={{ position: 'relative', display: 'inline-block' }}>
-          {/* <StyledBadge
-            overlap='circular'
-            anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-            variant='dot'
-          > */}
           <Avatar
             sx={{ width: 40, height: 40 }}
             name={comment.userId?.name}
@@ -83,10 +80,9 @@ const CommentItem = ({
               (comment.userId.picture || util.getRoboHashUrl(comment.userId.id))
             }
           />
-          {/* </StyledBadge> */}
         </Box>
         <Box width={'100%'}>
-          <Box display={'flex'} gap={1}>
+          <Box display={'flex'} alignItems={'center'} gap={1}>
             <Typography
               fontSize={'13px'}
               fontWeight={'600'}
@@ -94,6 +90,23 @@ const CommentItem = ({
             >
               {comment.userId?.name}
             </Typography>
+
+            {/* Check if the user is an admin, and display the tag */}
+            {role === 'admin' && (
+              <Typography
+                fontSize={'12px'}
+                color={'white'}
+                fontWeight={'600'}
+                sx={{
+                  backgroundColor: 'primary.main',
+                  padding: '2px 6px',
+                  borderRadius: '12px'
+                }}
+              >
+                Admin
+              </Typography>
+            )}
+
             <Typography fontSize={'12px'}>
               {util.getTimeSince(comment.createdAt)}
             </Typography>
@@ -158,6 +171,7 @@ const CommentItem = ({
                   handleCreate={handleCreate}
                   onToggleLike={handleLikeChange}
                   userId={userId}
+                  role={role}
                   targetCommentId={targetCommentId} // Truyền ID cần tìm xuống các reply
                 />
               ))}

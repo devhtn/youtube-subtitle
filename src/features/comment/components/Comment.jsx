@@ -1,5 +1,5 @@
 import { memo, useEffect, useState } from 'react'
-import { useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { useLocation, useSearchParams } from 'react-router-dom'
 
 import { Box } from '@mui/material'
 
@@ -7,15 +7,22 @@ import CommentForm from './CommentForm'
 import CommentItem from './CommentItem'
 import CardAction from '~/features/exercise/components/CardAction'
 
-import useCommentSocketContext from '~/contexts/useCommentSocketContext'
 import exerciseApi from '~/features/exercise/exerciseApi'
 import useAuth from '~/hooks/useAuth'
+import useSocketListener from '~/hooks/useSocketListener'
 
 const Comment = memo(({ exercise }) => {
-  const { newNotify } = useCommentSocketContext()
   const [searchParams] = useSearchParams()
   const commentId = searchParams.get('commentId')
   const auth = useAuth()
+
+  const [commentNotify, setCommentNotify] = useState(null)
+
+  useSocketListener(auth.id, 'comment', (data) => {
+    setCommentNotify(data)
+  })
+
+  // Lắng nghe sự kiện 'comment'
 
   const location = useLocation()
   const [currentKey, setCurrentKey] = useState(location.key)
@@ -73,10 +80,10 @@ const Comment = memo(({ exercise }) => {
   }
 
   useEffect(() => {
-    if (newNotify) {
-      handleCreate(newNotify.relatedId)
+    if (commentNotify) {
+      handleCreate(commentNotify.relatedId)
     }
-  }, [newNotify])
+  }, [commentNotify])
 
   useEffect(() => {
     ;(async () => {
@@ -92,7 +99,11 @@ const Comment = memo(({ exercise }) => {
   return (
     <>
       <CardAction inCard={false} exercise={exercise} newComment={newComment} />
-      <CommentForm exerciseId={exercise.id} onCreate={handleCreate} />
+      <CommentForm
+        exerciseId={exercise.id}
+        onCreate={handleCreate}
+        firstLevel={true}
+      />
       {/* show comment */}
       <Box mt={4} key={currentKey}>
         {comments.map((comment) => (
@@ -104,6 +115,7 @@ const Comment = memo(({ exercise }) => {
             handleCreate={handleCreate}
             handleLikeChange={handleLikeChange}
             targetCommentId={commentId}
+            role={auth.role}
           />
         ))}
       </Box>

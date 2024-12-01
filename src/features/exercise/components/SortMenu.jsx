@@ -13,24 +13,24 @@ const sorts = [
     label: 'Tốc độ',
     sort: 'avgSpeed',
     orderOptions: [
-      { label: 'Tốc độ thấp - cao', order: 'asc' },
-      { label: 'Tốc độ cao - thấp', order: 'desc' }
+      { label: 'Tăng dần', order: 'asc' },
+      { label: 'Giảm dần', order: 'desc' }
     ]
   },
   {
-    label: 'Độ khó',
+    label: 'Số lượng từ nâng cao',
     sort: 'difficult',
     orderOptions: [
-      { label: 'Độ khó thấp - cao', order: 'asc' },
-      { label: 'Độ khó cao - thấp', order: 'desc' }
+      { label: 'Tăng dần', order: 'asc' },
+      { label: 'Giảm dần', order: 'desc' }
     ]
   },
   {
     label: 'Thời lượng',
     sort: 'duration',
     orderOptions: [
-      { label: 'Thời lượng thấp - cao', order: 'asc' },
-      { label: 'Thời lượng cao - thấp', order: 'desc' }
+      { label: 'Tăng dần', order: 'asc' },
+      { label: 'Giảm dần', order: 'desc' }
     ]
   }
 ]
