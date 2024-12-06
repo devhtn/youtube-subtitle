@@ -14,8 +14,9 @@ import {
 import _ from 'lodash'
 
 import exerciseApi from '../exerciseApi'
+import useAuth from '~/hooks/useAuth'
 
-const FILTER = [
+const FILTERS = [
   {
     property: 'duration',
     label: 'Thời lượng',
@@ -45,13 +46,29 @@ const FILTER = [
     ]
   }
 ]
+const ADMIN_FILTERS = [
+  {
+    property: 'state',
+    label: 'Trạng thái',
+    items: [
+      { label: 'Chia sẻ', value: 'public' },
+      { label: 'Đã ẩn', value: 'hidden' }
+    ]
+  },
+  {
+    property: 'creator',
+    label: 'Người chia sẻ',
+    items: [{ label: 'Admin', value: 'admin' }]
+  }
+]
 
-const Filter = ({ value = {}, onChange = () => {} }) => {
+const Filter = ({ value = {}, onChange = () => {}, searchValue }) => {
   const [anchorEl, setAnchorEl] = useState(null)
-  const [filter, setFilter] = useState([...FILTER])
+  const [filter, setFilter] = useState([])
   const [selectedFilter, setSelectedFilter] = useState({})
   const [activeFilter, setActiveFilter] = useState({})
   const [resultTotalExercises, setResultTotalExercises] = useState(0)
+  const auth = useAuth()
 
   const open = Boolean(anchorEl)
 
@@ -130,11 +147,12 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
 
   useEffect(() => {
     if (!_.isEmpty(selectedFilter)) {
-      console.log(selectedFilter)
       ;(async () => {
         try {
-          const { totalExercises } =
-            await exerciseApi.getExercises(selectedFilter)
+          const { exercises, totalExercises } = await exerciseApi.getExercises({
+            ...selectedFilter,
+            q: searchValue
+          })
           setResultTotalExercises(totalExercises)
         } catch (error) {
           console.log(error)
@@ -144,18 +162,23 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
   }, [selectedFilter])
 
   useEffect(() => {
-    ;(async () => {
-      try {
-        const categories = await exerciseApi.getCategories()
-        setFilter(() => [
-          { property: 'category', label: 'Thể loại', items: categories },
-          ...FILTER
-        ])
-      } catch (error) {
-        console.log(error)
+    if (auth.role) {
+      if (auth.role === 'admin') setFilter([...ADMIN_FILTERS])
+      else {
+        ;(async () => {
+          try {
+            const categories = await exerciseApi.getCategories()
+            setFilter(() => [
+              { property: 'category', label: 'Thể loại', items: categories },
+              ...FILTERS
+            ])
+          } catch (error) {
+            console.log(error)
+          }
+        })()
       }
-    })()
-  }, [])
+    }
+  }, [auth.role])
   return (
     <Box position='relative'>
       {/* Backdrop xuất hiện khi Popover mở và không phủ Chip và Popover */}
@@ -177,17 +200,16 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
 
       <Box display='flex' gap={1} mb={1}>
         {/* Nút Filter để mở Popover */}
-        <Chip
-          icon={<FilterAlt />}
-          label='Filter'
-          variant='outlined'
+        <Button
+          variant='contained'
           onClick={handleOpenPopover}
           sx={{
-            cursor: 'pointer',
-            borderRadius: 1,
-            zIndex: (theme) => (open ? theme.zIndex.drawer : '') // Đảm bảo Chip luôn hiển thị trên Backdrop
+            zIndex: (theme) => (open ? theme.zIndex.drawer : '')
           }}
-        />
+        >
+          <FilterAlt sx={{ color: 'white' }} />
+        </Button>
+
         {/* Đã chọn */}
         {!_.isEmpty(activeFilter) && (
           <Stack direction='row' gap={1}>
@@ -225,6 +247,7 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
                             }
                             variant='outlined'
                             sx={{
+                              height: '100%',
                               borderRadius: 1,
                               borderColor: isSelected ? 'secondary.main' : ''
                             }}
@@ -385,7 +408,7 @@ const Filter = ({ value = {}, onChange = () => {} }) => {
                   kết quả
                 </Button>
               ) : (
-                <Alert severity='warning'>Không có bài tập phù hợp</Alert>
+                <Alert severity='warning'>Không có video nào phù hợp!</Alert>
               )}
             </Stack>
           )}

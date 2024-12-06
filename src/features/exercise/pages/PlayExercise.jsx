@@ -17,6 +17,7 @@ import PlayVideo from '../components/PlayVideo'
 import Progress from '../components/Progress'
 import Segment from '../components/Segment'
 import Volume from '../components/Volume'
+import ScrollTopButton from '~/components/ScrollTopBottom'
 
 import exerciseApi from '../exerciseApi'
 
@@ -142,7 +143,7 @@ const PlayExercise = () => {
                 timePlay={timePlay}
                 onPlayingChange={(value) => setPlaying(value)}
                 onSegmentIndexChange={handleSegmentIndexChange}
-                comment={exercise.isPublic}
+                comment={exercise.state === 'public'}
               />
             )}
           </Box>
@@ -151,7 +152,8 @@ const PlayExercise = () => {
               sx={{
                 position: 'sticky',
                 top: '0',
-                height: 'calc(100vh)'
+                height: 'calc(100vh)',
+                borderLeft: '1px solid #959595'
               }}
             >
               {/* show subtitle */}
@@ -214,8 +216,6 @@ const PlayExercise = () => {
                     justifyContent='space-between'
                     gap={2}
                     sx={{
-                      borderLeft: '1px solid #f5f5f5eb',
-                      borderRight: '1px solid #f5f5f5eb',
                       py: 1,
                       px: 2
                     }}
@@ -271,6 +271,7 @@ const PlayExercise = () => {
             </Box>
           </Box>
         </Box>
+        <ScrollTopButton />
       </Box>
     </>
   )

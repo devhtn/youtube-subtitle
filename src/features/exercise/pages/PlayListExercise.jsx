@@ -14,7 +14,7 @@ const PlayListExercise = () => {
   const [isShowEmpty, setIsShowEmpty] = useState(false)
 
   //  Lấy giá trị tab từ search params, mặc định là tab 0
-  const tabFromUrl = parseInt(searchParams.get('tab')) || 0
+  const tabFromUrl = parseInt(searchParams.get('tab')) || null
 
   const handleEmpty = (isEmpty) => {
     setIsShowEmpty(isEmpty)

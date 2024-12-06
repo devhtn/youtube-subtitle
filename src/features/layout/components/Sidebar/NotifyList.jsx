@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 import { NotificationsNone } from '@mui/icons-material'
 import { Box, List, Popover, Stack, Typography } from '@mui/material'
@@ -18,7 +18,8 @@ const imageMapping = [
   {
     type: 'Comment',
     getImage: (el) =>
-      el.relatedId.userId?.picture || util.getRoboHashUrl(el.userId.id)
+      el.relatedId.userId?.picture ||
+      util.getRoboHashUrl(el.relatedId.userId?.id)
   }
 ]
 
@@ -30,31 +31,31 @@ const NotifyList = ({
   userId
 }) => {
   const navigate = useNavigate()
+  const location = useLocation()
 
-  const [commentNotify, setCommentNotify] = useState({})
-  const [exerciseNotify, setExerciseNotify] = useState({})
+  const [commentNotify, setCommentNotify] = useState(null)
+  const [exerciseNotify, setExerciseNotify] = useState(null)
   useSocketListener(userId, 'comment', (data) => {
     setCommentNotify(data)
   })
   useSocketListener(userId, 'exercise', (data) => {
     setExerciseNotify(data)
-    console.log(data)
   })
 
   const [newNotifies, setNewNotifies] = useState([])
   const [notifies, setNotifies] = useState([])
-  console.log(notifies)
 
   const handleGetImage = (el) => {
     const mapping = imageMapping.find((item) => item.type === el.type)
     return mapping ? mapping.getImage(el) : null
   }
-
   const handleClick = (notify) => {
     if (notify.type === 'Comment') {
       const exerciseId = notify.relatedId.exerciseId
       const relatedId = notify.relatedId.id
-      navigate(`/exercise/preview/${exerciseId}/?commentId=${relatedId}`)
+      if (location.pathname.startsWith(`/exercise/play/${exerciseId}`))
+        navigate(`/exercise/play/${exerciseId}/?commentId=${relatedId}`)
+      else navigate(`/exercise/preview/${exerciseId}/?commentId=${relatedId}`)
     }
 
     if (notify.type === 'Exercise') {
@@ -68,6 +69,10 @@ const NotifyList = ({
     if (!notify.seen) handleMarkAsRead(notify.id)
 
     onClose()
+  }
+
+  const handleDelete = async (id) => {
+    console.log(id)
   }
 
   const handleMarkAsRead = async (id) => {
@@ -109,7 +114,7 @@ const NotifyList = ({
       ]
       onNewNotifiesChange(updatedNewNotifies)
     }
-  }, [exerciseNotify]) // Gộp lại đc không, trả lời tiếng việt
+  }, [exerciseNotify])
 
   useEffect(() => {
     ;(async () => {
@@ -144,15 +149,31 @@ const NotifyList = ({
           minHeight: 500,
           p: 2,
           display: 'flex',
-          flexDirection: 'column'
+          flexDirection: 'column',
+          bgcolor: 'background.default'
         }}
       >
-        <Typography sx={{ fontWeight: 'bold', textAlign: 'center' }}>
+        <Typography
+          sx={{
+            fontWeight: 'bold',
+            textAlign: 'center',
+            borderBottom: '2px solid #000'
+          }}
+        >
           Thông báo
         </Typography>
+        <Stack direction='row' justifyContent='space-between' py={1}>
+          <Typography variant='subtitle2'>
+            Chưa xem: {newNotifies.length}
+          </Typography>
+          <Typography variant='subtitle2'>Tổng: {notifies.length}</Typography>
+        </Stack>
         {notifies.length > 0 ? (
           <List>
             {notifies.map((el, index) => {
+              let subText = ''
+              if (el.type === 'Comment') subText = el.relatedId?.content
+              if (el.type === 'Exercise') subText = el.relatedId?.title
               return (
                 <Box key={index} onClick={() => handleClick(el)}>
                   <NotifyItem
@@ -162,7 +183,8 @@ const NotifyList = ({
                     type={el.type}
                     time={el.createdAt}
                     onMarkAsRead={() => handleMarkAsRead(el.id)}
-                    subText={el.relatedId?.content}
+                    onDelele={() => handleDelete(el.id)}
+                    subText={subText}
                   />
                 </Box>
               )

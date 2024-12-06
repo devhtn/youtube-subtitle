@@ -16,23 +16,22 @@ const Intro = () => {
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        gap: 2,
-        backgroundColor: '#f5f5f5'
+        gap: 2
       }}
     >
       {/* Container để giữ nội dung */}
       {/* Tiêu đề chính */}
       <Typography variant='h3' sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-        Ứng dụng hỗ trợ học tiếng Anh qua video trực tuyến
+        ENGLISH IS EASY
       </Typography>
 
       {/* Mô tả ngắn */}
       <Typography
-        variant='h6'
-        sx={{ marginBottom: 3, color: 'text.secondary' }}
+        variant='h5'
+        sx={{ textAlign: 'center', marginBottom: 3, color: 'text.secondary' }}
       >
-        Ứng dụng giúp bạn học từ vựng tiếng Anh hiệu quả, theo dõi tiến độ học
-        qua các video trực tuyến.
+        Một website được phát triển nhằm cung cấp cho người học tiếng Anh những
+        công cụ hỗ trợ tiếp cận video trên YouTube hiệu quả và tối ưu hơn.
       </Typography>
 
       {/* Giới thiệu về tính năng */}

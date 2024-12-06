@@ -17,7 +17,7 @@ const ScrollTopButton = () => {
         role='presentation'
         sx={{
           position: 'fixed',
-          bottom: 16,
+          bottom: 64,
           right: 16,
           zIndex: 1000
         }}

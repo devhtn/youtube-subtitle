@@ -6,6 +6,9 @@ const commentApi = {
   },
   toggleLikeComment(body) {
     return privateAxios.post(`/comment/toggle-like`, body)
+  },
+  getExerciseComments(exerciseId) {
+    return privateAxios.get(`/comment/${exerciseId}`)
   }
 }
 

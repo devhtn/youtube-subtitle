@@ -8,6 +8,7 @@ import {
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
   LibraryBooks,
+  ListAltOutlined,
   ManageAccounts,
   PostAdd,
   Public,
@@ -127,6 +128,12 @@ const Sidebar = () => {
                 icon={<PostAdd />}
                 openSidebar={open}
                 path='/exercise/admin/create'
+              />
+              <Navigation
+                text='Danh sách video'
+                icon={<ListAltOutlined />}
+                openSidebar={open}
+                path='/exercise/admin/list'
               />
             </List>
           ) : (

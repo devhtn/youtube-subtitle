@@ -2,8 +2,7 @@ import { createTheme } from '@mui/material/styles'
 
 const getTheme = (mode) =>
   createTheme({
-    // Những thuộc tính do MUI định nghĩa, ta custom sẽ ảnh hưởng tới nhiều component sẵn có của MUI
-    // Chỉ nên tự định nghĩa thuộc tính được dùng nhiều nơi hoặc sẽ được thay đổi thường xuyên
+    // Common app settings
     app: {
       headerHeight: '56px',
       sidebarWidth: '300px',
@@ -16,30 +15,25 @@ const getTheme = (mode) =>
     palette: {
       mode,
       primary: {
-        main: '#ff3199'
+        main: mode === 'light' ? '#0077B6' : '#00e1e3', // Ocean blue (main color)
+        contrastText: '#ffffff' // Text color for buttons or components with this color
       },
       secondary: {
-        main: '#11a5ff'
+        main: '#00B4D8' // Lighter blue for secondary actions,
       },
       background: {
-        highlight: '#ededed'
+        default: mode === 'light' ? '#f1f5f8' : '#062a3f', // Light background for light mode, dark for dark mode
+        paper: mode === 'light' ? '#ffffff' : '#1e1e1e', // Paper background color
+        highlight: mode === 'light' ? '#e2f6ff' : '#34526b'
+      },
+      text: {
+        primary: mode === 'light' ? '#333333' : '#f1f1f1', // Primary text color
+        secondary: mode === 'light' ? '#555555' : '#dfdfdf' // Secondary text color
+      },
+      divider: mode === 'light' ? '#e0e0e0' : '#333333', // Divider line color
+      action: {
+        active: '#ed6c02'
       }
-      // text: {
-      //   primary: '#2e2e2e',
-      //   hightlight: '#4786bd'
-      // },
-      // success: {
-      //   main: '#26db13'
-      // },
-      // warning: {
-      //   main: '#ffa211'
-      // },
-      // error: {
-      //   main: '#f21616'
-      // },
-      // action: {
-      //   disabled: '#a3a3a23b'
-      // }
     },
     components: {
       MuiCssBaseline: {
@@ -47,20 +41,20 @@ const getTheme = (mode) =>
           html: {
             '*::-webkit-scrollbar': {
               width: '8px',
-              height: '8px' // Chiều cao scrollbar cho trục ngang (nếu cần)
+              height: '8px' // Horizontal scrollbar height if needed
             },
             '*::-webkit-scrollbar-thumb': {
-              backgroundColor: '#c4c4c4',
+              backgroundColor: '#0077B6', // Ocean blue for the scrollbar thumb
               borderRadius: '10px',
               border: '2px solid transparent',
               backgroundClip: 'content-box',
-              transition: 'background-color 0.3s ease', // Thêm hiệu ứng chuyển màu
+              transition: 'background-color 0.3s ease',
               '&:hover': {
-                backgroundColor: '#a0a0a0' // Màu khi hover
+                backgroundColor: '#005f8b' // Darker ocean blue when hovered
               }
             },
             '*::-webkit-scrollbar-track': {
-              backgroundColor: '#f5f5f5'
+              backgroundColor: mode === 'light' ? '#f5f5f5' : '#2c2c2c' // Track color depending on the mode
             }
           }
         }
@@ -68,7 +62,7 @@ const getTheme = (mode) =>
       MuiSvgIcon: {
         styleOverrides: {
           root: {
-            color: '#959595'
+            color: '#959595' // Icons will have the ocean blue color
           }
         }
       }

@@ -48,7 +48,7 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
           <Typography
             variant='body2'
             component='div'
-            sx={{ color: 'text.secondary', fontSize: '13px' }}
+            sx={{ color: 'secondary.main', fontSize: '13px' }}
           >
             {`${Math.round(value)}%`}
           </Typography>
@@ -63,7 +63,7 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
             variant='determinate'
             value={value}
             sx={{
-              height: 12,
+              height: 16,
               borderRadius: 5,
               backgroundColor: 'grey.300',
               '& .MuiLinearProgress-bar': {
@@ -85,7 +85,7 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
           >
             <Typography
               variant='caption'
-              sx={{ color: 'text.secondary', fontSize: '13px' }}
+              sx={{ color: 'secondary.main', fontSize: '13px' }}
             >
               {`${Math.round(value)}%`}
             </Typography>

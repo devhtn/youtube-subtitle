@@ -36,8 +36,8 @@ const CreateExercise = () => {
     const id = customToast.loading()
     try {
       const exercise = await exerciseApi.checkVideo(data)
-      console.log(exercise)
-      if (exercise) setExercise(exercise)
+      setExercise(exercise)
+      customToast.success('Lấy thông tin video thành công!')
     } catch (error) {
       customToast.error(error.data.message)
     }
@@ -153,13 +153,12 @@ const CreateExercise = () => {
               </Typography>
             </Box>
           </Box>
-          <Box width={1 / 3}>
+          <Box width={1 / 3} sx={{ borderLeft: '1px solid #959595' }}>
             <Box
               sx={{
                 position: 'sticky',
                 top: '0',
-                height: 'calc(100vh - 56px)',
-                backgroundColor: '#f5f5f5eb' // Đặt màu nền sidebar
+                height: 'calc(100vh - 56px)'
               }}
             >
               {/* show subtitle */}
@@ -188,14 +187,14 @@ const CreateExercise = () => {
                   </Box>
                 </Box>
               </Box>
+            </Box>
+            <Box>
               <Stack
                 direction='row'
                 alignItems='center'
                 justifyContent='space-between'
                 gap={2}
                 sx={{
-                  borderLeft: '1px solid #f5f5f5eb',
-                  borderRight: '1px solid #f5f5f5eb',
                   py: 1,
                   px: 2
                 }}
@@ -225,11 +224,11 @@ const CreateExercise = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <Stack direction={'row'} gap={2}>
               <TextField
-                label='Link to online video'
+                label='Đường dẫn đến video trên YouTube'
                 name='link'
                 control={control}
                 rules={{
-                  required: 'Link to online video is required' // Thông báo lỗi khi field này bị bỏ trống
+                  required: 'Đường dẫn đến video trên YouTube là bắt buộc!' // Thông báo lỗi khi field này bị bỏ trống
                 }}
                 autoComplete='off'
               />
@@ -244,7 +243,7 @@ const CreateExercise = () => {
                   color='primary'
                   type='submit'
                 >
-                  Xem video
+                  Xem trước
                 </Button>
               </FormControl>
             </Stack>

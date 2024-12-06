@@ -22,9 +22,6 @@ const exerciseApi = {
   getExercise(videoId) {
     return privateAxios.get(`/exercise/${videoId}`)
   },
-  getExerciseComments(exerciseId) {
-    return privateAxios.get(`/exercise/${exerciseId}/comments`)
-  },
   toggleLike(body) {
     return privateAxios.post(`/exercise/toggle-like`, body)
   },

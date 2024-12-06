@@ -13,7 +13,6 @@ import { useTheme } from '@mui/material/styles'
 import dayjs from 'dayjs/esm'
 import customParseFormat from 'dayjs/plugin/customParseFormat'
 import {
-  CartesianGrid,
   Label,
   Legend,
   Line,
@@ -25,6 +24,7 @@ import {
 } from 'recharts'
 
 import statisticApi from '../statisticApi'
+import statisticUtil from '../statisticUtil'
 import authApi from '~/features/auth/authApi'
 import useAuth from '~/hooks/useAuth'
 
@@ -92,34 +92,6 @@ const UserStatistic = () => {
     setSelectedMonth(event.target.value)
   }
 
-  const getAvailableMonths = () => {
-    const months = []
-    const createdAt = dayjs(user.createdAt) // Giả sử user.createdAt là ngày người dùng đăng ký
-    const currentMonth = dayjs()
-
-    // Lấy năm và tháng từ createdAt và currentMonth
-    let month = createdAt.month()
-    let year = createdAt.year()
-
-    // Tính toán từ tháng đăng ký đến tháng hiện tại
-    while (
-      year < currentMonth.year() ||
-      (year === currentMonth.year() && month <= currentMonth.month())
-    ) {
-      // Định dạng giá trị MM-YYYY
-      months.push(dayjs().year(year).month(month).format('MM-YYYY'))
-
-      // Tiến tới tháng tiếp theo
-      month++
-      if (month === 12) {
-        month = 0 // Reset về tháng 0 (tháng 1)
-        year++ // Tăng năm
-      }
-    }
-
-    return months
-  }
-
   useEffect(() => {
     ;(async () => {
       try {
@@ -148,23 +120,26 @@ const UserStatistic = () => {
             sx={{
               '& .MuiSelect-select': {
                 px: 2,
-                py: 1
+                py: 1,
+                bgcolor: 'background.paper'
               },
               fontSize: '14px'
             }}
           >
-            {getAvailableMonths().map((monthYear) => (
-              <MenuItem
-                key={monthYear}
-                value={monthYear} // Sử dụng giá trị MM-YYYY
-                sx={{
-                  fontSize: '14px', // Tuỳ chỉnh fontSize cho MenuItem
-                  paddingY: '2px' // Tuỳ chỉnh padding vertical cho MenuItem
-                }}
-              >
-                {monthYear} {/* Hiển thị MM-YYYY */}
-              </MenuItem>
-            ))}
+            {statisticUtil
+              .getAvailableMonths(user.createdAt)
+              .map((monthYear) => (
+                <MenuItem
+                  key={monthYear}
+                  value={monthYear} // Sử dụng giá trị MM-YYYY
+                  sx={{
+                    fontSize: '14px', // Tuỳ chỉnh fontSize cho MenuItem
+                    paddingY: '2px' // Tuỳ chỉnh padding vertical cho MenuItem
+                  }}
+                >
+                  {monthYear} {/* Hiển thị MM-YYYY */}
+                </MenuItem>
+              ))}
           </Select>
         </FormControl>
 
@@ -222,19 +197,19 @@ const UserStatistic = () => {
 
             {/* Các đường đại diện cho từng loại thống kê */}
             <Line
-              type='linear'
+              type='monotone'
               dataKey='dictationWordsCount'
               stroke={theme.palette.secondary.main}
               name='Từ vựng đã chép'
             />
             <Line
-              type='linear'
+              type='monotone'
               dataKey='newWordsCount'
               stroke={theme.palette.success.main}
               name='Từ vựng mới'
             />
             <Line
-              type='linear'
+              type='monotone'
               dataKey='forgetWordsCount'
               stroke={theme.palette.error.main}
               name='Từ vựng có thể quên'

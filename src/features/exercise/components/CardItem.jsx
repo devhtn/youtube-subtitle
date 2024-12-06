@@ -1,5 +1,6 @@
 import { useState } from 'react'
 
+import styled from '@emotion/styled'
 import {
   Delete,
   FitnessCenter,
@@ -17,6 +18,7 @@ import {
   Skeleton,
   Stack,
   Tooltip,
+  tooltipClasses,
   Typography
 } from '@mui/material'
 import _ from 'lodash'
@@ -26,6 +28,14 @@ import Progress from './Progress'
 
 import exerciseUtil from '../exerciseUtil'
 import util from '~/utils'
+
+const CustomTooltip = styled(({ className, ...props }) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.tooltip}`]: {
+    fontSize: '14px' // Kích thước chữ
+  }
+}))
 
 const CardItem = ({
   exercise = {},
@@ -174,7 +184,7 @@ const CardItem = ({
         {/* Card Content */}
         <CardContent>
           {/* Name of the Content */}
-          <Tooltip title={exercise.title} arrow>
+          <CustomTooltip title={exercise.title} arrow>
             <Typography
               variant='body1'
               component='div'
@@ -188,7 +198,7 @@ const CardItem = ({
             >
               {exercise.title}
             </Typography>
-          </Tooltip>
+          </CustomTooltip>
 
           {/* Avatar and Shared By */}
           {!isCheckInfo && (
@@ -202,10 +212,8 @@ const CardItem = ({
                 size='40'
               />
               <Box>
-                <Typography variant='body2' color='text.secondary'>
-                  First completed by
-                </Typography>
-                <Typography variant='body2' color='text.secondary'>
+                <Typography variant='body2'>First completed by</Typography>
+                <Typography variant='body2'>
                   {exercise.firstUserId?.name || '? ? ?'}
                 </Typography>
               </Box>

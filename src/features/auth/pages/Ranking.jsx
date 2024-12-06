@@ -44,6 +44,7 @@ const Ranking = () => {
         const { topUsers, targetUser } = await authApi.getRankingUser()
         setTopUsers(topUsers)
         setTargetUser(targetUser)
+        console.log('targetUserRef:', targetUserRef.current)
       } catch (error) {
         console.log(error)
       }
@@ -71,7 +72,7 @@ const Ranking = () => {
         <RankingTable
           users={topUsers}
           targetUser={targetUser}
-          targetUserRef={targetUserRef}
+          ref={targetUserRef}
         />
       </Paper>
     </Box>

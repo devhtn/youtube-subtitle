@@ -149,7 +149,7 @@ const PlayVideo = ({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          borderBottom: '1px solid #ddd'
+          borderBottom: '1px solid #959595'
         }}
       >
         <Typography fontSize={18} color='secondary'>

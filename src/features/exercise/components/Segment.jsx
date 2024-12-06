@@ -60,7 +60,10 @@ const Segment = memo(
           {arrayWords.map((word, index) => {
             const match = findWord(word, segment.dictationWords)
             return (
-              <CustomTooltip title={segment.tags[index] || ''} key={index}>
+              <CustomTooltip
+                title={isDictation ? segment.tags[index] || '' : ''}
+                key={index}
+              >
                 <Typography
                   key={index}
                   fontSize='14px'
@@ -71,14 +74,14 @@ const Segment = memo(
                         : isCheck
                           ? 'error.main'
                           : ''
-                      : 'secondary.main'
+                      : ''
                   }
                   variant='span'
                   fontFamily='Nunito, sans-serif'
                   sx={{
-                    // pr: isSelec && !isCheck && 5,
+                    pr: isDictation && !isCheck && 5,
                     '&:hover': {
-                      color: 'primary.main' // Đổi màu khi hover
+                      color: isDictation ? 'primary.main' : '' // Đổi màu khi hover
                     }
                   }}
                 >

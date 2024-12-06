@@ -22,7 +22,7 @@ const authRoutes = [
           {
             path: 'ranking',
             element: (
-              <RequireAuth>
+              <RequireAuth allowedRoles={['user']}>
                 <Ranking />
               </RequireAuth>
             )

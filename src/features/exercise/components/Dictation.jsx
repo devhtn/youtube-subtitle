@@ -87,8 +87,6 @@ const Dictation = ({
     setResultSegment(resultSegment)
     const isCompleted =
       totalCorrectedWords === segments[segmentIndex].dictationWords.length
-    console.log(totalCorrectedWords)
-    console.log(segments[segmentIndex].dictationWords.length)
 
     try {
       // update completed segment

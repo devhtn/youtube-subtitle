@@ -1,7 +1,7 @@
 import MainLayout from '../layout/layouts/MainLayout'
+import AdminListExercises from './pages/AdminListExercise'
 import CreateExercise from './pages/CreateExercise'
 import ListExercises from './pages/ListExercises'
-import ManageExercise from './pages/ManageExercise'
 import PlayExercise from './pages/PlayExercise'
 import PlayListExercise from './pages/PlayListExercise'
 import PreviewExercise from './pages/PreviewExercise'
@@ -24,10 +24,10 @@ const exerciseRoutes = [
             )
           },
           {
-            path: 'admin/manage',
+            path: 'admin/list',
             element: (
               <RequireAuth allowedRoles={['admin']}>
-                <ManageExercise />
+                <AdminListExercises />
               </RequireAuth>
             )
           },
@@ -42,7 +42,7 @@ const exerciseRoutes = [
           {
             path: 'list',
             element: (
-              <RequireAuth>
+              <RequireAuth allowedRoles={['user']}>
                 <ListExercises />
               </RequireAuth>
             )
@@ -50,7 +50,7 @@ const exerciseRoutes = [
           {
             path: 'create',
             element: (
-              <RequireAuth>
+              <RequireAuth allowedRoles={['user']}>
                 <CreateExercise />
               </RequireAuth>
             )
@@ -58,7 +58,7 @@ const exerciseRoutes = [
           {
             path: 'playlist',
             element: (
-              <RequireAuth>
+              <RequireAuth allowedRoles={['user']}>
                 <PlayListExercise />
               </RequireAuth>
             )
@@ -66,7 +66,7 @@ const exerciseRoutes = [
           {
             path: 'play/:id',
             element: (
-              <RequireAuth>
+              <RequireAuth allowedRoles={['user']}>
                 <PlayExercise />
               </RequireAuth>
             )

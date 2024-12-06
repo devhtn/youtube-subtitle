@@ -23,7 +23,7 @@ const statisticRoutes = [
       {
         path: '/statistic',
         element: (
-          <RequireAuth>
+          <RequireAuth allowedRoles={['user']}>
             <UserStatistic />
           </RequireAuth>
         )

@@ -1,8 +1,5 @@
-import 'react-toastify/dist/ReactToastify.css'
-
 import ReactDOM from 'react-dom/client'
 import { Provider } from 'react-redux'
-import { ToastContainer } from 'react-toastify'
 
 import { GoogleOAuthProvider } from '@react-oauth/google'
 import { PersistGate } from 'redux-persist/integration/react'
@@ -16,7 +13,6 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <GoogleOAuthProvider clientId={env.GOOGLE_CLIENT_ID}>
-        <ToastContainer />
         <App />
       </GoogleOAuthProvider>
     </PersistGate>

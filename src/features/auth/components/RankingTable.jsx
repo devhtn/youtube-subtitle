@@ -1,3 +1,5 @@
+import { forwardRef } from 'react'
+
 import {
   Avatar,
   Box,
@@ -14,10 +16,11 @@ import _ from 'lodash'
 
 import util from '~/utils'
 
-const RankingTable = ({ users, targetUser, targetUserRef }) => {
+const RankingTable = forwardRef(({ users, targetUser }, ref) => {
   // Kiểm tra nếu targetUser không nằm trong danh sách users
   const isTargetUserInList =
     users.some((user) => user.id === targetUser.id) || null
+
   return (
     <TableContainer component={Paper}>
       <Table>
@@ -35,7 +38,10 @@ const RankingTable = ({ users, targetUser, targetUserRef }) => {
         <TableBody>
           {users &&
             users.map((user, index) => (
-              <TableRow key={index}>
+              <TableRow
+                key={index}
+                ref={user.id === targetUser.id ? ref : null}
+              >
                 <TableCell align='center'>{user.ranking}</TableCell>
                 <TableCell>
                   <Box display='flex' alignItems='center' gap={1}>
@@ -68,7 +74,7 @@ const RankingTable = ({ users, targetUser, targetUserRef }) => {
                 </TableCell>
               </TableRow>
               <TableRow
-                ref={targetUserRef} // Gắn ref vào targetUser
+                ref={ref} // Gắn ref vào targetUser
               >
                 <TableCell align='center'>{targetUser.ranking}</TableCell>
                 <TableCell>
@@ -98,6 +104,6 @@ const RankingTable = ({ users, targetUser, targetUserRef }) => {
       </Table>
     </TableContainer>
   )
-}
+})
 
 export default RankingTable

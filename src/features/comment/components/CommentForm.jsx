@@ -30,7 +30,8 @@ const CommentForm = ({
   replyName = null,
   setIsShowReplies,
   onCreate,
-  firstLevel
+  firstLevel,
+  role
 }) => {
   const [user, setUser] = useState({})
   const [open, setOpen] = useState(false)
@@ -94,6 +95,7 @@ const CommentForm = ({
                   <Typography
                     variant='span'
                     fontWeight={'bold'}
+                    s
                     color={'secondary.main'}
                   >
                     @{replyName}
@@ -107,7 +109,7 @@ const CommentForm = ({
         {(open || reply) && (
           <Stack direction='row' spacing={2} justifyContent='flex-end'>
             {/* Kiểm tra firstLevel, chỉ hiển thị checkbox nếu firstLevel là true */}
-            {firstLevel && (
+            {firstLevel && role !== 'admin' && (
               <FormControl margin='normal'>
                 <FormControlLabel
                   control={

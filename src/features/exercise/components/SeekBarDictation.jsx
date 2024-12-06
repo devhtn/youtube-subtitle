@@ -52,7 +52,7 @@ const SeekBarDictation = ({
           '& .MuiSlider-mark': {
             height: 6, // Tăng chiều cao của mark
             width: 4, // Tăng độ rộng của mark,
-            backgroundColor: 'secondary.main'
+            backgroundColor: 'warning.main'
           }
         }}
       />

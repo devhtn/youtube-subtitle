@@ -1,4 +1,4 @@
-import { MarkEmailRead, ReportProblem } from '@mui/icons-material'
+import { Delete, MarkEmailRead, ReportProblem } from '@mui/icons-material'
 import {
   Box,
   IconButton,
@@ -14,6 +14,7 @@ const NotifyItem = ({
   message,
   seen,
   onMarkAsRead,
+  onDelele,
   time,
   image,
   type,
@@ -25,13 +26,11 @@ const NotifyItem = ({
       sx={{
         position: 'relative',
         borderBottom: (theme) => theme.app.border,
+        bgcolor: seen ? '' : 'background.paper',
         p: 2,
         '&:hover': {
           cursor: 'pointer',
-          backgroundColor: 'rgba(0, 0, 0, 0.05)', // Đổi màu nền khi hover
-          '& .icon-button': {
-            visibility: !seen && 'visible' // Hiển thị IconButton khi hover
-          }
+          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)'
         }
       }}
     >
@@ -43,7 +42,7 @@ const NotifyItem = ({
           sx={{
             width: 40,
             height: 40,
-            borderRadius: type === 'Exercise' ? '' : '50%',
+            borderRadius: type === 'Exercise' ? '10%' : '50%',
             objectFit: 'cover',
             border: (theme) =>
               `2px solid ${seen ? theme.palette.grey[300] : theme.palette.primary.main}`,
@@ -73,16 +72,14 @@ const NotifyItem = ({
       {/* IconButton đánh dấu đã xem */}
       <IconButton
         size='small'
-        className='icon-button'
-        sx={{
-          visibility: 'hidden' // Ẩn IconButton mặc định
-        }}
+        sx={{}}
         onClick={(e) => {
           e.stopPropagation() // Ngăn chặn sự kiện lan truyền
-          onMarkAsRead() // Gọi hàm xử lý khi đánh dấu đã đọc
+          // Gọi hàm xử lý khi đánh dấu đã đọc
+          seen ? onDelele() : onMarkAsRead()
         }}
       >
-        <MarkEmailRead />
+        {seen ? <Delete /> : <MarkEmailRead sx={{ color: 'text.secondary' }} />}
       </IconButton>
       <Box
         sx={{

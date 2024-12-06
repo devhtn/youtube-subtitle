@@ -6,7 +6,6 @@ const defaultToastConfig = {
   hideProgressBar: true,
   closeButton: true,
   closeOnClick: true,
-  theme: 'light',
   style: {
     fontSize: '14px',
     width: '400px',

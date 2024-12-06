@@ -7,7 +7,7 @@ import CommentForm from './CommentForm'
 import CommentItem from './CommentItem'
 import CardAction from '~/features/exercise/components/CardAction'
 
-import exerciseApi from '~/features/exercise/exerciseApi'
+import commentApi from '../commentApi'
 import useAuth from '~/hooks/useAuth'
 import useSocketListener from '~/hooks/useSocketListener'
 
@@ -88,7 +88,7 @@ const Comment = memo(({ exercise }) => {
   useEffect(() => {
     ;(async () => {
       try {
-        const comments = await exerciseApi.getExerciseComments(exercise.id)
+        const comments = await commentApi.getExerciseComments(exercise.id)
         setComments(comments)
       } catch (error) {
         console.log(error)
@@ -98,11 +98,12 @@ const Comment = memo(({ exercise }) => {
 
   return (
     <>
-      <CardAction inCard={false} exercise={exercise} newComment={newComment} />
+      <CardAction isCollapse exercise={exercise} newComment={newComment} />
       <CommentForm
         exerciseId={exercise.id}
         onCreate={handleCreate}
         firstLevel={true}
+        role={auth.role}
       />
       {/* show comment */}
       <Box mt={4} key={currentKey}>
@@ -115,7 +116,6 @@ const Comment = memo(({ exercise }) => {
             handleCreate={handleCreate}
             handleLikeChange={handleLikeChange}
             targetCommentId={commentId}
-            role={auth.role}
           />
         ))}
       </Box>

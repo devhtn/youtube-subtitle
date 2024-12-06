@@ -23,6 +23,12 @@ const authApi = {
         'Content-Type': 'application/x-www-form-urlencoded'
       }
     })
+  },
+  lockUser(body) {
+    return privateAxios.patch('/auth/lock', body)
+  },
+  unlockUser(body) {
+    return privateAxios.patch('/auth/unlock', body)
   }
 }
 

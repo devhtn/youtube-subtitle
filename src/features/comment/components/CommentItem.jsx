@@ -14,6 +14,7 @@ import _ from 'lodash'
 
 import CommentForm from './CommentForm'
 
+import customToast from '~/config/toast'
 import commentApi from '~/features/comment/commentApi'
 import util from '~/utils'
 
@@ -24,8 +25,7 @@ const CommentItem = ({
   handleLikeChange,
   onToggleLike,
   userId,
-  targetCommentId = null,
-  role
+  targetCommentId = null
 }) => {
   const [reply, setReply] = useState(false)
   const [isShowReplies, setIsShowReplies] = useState(
@@ -34,7 +34,6 @@ const CommentItem = ({
   const [isLiked, setIsLiked] = useState(comment.likes?.includes(userId))
 
   const commentRef = useRef()
-  console.log(comment)
 
   const isSelfComment = comment.userId.id === userId
 
@@ -45,7 +44,12 @@ const CommentItem = ({
       })
       setIsLiked(updateComment.likes.includes(userId))
       onToggleLike(updateComment)
-    } catch (error) {}
+      if (updateComment.likes.includes(userId))
+        customToast.success('Thích comment thành công!')
+      else customToast.success('Bỏ thích comment video thành công!')
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const scrollToComment = () => {
@@ -92,7 +96,7 @@ const CommentItem = ({
             </Typography>
 
             {/* Check if the user is an admin, and display the tag */}
-            {role === 'admin' && (
+            {comment.userId?.role === 'admin' && (
               <Typography
                 fontSize={'12px'}
                 color={'white'}
@@ -122,9 +126,16 @@ const CommentItem = ({
           <Box display='flex' gap={2}>
             <Box display='flex' alignItems='center' gap={1}>
               {/* Like comment */}
-              <IconButton onClick={handleToggleLike} size='small'>
+              <IconButton
+                disabled={isSelfComment}
+                onClick={handleToggleLike}
+                size='small'
+              >
                 <ThumbUpAltOutlined
-                  sx={{ color: isLiked ? 'primary.main' : '' }}
+                  sx={{
+                    color: isLiked ? 'primary.main' : '',
+                    opacity: isSelfComment ? 0.5 : 1
+                  }}
                 />
               </IconButton>
               <Typography variant='body2'>{comment.likes?.length}</Typography>
@@ -171,7 +182,6 @@ const CommentItem = ({
                   handleCreate={handleCreate}
                   onToggleLike={handleLikeChange}
                   userId={userId}
-                  role={role}
                   targetCommentId={targetCommentId} // Truyền ID cần tìm xuống các reply
                 />
               ))}

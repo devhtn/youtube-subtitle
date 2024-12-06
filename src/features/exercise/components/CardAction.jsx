@@ -15,9 +15,9 @@ import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'
 import useAuth from '~/hooks/useAuth'
 
-const CardAction = ({ inCard = true, exercise, newComment }) => {
+const CardAction = ({ isCollapse = false, exercise, newComment }) => {
   const auth = useAuth()
-  const [showMoreInfo, setShowMoreInfo] = useState(inCard)
+  const [showMoreInfo, setShowMoreInfo] = useState(!isCollapse)
   const [isCommented, setIsCommented] = useState(
     exercise.commentedUsers?.includes(auth.id)
   )
@@ -35,6 +35,9 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
         exerciseId: exercise.id
       })
       setLikedUsers(likedUsers)
+      if (likedUsers.includes(auth.id))
+        customToast.success('Thích video thành công!')
+      else customToast.success('Bỏ thích video thành công!')
     } catch (error) {
       customToast.error(error.data.message)
     }
@@ -45,6 +48,9 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
         exerciseId: exercise.id
       })
       setDislikedUsers(dislikedUsers)
+      if (dislikedUsers.includes(auth.id))
+        customToast.success('Không thích video thành công!')
+      else customToast.success('Bỏ không thích video thành công!')
     } catch (error) {
       customToast.error(error.data.message)
     }
@@ -63,19 +69,19 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
         alignItems='center'
         justifyContent={'space-between'}
       >
-        <Stack direction='row' gap={2}>
+        <Stack direction='row' gap={1}>
           <Stack
             direction='row'
-            gap={3}
-            border={(theme) => theme.app.border}
+            gap={2}
             padding='2px 10px'
             borderRadius='10px'
+            bgcolor={'background.paper'}
           >
             <Stack direction='row' gap='2px'>
               <ThumbUpOutlined
                 sx={{
                   fontSize: '20px',
-                  color: isLiked ? 'warning.main' : '',
+                  color: isLiked ? 'primary.main' : '',
                   cursor: 'pointer'
                 }}
                 onClick={handleToggleLike}
@@ -97,7 +103,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
               <Comment
                 sx={{
                   fontSize: '20px',
-                  color: isCommented ? 'warning.main' : ''
+                  color: isCommented ? 'primary.main' : ''
                 }}
               />
               <Typography variant='body2'>{commentedCount || 0}</Typography>
@@ -106,7 +112,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
               <HowToReg
                 sx={{
                   fontSize: '20px',
-                  color: isCompleted ? 'warning.main' : ''
+                  color: isCompleted ? 'primary.main' : ''
                 }}
               />
               <Typography variant='body2'>
@@ -115,7 +121,7 @@ const CardAction = ({ inCard = true, exercise, newComment }) => {
             </Stack>
           </Stack>
           {/*  */}
-          {!inCard && (
+          {isCollapse && (
             <Button
               sx={{ p: 0 }}
               endIcon={

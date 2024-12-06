@@ -25,8 +25,8 @@ const ConfirmDialog = ({
     onClose() // Call the onClose function if provided
   }
   const handleConfirm = () => {
-    setOpenDialog(false)
     onConfirm() // Call the onClose function if provided
+    handleClose()
   }
 
   useEffect(() => {
@@ -44,9 +44,16 @@ const ConfirmDialog = ({
         </Stack>
       </DialogTitle>
       <DialogContent sx={{ maxWidth: '600px', minWidth: '400px' }}>
-        <Typography textAlign='center'>{content}</Typography>
+        <Typography
+          textAlign='center'
+          sx={{
+            whiteSpace: 'pre-line' // Hỗ trợ ngắt dòng qua ký tự \n
+          }}
+        >
+          {content}
+        </Typography>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ py: 2 }}>
         <Button onClick={handleClose} variant='outlined'>
           Đóng
         </Button>

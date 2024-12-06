@@ -3,34 +3,82 @@ import { useEffect, useState } from 'react'
 import { Box, Chip, Popover } from '@mui/material'
 import _ from 'lodash'
 
-const sorts = [
+import useAuth from '~/hooks/useAuth'
+
+const SORTS = [
   {
     label: 'Phổ biến',
     sort: 'completedUsersCount',
-    orderOptions: [{ label: 'Phổ biến', order: 'desc' }]
+    orderOptions: [
+      { label: 'Phổ biến - Tăng dần', order: 'asc' },
+      { label: 'Phổ biến - Giảm dần', order: 'desc' }
+    ]
   },
   {
     label: 'Tốc độ',
     sort: 'avgSpeed',
     orderOptions: [
-      { label: 'Tăng dần', order: 'asc' },
-      { label: 'Giảm dần', order: 'desc' }
+      { label: 'Tốc độ - Tăng dần', order: 'asc' },
+      { label: 'Tốc độ - Giảm dần', order: 'desc' }
     ]
   },
   {
     label: 'Số lượng từ nâng cao',
     sort: 'difficult',
     orderOptions: [
-      { label: 'Tăng dần', order: 'asc' },
-      { label: 'Giảm dần', order: 'desc' }
+      { label: 'Số lượng từ - Tăng dần', order: 'asc' },
+      { label: 'Số lượng từ - Giảm dần', order: 'desc' }
     ]
   },
   {
     label: 'Thời lượng',
     sort: 'duration',
     orderOptions: [
-      { label: 'Tăng dần', order: 'asc' },
-      { label: 'Giảm dần', order: 'desc' }
+      { label: 'Thời lượng - Tăng dần', order: 'asc' },
+      { label: 'Thời lượng - Giảm dần', order: 'desc' }
+    ]
+  }
+]
+
+const ADMIN_SORTS = [
+  {
+    label: 'Phổ biến',
+    sort: 'completedUsersCount',
+    orderOptions: [
+      { label: 'Phổ biến', order: 'desc' },
+      { label: 'Kém phổ biến', order: 'asc' }
+    ]
+  },
+  {
+    label: 'Thời gian',
+    sort: 'createdAt',
+    orderOptions: [
+      { label: 'Thời gian - Cũ', order: 'asc' },
+      { label: 'Thời gian - Mới', order: 'desc' }
+    ]
+  },
+  {
+    label: 'Số lượt thích',
+    sort: 'likedUsersCount',
+    orderOptions: [
+      { label: 'Số lượt thích - Tăng dần', order: 'asc' },
+      { label: 'Số lượt thích - Giảm dần', order: 'desc' }
+    ]
+  },
+  {
+    label: 'Số lượt không thích',
+    sort: 'dislikedUsersCount',
+    orderOptions: [
+      { label: 'Số lượt không thích - Tăng dần', order: 'asc' },
+      { label: 'Số lượt không thích - Giảm dần', order: 'desc' }
+    ]
+  },
+  {
+    label: 'Số lượt bình luận',
+    sort: 'commentedCount',
+    orderOptions: [
+      { label: 'Số lượt bình luận - Tăng dần', order: 'asc' },
+      { label: 'Số lượt bình luận - Giảm dần', order: 'desc' }
     ]
   }
 ]
@@ -39,10 +87,11 @@ const SortMenu = ({ value = {}, onChange = () => {} }) => {
   const [anchorEl, setAnchorEl] = useState(null)
   const [selectedSort, setSelectedSort] = useState(null)
   const [selectedOrder, setSelectedOrder] = useState(null)
-  const [resultSort, setResultSort] = useState({
-    sort: 'completedUsersCount',
-    order: 'desc'
-  })
+  const [resultSort, setResultSort] = useState({})
+  const auth = useAuth()
+
+  // Chọn danh sách sắp xếp theo vai trò người dùng
+  const displaySorts = auth.role === 'admin' ? ADMIN_SORTS : SORTS
 
   const open = Boolean(anchorEl)
 
@@ -101,7 +150,7 @@ const SortMenu = ({ value = {}, onChange = () => {} }) => {
       />
 
       <Box display='flex' alignItems='center' gap={1}>
-        {sorts.map((el) => (
+        {displaySorts.map((el) => (
           <Chip
             key={el.sort}
             label={
