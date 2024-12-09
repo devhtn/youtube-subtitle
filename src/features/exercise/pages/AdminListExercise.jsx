@@ -37,15 +37,10 @@ const AdminListExercises = () => {
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [exercises, setExercises] = useState(null)
-  console.log(exercises)
-  const [query, setQuery] = useState(
-    location.search
-      ? null
-      : {
-          sort: 'completedUsersCount',
-          order: 'desc'
-        }
-  )
+  const [query, setQuery] = useState({
+    sort: 'completedUsersCount',
+    order: 'desc'
+  })
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [activeFilter, setActiveFilter] = useState({})

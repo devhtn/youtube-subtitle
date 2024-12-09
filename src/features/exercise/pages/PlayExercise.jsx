@@ -16,8 +16,10 @@ import PlayRate from '../components/PlayRate'
 import PlayVideo from '../components/PlayVideo'
 import Progress from '../components/Progress'
 import Segment from '../components/Segment'
+import SegmentNote from '../components/SegmentNote'
 import Volume from '../components/Volume'
 import ScrollTopButton from '~/components/ScrollTopBottom'
+import Comment from '~/features/comment/components/Comment'
 
 import exerciseApi from '../exerciseApi'
 
@@ -32,11 +34,10 @@ const PlayExercise = () => {
   const [currentTime, setCurrentTime] = useState(0)
   const [selectedSegmentIndex, setSelectedSegmentIndex] = useState(null)
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
-  const [isCheck, setIsCheck] = useState(true)
+  const [isCheck, setIsCheck] = useState(false)
   const [end, setEnd] = useState(null)
   const [timePlay, setTimePlay] = useState({})
   const [isPreview, setIsPreview] = useState(false)
-
   const segments = exercise.segments
 
   const handleSegmentIndexChange = (index) => {
@@ -45,19 +46,20 @@ const PlayExercise = () => {
 
   const handleSegmentClick = useCallback((segment) => {
     const selection = window.getSelection().toString()
-    // Nếu có nội dung được chọn (select), không thực hiện click
+
     if (selection.length > 0) {
       return
     }
 
-    setTimePlay({ start: segment.start })
+    const start = _.get(segment, 'start', 0) // Giá trị mặc định là 0 nếu start không tồn tại
+    setTimePlay({ start })
   }, [])
 
   const handleSelectedSegmentIndex = (index) => {
     setSelectedSegmentIndex(index)
   }
 
-  const handlePreview = () => {
+  const handleClosePreview = () => {
     setIsPreview(!isPreview)
   }
 
@@ -96,12 +98,7 @@ const PlayExercise = () => {
       setPlaying(false)
       setEnd(null)
     }
-    if (isPreview) {
-      setSelectedSegmentIndex(null)
-      if (selectedSegmentIndex) setCurrentSegmentIndex(selectedSegmentIndex)
-      setIsCheck(true)
-    }
-  }, [isCheck, isPreview])
+  }, [isCheck])
 
   useEffect(() => {
     ;(async () => {
@@ -116,12 +113,20 @@ const PlayExercise = () => {
   }, [])
 
   useEffect(() => {
-    if (currentSegmentIndex && isPreview) {
-      const element = document.getElementById(
-        `segment-${segments[currentSegmentIndex].start}`
-      )
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (isPreview) {
+      setCurrentSegmentIndex(selectedSegmentIndex)
+    }
+  }, [isPreview, selectedSegmentIndex])
+
+  useEffect(() => {
+    if (currentSegmentIndex !== null && isPreview) {
+      const start = _.get(segments, [currentSegmentIndex, 'start'])
+      if (start != null) {
+        // Thêm setTimeout để đảm bảo DOM đã sẵn sàng
+        const element = document.getElementById(`segment-${start}`)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
       }
     }
   }, [currentSegmentIndex, isPreview])
@@ -143,8 +148,25 @@ const PlayExercise = () => {
                 timePlay={timePlay}
                 onPlayingChange={(value) => setPlaying(value)}
                 onSegmentIndexChange={handleSegmentIndexChange}
-                comment={exercise.state === 'public'}
               />
+            )}
+            {/* Notes */}
+            <Box mt={2}>
+              {isCheck &&
+                isPreview &&
+                dictation.segments[currentSegmentIndex].note && (
+                  <SegmentNote
+                    note={dictation.segments[currentSegmentIndex].note}
+                  />
+                )}
+            </Box>
+            {/* End Notes */}
+
+            {/* comment */}
+            {exercise.state === 'public' && (
+              <Box p={2}>
+                {!_.isEmpty(exercise) && <Comment exercise={exercise} />}
+              </Box>
             )}
           </Box>
           <Box width={1 / 3}>
@@ -252,7 +274,7 @@ const PlayExercise = () => {
                       <PlayRate setPlayRate={memoizedSetPlayRate} />
                       {/* Preview */}
                       {isCheck && (
-                        <IconButton onClick={handlePreview}>
+                        <IconButton onClick={handleClosePreview}>
                           {!isPreview ? (
                             <Preview />
                           ) : (

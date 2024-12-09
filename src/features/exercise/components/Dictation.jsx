@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react'
+import { memo, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
@@ -14,6 +14,7 @@ import {
 import { Box, Button, FormControl, Stack, Typography } from '@mui/material'
 import _ from 'lodash'
 
+import NextForm from './NextForm'
 import SeekBarDictation from './SeekBarDictation'
 import Segment from './Segment'
 import SegmentNote from './SegmentNote'
@@ -46,8 +47,18 @@ const Dictation = ({
   const [playTime, setPlayTime] = useState({})
   const [openSegmentNoteForm, setOpenSegmentNoteForm] = useState(false)
   const [segmentNote, setSegmentNote] = useState(null)
+  const [openNextForm, setOpenNextForm] = useState(false)
   const segments = exercise.segments
   const { control, handleSubmit, reset } = useForm({})
+
+  const inputRef = useRef()
+
+  const handleNext = () => {
+    getRandomSegment()
+    reset({ inputWords: '' })
+    setOpenNextForm(false)
+  }
+
   const handleCheck = (newCheckValue) => {
     setIsCheck(newCheckValue)
     onCheckChange(newCheckValue) // Gọi callback khi trạng thái thay đổi
@@ -62,16 +73,16 @@ const Dictation = ({
     handleCheck(true)
 
     const inputWords = data.inputWords
+      .replace(/[^a-zA-Z0-9 ]/g, '') // Bước 1: Loại bỏ ký tự đặc biệt
+      .replace(/\s+/g, ' ') // Bước 2: Thay thế nhiều dấu cách bằng một dấu cách
+      .trim()
+      .toLowerCase()
       .split(' ')
-      .map((word) => {
-        const sanitizedWord = word.replace(/[^a-zA-Z0-9'’]/g, '').toLowerCase()
-        return isNaN(sanitizedWord) ? sanitizedWord : sanitizedWord.toString()
-      })
       .filter((word) => word.length > 0)
     let totalCorrectedWords = 0
     const resultDictationWords = segments[segmentIndex].dictationWords.map(
       (dictationWord) => {
-        const found = inputWords.includes(dictationWord.toLowerCase())
+        const found = inputWords.includes(dictationWord)
         if (found) {
           totalCorrectedWords++
         }
@@ -119,8 +130,9 @@ const Dictation = ({
       console.log(error)
     }
 
-    if (isCompleted) customToast.success(`Chúc mừng! Bạn đã trả lời chính xác!`)
-    else customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
+    if (isCompleted)
+      customToast.update(id, `Chúc mừng! Bạn đã trả lời chính xác!`, 'success')
+    else customToast.update(id, 'Cố gắng hơn ở lần sau bạn nhé!', 'error')
 
     customToast.stop(id)
   }
@@ -159,6 +171,11 @@ const Dictation = ({
 
   // get random segment
   const getRandomSegment = () => {
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.focus()
+      }
+    }, 0)
     // Lấy ngẫu nhiên một phần tử từ mảng validSegments
     const randomValidSegmentIndex =
       validSegmentIndexs[Math.floor(Math.random() * validSegmentIndexs.length)]
@@ -199,9 +216,8 @@ const Dictation = ({
     ])
   }
 
-  const handleSegmentNext = () => {
-    getRandomSegment()
-    reset()
+  const handleAfterNext = () => {
+    setOpenNextForm(true)
   }
 
   const handleFormSubmit = (e) => {
@@ -301,10 +317,7 @@ const Dictation = ({
 
                 {/* Nút click để đi tới segment kế tiếp */}
                 <Box>
-                  <Button
-                    onClick={() => handleSegmentNext()}
-                    disabled={!isCheck}
-                  >
+                  <Button onClick={handleAfterNext} disabled={!isCheck}>
                     <SkipNext
                       sx={{
                         color: isCheck ? 'warning.main' : 'action.disabled'
@@ -334,6 +347,7 @@ const Dictation = ({
             </Box>
             <Stack>
               <TextField
+                inputRef={inputRef}
                 onKeyDown={handleKeyPress}
                 name='inputWords'
                 control={control}
@@ -397,6 +411,14 @@ const Dictation = ({
             dictation={dictation}
             onChangeNote={handleChangeNote}
             resultSegment={resultSegment}
+          />
+          <NextForm
+            setSegmentNote={setSegmentNote}
+            selectedSegment={segments[segmentIndex]}
+            open={openNextForm}
+            setOpen={setOpenNextForm}
+            resultSegment={resultSegment}
+            onNext={handleNext}
           />
         </Box>
       ) : (

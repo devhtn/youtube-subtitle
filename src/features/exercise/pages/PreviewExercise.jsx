@@ -8,6 +8,7 @@ import {
   VisibilityOff
 } from '@mui/icons-material'
 import { Box, IconButton, Stack, Typography } from '@mui/material'
+import _ from 'lodash'
 
 import PlayVideo from '../components/PlayVideo'
 import Segment from '../components/Segment'
@@ -85,15 +86,16 @@ const PreviewExercise = () => {
 
   // effect currentSegment change
   useEffect(() => {
-    if (currentSegmentIndex) {
-      const element = document.getElementById(
-        `segment-${segments[currentSegmentIndex].start}`
-      )
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    if (currentSegmentIndex != null) {
+      const start = _.get(segments, `[${currentSegmentIndex}].start`) // Truy cập an toàn vào start
+      if (start != null) {
+        const element = document.getElementById(`segment-${start}`)
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        }
       }
     }
-  }, [currentSegmentIndex])
+  }, [currentSegmentIndex, segments])
 
   return (
     <Box>
@@ -144,6 +146,7 @@ const PreviewExercise = () => {
                     </Box>
                   ))}
                 </Box>
+                <Box height='50vh'></Box>
               </Box>
             </Box>
 
@@ -166,7 +169,7 @@ const PreviewExercise = () => {
                   </IconButton>
                 ) : (
                   <IconButton onClick={() => toggleLockClick(exercise.id)}>
-                    {isPublic ? (
+                    {isPublic === null ? null : isPublic ? (
                       <Public fontSize='small' sx={{ color: 'primary.main' }} />
                     ) : (
                       <VisibilityOff

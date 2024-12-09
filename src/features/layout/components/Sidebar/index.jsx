@@ -3,16 +3,13 @@ import { useState } from 'react'
 import {
   Assessment,
   AutoGraph,
-  Dashboard,
   EmojiEvents,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
-  LibraryBooks,
-  ListAltOutlined,
-  ManageAccounts,
   PostAdd,
   Public,
-  SportsEsports
+  SportsEsports,
+  ViewList
 } from '@mui/icons-material'
 import { Box, Button, List } from '@mui/material'
 import MuiDrawer from '@mui/material/Drawer'
@@ -118,12 +115,6 @@ const Sidebar = () => {
           {auth && auth.role === 'admin' ? (
             <List>
               <Navigation
-                text='Thống kê tốc độ phát triển'
-                icon={<Assessment />}
-                openSidebar={open}
-                path='/statistic/admin'
-              />
-              <Navigation
                 text='Tạo bài tập mẫu'
                 icon={<PostAdd />}
                 openSidebar={open}
@@ -131,25 +122,19 @@ const Sidebar = () => {
               />
               <Navigation
                 text='Danh sách video'
-                icon={<ListAltOutlined />}
+                icon={<ViewList />}
                 openSidebar={open}
-                path='/exercise/admin/list'
+                path='/exercise/admin/list?order=desc&page=1&sort=completedUsersCount'
+              />
+              <Navigation
+                text='Thống kê tốc độ phát triển'
+                icon={<Assessment />}
+                openSidebar={open}
+                path='/statistic/admin'
               />
             </List>
           ) : (
             <List>
-              <Navigation
-                text='Thống kê quá trình học'
-                icon={<AutoGraph />}
-                openSidebar={open}
-                path='/statistic'
-              />
-              <Navigation
-                text='Bài tập được chia sẻ'
-                icon={<Public />}
-                openSidebar={open}
-                path='/exercise/list'
-              />
               <Navigation
                 text='Tạo mới bài tập'
                 icon={<PostAdd />}
@@ -163,10 +148,22 @@ const Sidebar = () => {
                 path='/exercise/playlist'
               />
               <Navigation
+                text='Bài tập được chia sẻ'
+                icon={<Public />}
+                openSidebar={open}
+                path='/exercise/list?order=desc&page=1&sort=completedUsersCount'
+              />
+              <Navigation
                 text='Bảng xếp hạng'
                 icon={<EmojiEvents />}
                 openSidebar={open}
                 path='/user/ranking'
+              />
+              <Navigation
+                text='Thống kê quá trình học'
+                icon={<AutoGraph />}
+                openSidebar={open}
+                path='/statistic'
               />
             </List>
           )}

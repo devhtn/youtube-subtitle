@@ -10,8 +10,16 @@ const SORTS = [
     label: 'Phổ biến',
     sort: 'completedUsersCount',
     orderOptions: [
-      { label: 'Phổ biến - Tăng dần', order: 'asc' },
-      { label: 'Phổ biến - Giảm dần', order: 'desc' }
+      { label: 'Phổ biến - Tăng dần', order: 'desc' },
+      { label: 'Phổ biến - Giảm dần', order: 'asc' }
+    ]
+  },
+  {
+    label: 'Yêu thích',
+    sort: 'likedUsersCount',
+    orderOptions: [
+      { label: 'Yêu thích - Tăng dần', order: 'desc' },
+      { label: 'Yêu thích - Giảm dần', order: 'asc' }
     ]
   },
   {
@@ -23,11 +31,11 @@ const SORTS = [
     ]
   },
   {
-    label: 'Số lượng từ nâng cao',
+    label: 'Từ vựng nâng cao',
     sort: 'difficult',
     orderOptions: [
-      { label: 'Số lượng từ - Tăng dần', order: 'asc' },
-      { label: 'Số lượng từ - Giảm dần', order: 'desc' }
+      { label: 'Từ vựng nâng cao - Giảm dần', order: 'asc' },
+      { label: 'Từ vựng nâng cao - Tăng dần', order: 'desc' }
     ]
   },
   {
@@ -45,40 +53,40 @@ const ADMIN_SORTS = [
     label: 'Phổ biến',
     sort: 'completedUsersCount',
     orderOptions: [
-      { label: 'Phổ biến', order: 'desc' },
-      { label: 'Kém phổ biến', order: 'asc' }
+      { label: 'Phổ biến - Tăng dần', order: 'desc' },
+      { label: 'Phổ biến - Giảm dần', order: 'asc' }
     ]
   },
   {
     label: 'Thời gian',
     sort: 'createdAt',
     orderOptions: [
-      { label: 'Thời gian - Cũ', order: 'asc' },
-      { label: 'Thời gian - Mới', order: 'desc' }
+      { label: 'Thời gian - Mới dần', order: 'asc' },
+      { label: 'Thời gian - Cũ dần', order: 'desc' }
     ]
   },
   {
-    label: 'Số lượt thích',
+    label: 'Lượt thích',
     sort: 'likedUsersCount',
     orderOptions: [
-      { label: 'Số lượt thích - Tăng dần', order: 'asc' },
-      { label: 'Số lượt thích - Giảm dần', order: 'desc' }
+      { label: 'Lượt thích - Tăng dần', order: 'asc' },
+      { label: 'Lượt thích - Giảm dần', order: 'desc' }
     ]
   },
   {
-    label: 'Số lượt không thích',
+    label: 'Lượt không thích',
     sort: 'dislikedUsersCount',
     orderOptions: [
-      { label: 'Số lượt không thích - Tăng dần', order: 'asc' },
-      { label: 'Số lượt không thích - Giảm dần', order: 'desc' }
+      { label: 'Lượt không thích - Tăng dần', order: 'asc' },
+      { label: 'Lượt không thích - Giảm dần', order: 'desc' }
     ]
   },
   {
-    label: 'Số lượt bình luận',
+    label: 'Lượt bình luận',
     sort: 'commentedCount',
     orderOptions: [
-      { label: 'Số lượt bình luận - Tăng dần', order: 'asc' },
-      { label: 'Số lượt bình luận - Giảm dần', order: 'desc' }
+      { label: 'Lượt bình luận - Tăng dần', order: 'asc' },
+      { label: 'Lượt bình luận - Giảm dần', order: 'desc' }
     ]
   }
 ]
@@ -89,7 +97,6 @@ const SortMenu = ({ value = {}, onChange = () => {} }) => {
   const [selectedOrder, setSelectedOrder] = useState(null)
   const [resultSort, setResultSort] = useState({})
   const auth = useAuth()
-
   // Chọn danh sách sắp xếp theo vai trò người dùng
   const displaySorts = auth.role === 'admin' ? ADMIN_SORTS : SORTS
 

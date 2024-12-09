@@ -30,6 +30,7 @@ const Segment = memo(
       const cleanWord = word
         .replace(/^[^a-zA-Z0-9]+/, '')
         .replace(/[^a-zA-Z0-9]+$/, '')
+        .toLowerCase()
 
       return dictationWords.find((dictationWord) => {
         // Kiểm tra nếu dictationWord là object chứa thuộc tính word
@@ -44,7 +45,7 @@ const Segment = memo(
 
     return (
       <Box
-        id={`segment-${segment.start}`} // Đặt id cho mỗi segment
+        id={isDictation ? undefined : `segment-${segment.start}`} // Đặt id cho mỗi segment
         sx={{
           p: '10px 16px 26px 16px',
           borderBottom: (theme) => theme.app.border,
@@ -59,9 +60,12 @@ const Segment = memo(
         <Box>
           {arrayWords.map((word, index) => {
             const match = findWord(word, segment.dictationWords)
+            let tag = match ? segment.tags[index] || '' : ''
+            // let charCount = match ? match.length + ' Kí tự - ' : ''
+            let charCount = ''
             return (
               <CustomTooltip
-                title={isDictation ? segment.tags[index] || '' : ''}
+                title={isDictation ? charCount + tag : ''}
                 key={index}
               >
                 <Typography
@@ -79,14 +83,16 @@ const Segment = memo(
                   variant='span'
                   fontFamily='Nunito, sans-serif'
                   sx={{
-                    pr: isDictation && !isCheck && 5,
+                    pr: isDictation && isCheck && 1,
+                    textDecoration: isCheck && match ? 'underline' : 'none',
+                    userSelect: isDictation ? 'none' : 'auto', // Chặn sao chép khi isDictation là true
                     '&:hover': {
-                      color: isDictation ? 'primary.main' : '' // Đổi màu khi hover
+                      color: isDictation && match ? 'primary.main' : '' // Đổi màu khi hover
                     }
                   }}
                 >
                   {isDictation && !isCheck && match && !segment.isCompleted
-                    ? `_${word.length}_` + ' '
+                    ? '_'.repeat(match.length) + ' '
                     : word + ' '}
                 </Typography>
               </CustomTooltip>

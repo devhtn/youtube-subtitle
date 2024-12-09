@@ -30,9 +30,10 @@ const ListExercises = () => {
 
   const [isScrolled, setIsScrolled] = useState(false)
   const [exercises, setExercises] = useState(null)
-  const [query, setQuery] = useState(
-    location.search ? null : { sort: 'completedUsersCount', order: 'desc' }
-  )
+  const [query, setQuery] = useState({
+    sort: 'completedUsersCount',
+    order: 'desc'
+  })
   const [page, setPage] = useState(1)
   const [totalPages, setTotalPages] = useState(0)
   const [activeFilter, setActiveFilter] = useState({})
@@ -45,10 +46,14 @@ const ListExercises = () => {
     if (level && level.words && Array.isArray(level.words)) {
       setLevelWords(level.words.map((item) => item.word)) // Cập nhật levelWords khi có dữ liệu
     }
-  }, [level])
+  }, [level.words])
 
   const handleChangePage = async (event, value) => {
     setPage(value)
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth' // Optional: Cho hiệu ứng mượt mà
+    })
   }
   // Điều hướng đến trang xem trước
   const handlePreviewClick = (id) => {
@@ -120,18 +125,17 @@ const ListExercises = () => {
   }, [])
 
   useEffect(() => {
-    if (page === 1) {
-      // Change url
-      navigate({
-        pathname: `/exercise/list`,
-        search: queryString.stringify(
-          { ...query, page },
-          { arrayFormat: 'bracket' }
-        )
-      })
-      filterExercises()
-    }
-  }, [query])
+    // Change url
+    navigate({
+      pathname: `/exercise/list`,
+      search: queryString.stringify(
+        { ...query, page },
+        { arrayFormat: 'bracket' }
+      )
+    })
+    console.log(query)
+    filterExercises()
+  }, [query, levelWords])
 
   useEffect(() => {
     // Change url

@@ -34,6 +34,27 @@ const Comment = memo(({ exercise }) => {
   const [comments, setComments] = useState([])
   const [newComment, setNewComment] = useState({})
 
+  // handle hidden comment
+  function updateCommentStateById(comments, hiddenComment) {
+    return comments.map((comment) => {
+      if (comment.id === hiddenComment.id) {
+        // Chỉ cập nhật trường `state`
+        return { ...comment, state: hiddenComment.state }
+      }
+
+      // Kiểm tra và cập nhật trong replies
+      return {
+        ...comment,
+        replies: updateCommentStateById(comment.replies, hiddenComment)
+      }
+    })
+  }
+
+  const handleHidden = (hiddenComment) => {
+    setComments((prev) => updateCommentStateById(prev, hiddenComment))
+  }
+  // end handle hidden comment
+
   const handleCreate = (newComment) => {
     setNewComment(newComment)
     if (newComment.parentId === null)
@@ -88,7 +109,9 @@ const Comment = memo(({ exercise }) => {
   useEffect(() => {
     ;(async () => {
       try {
-        const comments = await commentApi.getExerciseComments(exercise.id)
+        const comments = await commentApi.getExerciseComments(exercise.id, {
+          state: 'public'
+        })
         setComments(comments)
       } catch (error) {
         console.log(error)
@@ -116,6 +139,8 @@ const Comment = memo(({ exercise }) => {
             handleCreate={handleCreate}
             handleLikeChange={handleLikeChange}
             targetCommentId={commentId}
+            role={auth.role}
+            onHidden={handleHidden}
           />
         ))}
       </Box>

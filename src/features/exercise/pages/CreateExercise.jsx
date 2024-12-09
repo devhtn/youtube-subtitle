@@ -46,6 +46,7 @@ const CreateExercise = () => {
 
   const handleClose = () => {
     setExercise(null)
+    setCurrentSegmentIndex(0)
     reset()
   }
 
@@ -55,6 +56,7 @@ const CreateExercise = () => {
       await exerciseApi.createExercise(exercise)
       if (auth.role === 'admin') {
         setExercise(null)
+        setCurrentSegmentIndex(0)
         customToast.success(`Bài tập đã được chia sẻ thành công!`)
         reset()
       } else {
@@ -73,21 +75,23 @@ const CreateExercise = () => {
 
   const handleSegmentClick = useCallback((segment) => {
     const selection = window.getSelection().toString()
+
     // Nếu có nội dung được chọn (select), không thực hiện click
     if (selection.length > 0) {
       return
     }
 
-    setTimePlay({ start: segment.start })
+    const start = _.get(segment, 'start') // Lấy giá trị segment.start an toàn
+    if (start) {
+      setTimePlay({ start })
+    }
   }, [])
-
   // effect currentSegment change
   useEffect(() => {
-    if (exercise && exercise.segments) {
-      // scrollIntoView
-      const element = document.getElementById(
-        `segment-${exercise.segments[currentSegmentIndex].start}`
-      )
+    const segment = _.get(exercise, `segments[${currentSegmentIndex}]`)
+
+    if (segment && segment.start) {
+      const element = document.getElementById(`segment-${segment.start}`)
       if (element) {
         element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
@@ -140,13 +144,13 @@ const CreateExercise = () => {
                 Thể loại: {exercise.category}
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
-                Từ vựng cần chép: {exercise.totalDictationWords} words
+                Từ vựng bài tập: {exercise.totalDictationWords} words
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
                 Từ vựng gốc: {exercise.lemmaWords?.length} words
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
-                Số lượng từ nâng cao: {exercise.difficult}
+                Từ vựng nâng cao: {exercise.difficult} words
               </Typography>
               <Typography variant='body1' sx={{ mt: '2px' }}>
                 Tốc độ: {exercise.avgSpeed} WPM
@@ -184,6 +188,7 @@ const CreateExercise = () => {
                         />
                       </Box>
                     ))}
+                    <Box height='50vh' sx={{ background: 'white' }}></Box>
                   </Box>
                 </Box>
               </Box>

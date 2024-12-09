@@ -6,6 +6,7 @@ import { Box, List, Popover, Stack, Typography } from '@mui/material'
 
 import NotifyItem from './NotifyItem'
 
+import customToast from '~/config/toast'
 import notifyApi from '~/features/notify/notifyApi'
 import useSocketListener from '~/hooks/useSocketListener'
 import util from '~/utils'
@@ -44,6 +45,7 @@ const NotifyList = ({
 
   const [newNotifies, setNewNotifies] = useState([])
   const [notifies, setNotifies] = useState([])
+  const [deletingNotifyId, setDeletingNotifyId] = useState(null)
 
   const handleGetImage = (el) => {
     const mapping = imageMapping.find((item) => item.type === el.type)
@@ -72,7 +74,22 @@ const NotifyList = ({
   }
 
   const handleDelete = async (id) => {
-    console.log(id)
+    try {
+      // Đánh dấu thông báo đang bị xóa
+      setDeletingNotifyId(id)
+
+      // Đợi hiệu ứng xóa hoàn thành (ví dụ: 500ms)
+      setTimeout(async () => {
+        const deleteNotify = await notifyApi.deleteNotify(id)
+        setNotifies((prev) =>
+          prev.filter((notify) => notify.id !== deleteNotify.id)
+        )
+        customToast.success('Bạn đã xóa 1 thông báo!')
+        setDeletingNotifyId(null) // Xóa đánh dấu sau khi hoàn thành
+      }, 500) // Thời gian tương ứng với hiệu ứng
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const handleMarkAsRead = async (id) => {
@@ -171,11 +188,20 @@ const NotifyList = ({
         {notifies.length > 0 ? (
           <List>
             {notifies.map((el, index) => {
+              const isDeleting = el.id === deletingNotifyId
               let subText = ''
               if (el.type === 'Comment') subText = el.relatedId?.content
               if (el.type === 'Exercise') subText = el.relatedId?.title
               return (
-                <Box key={index} onClick={() => handleClick(el)}>
+                <Box
+                  key={index}
+                  sx={{
+                    opacity: isDeleting ? 0 : 1,
+                    transform: isDeleting ? 'translateX(-20px)' : 'none',
+                    transition: 'opacity 0.5s ease, transform 0.5s ease'
+                  }}
+                  onClick={() => handleClick(el)}
+                >
                   <NotifyItem
                     message={el.message}
                     seen={el.seen}

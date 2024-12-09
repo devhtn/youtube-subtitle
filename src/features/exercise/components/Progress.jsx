@@ -79,13 +79,12 @@ function ProgressWithLabel({ value, variant = 'circular', tooltip }) {
               right: 0,
               bottom: 0,
               display: 'flex',
-              alignItems: 'center',
               justifyContent: 'center'
             }}
           >
             <Typography
               variant='caption'
-              sx={{ color: 'secondary.main', fontSize: '13px' }}
+              sx={{ color: 'white', fontSize: '13px' }}
             >
               {`${Math.round(value)}%`}
             </Typography>

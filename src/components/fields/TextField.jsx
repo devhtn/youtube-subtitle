@@ -15,7 +15,7 @@ const TextField = forwardRef(
         render={({ field, fieldState: { error } }) => (
           <MuiTextField
             {...field}
-            ref={ref} // Truyền ref vào MuiTextField
+            inputRef={ref || field.ref} // Truyền ref vào MuiTextField
             label={label}
             type={type || 'text'}
             error={!!error}

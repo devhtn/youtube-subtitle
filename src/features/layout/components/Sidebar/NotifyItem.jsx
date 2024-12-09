@@ -1,4 +1,4 @@
-import { Delete, MarkEmailRead, ReportProblem } from '@mui/icons-material'
+import { Delete, MarkEmailRead, PriorityHigh } from '@mui/icons-material'
 import {
   Box,
   IconButton,
@@ -51,7 +51,7 @@ const NotifyItem = ({
         />
       ) : (
         <ListItemIcon>
-          <ReportProblem sx={{ fontSize: '40px', color: 'error.main' }} />
+          <PriorityHigh sx={{ fontSize: '40px', color: 'primary.main' }} />
         </ListItemIcon>
       )}
       <ListItemText

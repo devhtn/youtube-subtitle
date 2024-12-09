@@ -1,5 +1,6 @@
 import { forwardRef } from 'react'
 
+import { EmojiEvents } from '@mui/icons-material'
 import {
   Avatar,
   Box,
@@ -41,6 +42,10 @@ const RankingTable = forwardRef(({ users, targetUser }, ref) => {
               <TableRow
                 key={index}
                 ref={user.id === targetUser.id ? ref : null}
+                sx={{
+                  bgcolor:
+                    user.id === targetUser.id ? 'background.highlight' : ''
+                }}
               >
                 <TableCell align='center'>{user.ranking}</TableCell>
                 <TableCell>
@@ -52,11 +57,13 @@ const RankingTable = forwardRef(({ users, targetUser }, ref) => {
                         (user.picture || util.getRoboHashUrl(user.id))
                       }
                     />
-                    <Typography
-                      color={user.id === targetUser.id ? 'primary' : ''}
-                    >
-                      {user.name}
-                    </Typography>
+                    <Typography>{user.name}</Typography>
+                    {index === 0 && (
+                      <EmojiEvents
+                        fontSize='large'
+                        sx={{ color: 'warning.main' }}
+                      />
+                    )}
                   </Box>
                 </TableCell>
                 <TableCell align='center'>{user.countExercise}</TableCell>
@@ -66,7 +73,7 @@ const RankingTable = forwardRef(({ users, targetUser }, ref) => {
             ))}
 
           {/* Nếu targetUser không nằm trong danh sách, thêm hàng với dấu ... */}
-          {isTargetUserInList !== null && !isTargetUserInList && (
+          {isTargetUserInList === null && !isTargetUserInList && (
             <>
               <TableRow>
                 <TableCell colSpan={5} align='center'>
@@ -75,6 +82,7 @@ const RankingTable = forwardRef(({ users, targetUser }, ref) => {
               </TableRow>
               <TableRow
                 ref={ref} // Gắn ref vào targetUser
+                sx={{ bgcolor: 'background.highlight' }}
               >
                 <TableCell align='center'>{targetUser.ranking}</TableCell>
                 <TableCell>
@@ -87,9 +95,7 @@ const RankingTable = forwardRef(({ users, targetUser }, ref) => {
                           util.getRoboHashUrl(targetUser.id))
                       }
                     />
-                    <Typography color={isTargetUserInList ? 'primary' : ''}>
-                      {targetUser.name}
-                    </Typography>
+                    <Typography>{targetUser.name}</Typography>
                   </Box>
                 </TableCell>
                 <TableCell align='center'>{targetUser.countExercise}</TableCell>

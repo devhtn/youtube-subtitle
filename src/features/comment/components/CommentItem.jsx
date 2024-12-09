@@ -25,7 +25,9 @@ const CommentItem = ({
   handleLikeChange,
   onToggleLike,
   userId,
-  targetCommentId = null
+  targetCommentId = null,
+  role,
+  onHidden
 }) => {
   const [reply, setReply] = useState(false)
   const [isShowReplies, setIsShowReplies] = useState(
@@ -36,6 +38,18 @@ const CommentItem = ({
   const commentRef = useRef()
 
   const isSelfComment = comment.userId.id === userId
+
+  const toggleHidden = async () => {
+    try {
+      const hiddenComment = await commentApi.toggleHiddenComment(comment.id)
+      onHidden(hiddenComment)
+      if (hiddenComment.state === 'hidden')
+        customToast.success('Bạn đã ẩn một bình luận thành công!')
+      else customToast.success('Bỏ ẩn comment video thành công!')
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleToggleLike = async () => {
     try {
@@ -115,13 +129,29 @@ const CommentItem = ({
               {util.getTimeSince(comment.createdAt)}
             </Typography>
           </Box>
-          <Typography variant='body2'>
+          <Typography variant='body2' my={1}>
             {comment.mentionUserId?.name && (
-              <Typography variant='span' color='secondary'>
+              <Typography component='span' variant='body2' color='secondary'>
                 @{comment.mentionUserId?.name}{' '}
               </Typography>
             )}
-            {comment.content}
+            {comment.state === 'public' ? (
+              comment.content
+            ) : (
+              <Typography
+                component='span'
+                variant='body2'
+                style={{
+                  color: '#D32F2F', // Đỏ Material Design
+                  backgroundColor: '#FFF4E6', // Nền nhạt
+                  padding: '4px 8px', // Khoảng cách
+                  borderRadius: '4px', // Bo góc
+                  display: 'inline-block' // Hiển thị dạng khối nhỏ gọn
+                }}
+              >
+                Nội dung này đã bị ẩn do không phù hợp!
+              </Typography>
+            )}
           </Typography>
           <Box display='flex' gap={2}>
             <Box display='flex' alignItems='center' gap={1}>
@@ -146,6 +176,18 @@ const CommentItem = ({
                 sx={{ textTransform: 'none', fontSize: '13px' }}
               >
                 Trả lời
+              </Button>
+            )}
+            {role === 'admin' && (
+              <Button
+                onClick={toggleHidden}
+                sx={{
+                  textTransform: 'none',
+                  fontSize: '13px',
+                  color: 'error.main'
+                }}
+              >
+                {comment.state === 'public' ? 'Ẩn' : 'Bỏ ẩn'}
               </Button>
             )}
           </Box>
@@ -183,6 +225,8 @@ const CommentItem = ({
                   onToggleLike={handleLikeChange}
                   userId={userId}
                   targetCommentId={targetCommentId} // Truyền ID cần tìm xuống các reply
+                  role={role}
+                  onHidden={onHidden}
                 />
               ))}
             </Box>

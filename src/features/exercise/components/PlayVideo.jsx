@@ -24,8 +24,7 @@ const PlayVideo = ({
   isPlaying,
   selectedSegmentIndex = null,
   onPlayingChange,
-  exercise = {},
-  comment
+  exercise = {}
 }) => {
   const [loading, setLoading] = useState(true)
   const [playing, setPlaying] = useState(false)
@@ -158,12 +157,6 @@ const PlayVideo = ({
             : currentSegment.transText}
         </Typography>
       </Box>
-      {/* comment */}
-      {comment && (
-        <Box p={2}>
-          {!_.isEmpty(exercise) && <Comment exercise={exercise} />}
-        </Box>
-      )}
     </>
   )
 }

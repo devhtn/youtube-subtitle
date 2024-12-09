@@ -50,6 +50,7 @@ const CommentForm = ({
       if (reply) {
         setReply(false)
         setIsShowReplies(true)
+        setNotifyAdmin(false)
       }
       setOpen(false)
       reset()
@@ -118,7 +119,12 @@ const CommentForm = ({
                       onChange={() => setNotifyAdmin(!notifyAdmin)} // Cập nhật giá trị khi thay đổi
                     />
                   }
-                  label='Nhắc tới admin'
+                  label='Thông báo cho admin nếu cần thiết'
+                  sx={{
+                    '& .MuiFormControlLabel-label': {
+                      fontSize: 14 // Thay đổi font-size ở đây
+                    }
+                  }}
                 />
               </FormControl>
             )}

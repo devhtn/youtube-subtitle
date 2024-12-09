@@ -75,7 +75,8 @@ const CardAction = ({ isCollapse = false, exercise, newComment }) => {
             gap={2}
             padding='2px 10px'
             borderRadius='10px'
-            bgcolor={'background.paper'}
+            border={'1px solid #959595'}
+            bgcolor={'background.highlight'}
           >
             <Stack direction='row' gap='2px'>
               <ThumbUpOutlined

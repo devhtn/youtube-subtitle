@@ -6,6 +6,9 @@ const notifyApi = {
   },
   updateNotify(id, body) {
     return privateAxios.patch(`/notify/${id}`, body)
+  },
+  deleteNotify(id) {
+    return privateAxios.delete(`/notify/${id}`)
   }
 }
 

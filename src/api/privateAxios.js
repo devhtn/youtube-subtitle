@@ -1,8 +1,9 @@
 import axios from 'axios'
-import { jwtDecode } from 'jwt-decode'
 import queryString from 'query-string'
 
 import env from '~/config/env'
+
+// Đối với React và React Router
 
 const privateAxios = axios.create({
   baseURL: `${env.API_URL}/v1`,
@@ -38,17 +39,10 @@ privateAxios.interceptors.response.use(
     return res.data
   },
   (err) => {
-    console.log(err)
     if (err.response.status === 401) {
-      const auth = localStorage.getItem('persist:auth')
-      if (auth && typeof auth === 'string') {
-        const authJSON = JSON.parse(auth)
-        const token = JSON.parse(authJSON?.token)
-        const userRole = jwtDecode(token).role
-        if (['user'].includes(userRole)) window.open('/re-login', '_blank')
-        else window.open('/admin/re-login', '_blank')
-        return null
-      }
+      localStorage.removeItem('persist:auth')
+      // Chuyển hướng về trang đăng nhập
+      window.location.href = '/login'
     }
     return Promise.reject(err.response)
   }

@@ -7,8 +7,11 @@ const commentApi = {
   toggleLikeComment(body) {
     return privateAxios.post(`/comment/toggle-like`, body)
   },
-  getExerciseComments(exerciseId) {
-    return privateAxios.get(`/comment/${exerciseId}`)
+  getExerciseComments(exerciseId, query) {
+    return privateAxios.get(`/comment/${exerciseId}`, { params: query })
+  },
+  toggleHiddenComment(commentId) {
+    return privateAxios.patch(`/comment/${commentId}`)
   }
 }
 

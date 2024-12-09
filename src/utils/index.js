@@ -30,7 +30,7 @@ const getTimeSince = (date) => {
   if (interval >= 1) {
     return `${interval} phút trước`
   }
-  return `${Math.floor(seconds)} giây trước`
+  return `vài giây trước`
 }
 
 const getRoboHashUrl = (userId, set = 'set4') => {

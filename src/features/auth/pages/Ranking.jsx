@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 import { Box, Button, Paper, Stack, Typography } from '@mui/material'
+import _ from 'lodash'
 
 import RankingTable from '../components/RankingTable'
 
@@ -44,7 +45,6 @@ const Ranking = () => {
         const { topUsers, targetUser } = await authApi.getRankingUser()
         setTopUsers(topUsers)
         setTargetUser(targetUser)
-        console.log('targetUserRef:', targetUserRef.current)
       } catch (error) {
         console.log(error)
       }
@@ -69,11 +69,13 @@ const Ranking = () => {
             Tìm vị trí của tôi
           </Button>
         </Stack>
-        <RankingTable
-          users={topUsers}
-          targetUser={targetUser}
-          ref={targetUserRef}
-        />
+        {!_.isEmpty(topUsers) && !_.isEmpty(targetUser) && (
+          <RankingTable
+            users={topUsers}
+            targetUser={targetUser}
+            ref={targetUserRef}
+          />
+        )}
       </Paper>
     </Box>
   )
