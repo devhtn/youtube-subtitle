@@ -55,7 +55,7 @@ const ForgetForm = ({ gobackToSignIn }) => {
               fontWeight: 'bold'
             }}
           >
-            ENGLISH IS EASY
+            HỌC TIẾNG ANH QUA VIDEO YOUTUBE
           </Typography>
         </Box>
         <Box p={2}>

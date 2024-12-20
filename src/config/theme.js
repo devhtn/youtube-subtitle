@@ -27,8 +27,8 @@ const getTheme = (mode) =>
         highlight: mode === 'light' ? '#e2f6ff' : '#34526b'
       },
       text: {
-        primary: mode === 'light' ? '#333333' : '#f1f1f1', // Primary text color
-        secondary: mode === 'light' ? '#555555' : '#dfdfdf' // Secondary text color
+        primary: mode === 'light' ? '#000' : '#f1f1f1', // Primary text color
+        secondary: mode === 'light' ? '#3b3b3b' : '#dfdfdf' // Secondary text color
       },
       divider: mode === 'light' ? '#e0e0e0' : '#333333', // Divider line color
       action: {

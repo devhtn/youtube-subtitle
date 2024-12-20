@@ -21,12 +21,12 @@ const ConfirmDialog = ({
 }) => {
   const [openDialog, setOpenDialog] = useState(false)
   const handleClose = () => {
+    onClose()
     setOpenDialog(false)
-    onClose() // Call the onClose function if provided
   }
   const handleConfirm = () => {
+    setOpenDialog(false)
     onConfirm() // Call the onClose function if provided
-    handleClose()
   }
 
   useEffect(() => {

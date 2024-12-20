@@ -96,7 +96,6 @@ const CommentForm = ({
                   <Typography
                     variant='span'
                     fontWeight={'bold'}
-                    s
                     color={'secondary.main'}
                   >
                     @{replyName}

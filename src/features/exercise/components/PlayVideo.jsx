@@ -22,7 +22,6 @@ const PlayVideo = ({
   rate = 1,
   isHidden = false,
   isPlaying,
-  selectedSegmentIndex = null,
   onPlayingChange,
   exercise = {}
 }) => {
@@ -35,7 +34,6 @@ const PlayVideo = ({
   const [fadeKey, setFadeKey] = useState(0)
 
   const playerRef = useRef(null)
-  const segments = exercise.segments
 
   const handleReady = () => {
     setLoading(false) // Ẩn Skeleton khi video sẵn sàng
@@ -151,10 +149,8 @@ const PlayVideo = ({
           borderBottom: '1px solid #959595'
         }}
       >
-        <Typography fontSize={18} color='secondary'>
-          {selectedSegmentIndex
-            ? segments[selectedSegmentIndex].transText
-            : currentSegment.transText}
+        <Typography fontSize={18} color='secondary' sx={{ userSelect: 'none' }}>
+          {currentSegment.transText}
         </Typography>
       </Box>
     </>

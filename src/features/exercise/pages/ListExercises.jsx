@@ -44,7 +44,7 @@ const ListExercises = () => {
   useEffect(() => {
     // Kiểm tra nếu level và level.words đã có giá trị
     if (level && level.words && Array.isArray(level.words)) {
-      setLevelWords(level.words.map((item) => item.word)) // Cập nhật levelWords khi có dữ liệu
+      setLevelWords(level.words) // Cập nhật levelWords khi có dữ liệu
     }
   }, [level.words])
 

@@ -22,7 +22,7 @@ const Intro = () => {
       {/* Container để giữ nội dung */}
       {/* Tiêu đề chính */}
       <Typography variant='h3' sx={{ fontWeight: 'bold', marginBottom: 2 }}>
-        ENGLISH IS EASY
+        HỌC TIẾNG ANH QUA VIDEO YOUTUBE
       </Typography>
 
       {/* Mô tả ngắn */}

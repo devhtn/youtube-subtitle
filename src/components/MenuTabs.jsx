@@ -10,30 +10,28 @@ function a11yProps(index) {
 }
 
 function MenuTabs({ tabItems, tab = null }) {
-  // Tạo index tabItems chỉ khi tabItems thay đổi
+  // Memoize tabItems chỉ khi tabItems thay đổi
   const tabItemsMemo = useMemo(() => tabItems, [tabItems])
 
-  // Xác định giá trị mặc định cho `Tabs` dựa trên pathname
-  const currentTabIndex =
-    tab !== null
-      ? tab
-      : tabItemsMemo.findIndex((item) => location.pathname === item.pathname)
-
-  const [value, setValue] = useState(
-    currentTabIndex !== -1 ? currentTabIndex : 0
+  // Xác định giá trị mặc định dựa trên pathname hoặc prop tab
+  const currentTabIndex = tabItemsMemo.findIndex(
+    (item) => location.pathname === item.pathname
   )
 
-  // Cập nhật `value` khi có thay đổi pathname
+  const initialTabIndex = tab !== null ? tab : currentTabIndex
+  const [value, setValue] = useState(
+    initialTabIndex !== -1 ? initialTabIndex : 0
+  )
+
   useEffect(() => {
-    if (currentTabIndex !== -1 && currentTabIndex !== value) {
-      setValue(currentTabIndex)
+    // Chỉ thiết lập giá trị khởi tạo khi component được mount
+    if (currentTabIndex !== -1 && tab !== null) {
+      setValue(initialTabIndex)
     }
-  }, [currentTabIndex, value])
+  }, [initialTabIndex])
 
   const handleChange = (event, newValue) => {
-    if (newValue !== value) {
-      setValue(newValue)
-    }
+    setValue(newValue)
   }
 
   return (

@@ -74,7 +74,7 @@ const AdminStatistic = () => {
       icon: <MenuBook sx={{ color: 'white' }} />,
       sub: [
         {
-          subLabel: 'Admin đã tạo',
+          subLabel: 'Video người quản lý đã tạo',
           subValue: exerciseInfo.totalAdminExercises
         },
         {
@@ -174,7 +174,7 @@ const AdminStatistic = () => {
           </Select>
         </FormControl>
         {/* Biểu đồ */}
-        <Stack direction={'column'} gap={10}>
+        <Stack direction={'row'} gap={10}>
           <Box width='100%'>
             {/* Thêm tên biểu đồ */}
             <Typography variant='h6' align='center' sx={{ mb: 2 }}>

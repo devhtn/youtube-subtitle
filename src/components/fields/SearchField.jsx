@@ -163,6 +163,7 @@ const SearchField = ({
                 transition: 'padding-left 0.1s ease-in-out'
               }
             }}
+            spellCheck={false}
             onFocus={() => setIsFocus(true)}
             onBlur={() => setTimeout(() => setIsFocus(false), 200)}
             onChange={(e) => {

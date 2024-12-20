@@ -6,6 +6,9 @@ const wordApi = {
   },
   getForgetWords() {
     return privateAxios.get('/word/forget')
+  },
+  getLevelWords() {
+    return privateAxios.get('/word/level')
   }
 }
 

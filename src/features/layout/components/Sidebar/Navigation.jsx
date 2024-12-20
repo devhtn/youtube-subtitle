@@ -12,7 +12,7 @@ const Navigation = ({ openSidebar, icon, text, path = '' }) => {
   const navigate = useNavigate()
   const location = useLocation()
 
-  const isMatch = location.pathname === path
+  const isMatch = location.pathname === path.split('?')[0]
 
   const handleClick = () => {
     if (!isMatch) navigate(path)

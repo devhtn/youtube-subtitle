@@ -13,6 +13,7 @@ import _ from 'lodash'
 import PlayVideo from '../components/PlayVideo'
 import Segment from '../components/Segment'
 import ScrollTopButton from '~/components/ScrollTopBottom'
+import Comment from '~/features/comment/components/Comment'
 
 import exerciseApi from '../exerciseApi'
 import customToast from '~/config/toast'
@@ -107,6 +108,12 @@ const PreviewExercise = () => {
             timePlay={timePlay}
             comment
           />
+          {/* comment */}
+          {exercise.state === 'public' && (
+            <Box p={2}>
+              {!_.isEmpty(exercise) && <Comment exercise={exercise} />}
+            </Box>
+          )}
         </Box>
         <Box
           width={1 / 3}
@@ -146,7 +153,7 @@ const PreviewExercise = () => {
                     </Box>
                   ))}
                 </Box>
-                <Box height='50vh'></Box>
+                <Box height='calc(50vh - 56px)'></Box>
               </Box>
             </Box>
 

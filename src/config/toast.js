@@ -2,14 +2,15 @@ import { toast } from 'react-toastify'
 
 const defaultToastConfig = {
   position: 'bottom-right',
-  autoClose: 4000,
+  autoClose: 3000,
   hideProgressBar: true,
   closeButton: true,
   closeOnClick: true,
   style: {
     fontSize: '14px',
     width: '400px',
-    right: '76px'
+    right: '76px',
+    fontFamily: "'Nunito', sans-serif" // Thêm font Nunito
   }
 }
 

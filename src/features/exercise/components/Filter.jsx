@@ -29,20 +29,20 @@ const FILTERS = [
   },
   {
     property: 'difficult',
-    label: 'Cấp độ',
+    label: 'Số lượng từ vựng nâng cao',
     items: [
-      { label: 'Dễ', value: '0-50' },
-      { label: 'Trung bình', value: '50-100' },
-      { label: 'Khó', value: '100-' }
+      { label: '0-50 từ', value: '0-50' },
+      { label: '50-100 từ', value: '50-100' },
+      { label: 'Trên 100 từ', value: '100-' }
     ]
   },
   {
     property: 'interaction',
-    label: 'Tương tác',
+    label: 'Tương tác của tôi',
     items: [
-      { label: 'Hoàn thành', value: 'completedUsers' },
-      { label: 'Yêu thích', value: 'likedUsers' },
-      { label: 'Bình luận', value: 'commentedUsers' }
+      { label: 'Đã hoàn thành', value: 'completedUsers' },
+      { label: 'Đã yêu thích', value: 'likedUsers' },
+      { label: 'Đã bình luận', value: 'commentedUsers' }
     ]
   }
 ]
@@ -58,7 +58,10 @@ const ADMIN_FILTERS = [
   {
     property: 'creator',
     label: 'Người chia sẻ',
-    items: [{ label: 'Admin', value: 'admin' }]
+    items: [
+      { label: 'Admin', value: 'admin' },
+      { label: 'Người học', value: 'user' }
+    ]
   }
 ]
 

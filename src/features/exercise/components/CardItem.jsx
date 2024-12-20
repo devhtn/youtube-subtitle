@@ -64,7 +64,7 @@ const CardItem = ({
                 right: -30,
                 backgroundColor: !play.isCompleted
                   ? 'secondary.main'
-                  : 'success.main',
+                  : 'warning.main',
                 width: '100px',
                 height: '20px',
                 display: 'flex',
@@ -230,14 +230,18 @@ const CardItem = ({
             <Progress
               variant='liner'
               value={play.progress}
-              tooltip='Khả năng nhớ, cần ôn lại nếu < 100%'
+              tooltip={
+                play.isCompleted
+                  ? 'Khả năng nhớ, cần ôn lại nếu < 100%'
+                  : 'Tiến độ hoàn thành'
+              }
             />
           )}
           {preview && (
             <Progress
               variant='liner'
               value={preview.progress}
-              tooltip='Tỉ lệ từ đã học'
+              tooltip='Mức độ tương đồng'
             />
           )}
         </CardContent>

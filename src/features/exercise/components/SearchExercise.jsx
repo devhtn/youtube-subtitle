@@ -11,7 +11,6 @@ import exerciseApi from '../exerciseApi'
 const SearchExercise = ({ resultSearch, setResultSearch, setQuery }) => {
   const [searchValue, setSearchValue] = useState('')
   const [suggestions, setSuggestions] = useState([])
-
   const { control, handleSubmit, reset } = useForm()
 
   const onSubmit = async (data) => {
@@ -44,7 +43,7 @@ const SearchExercise = ({ resultSearch, setResultSearch, setQuery }) => {
 
   useEffect(() => {
     ;(async () => {
-      if (searchValue === '') {
+      if (!searchValue) {
         setSuggestions([])
         return
       }

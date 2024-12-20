@@ -152,7 +152,7 @@ const CardAction = ({ isCollapse = false, exercise, newComment }) => {
             Từ vựng gốc: {exercise.lemmaWords?.length} words
           </Typography>
           <Typography variant='body2' sx={{ mt: '2px' }}>
-            Số lượng từ nâng cao: {exercise.difficult}
+            Số lượng từ nâng cao: {exercise.difficult} words
           </Typography>
           <Typography variant='body2' sx={{ mt: '2px' }}>
             Tốc độ: {exercise.avgSpeed} WPM

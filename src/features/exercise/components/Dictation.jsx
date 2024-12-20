@@ -48,9 +48,10 @@ const Dictation = ({
   const [openSegmentNoteForm, setOpenSegmentNoteForm] = useState(false)
   const [segmentNote, setSegmentNote] = useState(null)
   const [openNextForm, setOpenNextForm] = useState(false)
+  const [isExactly, setIsExactly] = useState(null)
+
   const segments = exercise.segments
   const { control, handleSubmit, reset } = useForm({})
-
   const inputRef = useRef()
 
   const handleNext = () => {
@@ -79,6 +80,7 @@ const Dictation = ({
       .toLowerCase()
       .split(' ')
       .filter((word) => word.length > 0)
+
     let totalCorrectedWords = 0
     const resultDictationWords = segments[segmentIndex].dictationWords.map(
       (dictationWord) => {
@@ -111,30 +113,43 @@ const Dictation = ({
       onChangeDictation(updateDictation)
 
       // Trường hợp segment đã hoàn thành
-      if (isCompleted) {
+      if (updateDictation.segments[segmentIndex]?.isCompleted) {
+        //
+        setIsExactly(true)
+
         // validSegmentIndexs chứa danh sách index hợp lệ thuộc về exercise.segments hoặc dictation.segments
         // el chính là index thuộc về segments
         setValidSegmentIndexs((prev) =>
           prev.filter((el) => el !== segmentIndex)
         )
+
         dispatch(addLevelWords(newLevelWords))
+
         // Thống kê trường hợp segment hoàn thành
         await statisticApi.updateDay({
           totalCorrectedWords,
           newLevelWordsCount: newLevelWords.length
         })
-      } else if (totalCorrectedWords > 0)
-        // Thống kê trường hợp không hoàn thành segment
-        await statisticApi.updateDay({ totalCorrectedWords })
+
+        //
+        customToast.update(
+          id,
+          `Chúc mừng! Bạn đã trả lời chính xác!`,
+          'success'
+        )
+      } else {
+        customToast.update(id, 'Cố gắng hơn ở lần sau bạn nhé!', 'error')
+        if (totalCorrectedWords > 0) {
+          //
+          setIsExactly(false)
+
+          // Thống kê trường hợp không hoàn thành segment
+          await statisticApi.updateDay({ totalCorrectedWords })
+        }
+      }
     } catch (error) {
       console.log(error)
     }
-
-    if (isCompleted)
-      customToast.update(id, `Chúc mừng! Bạn đã trả lời chính xác!`, 'success')
-    else customToast.update(id, 'Cố gắng hơn ở lần sau bạn nhé!', 'error')
-
-    customToast.stop(id)
   }
 
   const handleKeyPress = (e) => {
@@ -146,8 +161,14 @@ const Dictation = ({
   }
 
   const handleLose = async () => {
-    customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
+    //
+    setIsExactly(false)
     handleCheck(true)
+
+    //
+    customToast.error('Cố gắng hơn ở lần sau bạn nhé!')
+
+    //
     try {
       const { updateDictation } = await exerciseApi.updateDictationSegment(
         dictation.id,
@@ -190,6 +211,8 @@ const Dictation = ({
     // Tìm chỉ số của phần tử này trong mảng gốc segments
 
     const playTime = handlePlayTime(randomValidSegmentIndex)
+
+    console.log(playTime)
     setPlayTime(playTime)
 
     // Cập nhật trạng thái
@@ -217,7 +240,8 @@ const Dictation = ({
   }
 
   const handleAfterNext = () => {
-    setOpenNextForm(true)
+    if (isExactly) handleNext()
+    else setOpenNextForm(true)
   }
 
   const handleFormSubmit = (e) => {
@@ -394,7 +418,7 @@ const Dictation = ({
                         </Typography>
                       </>
                     }
-                    onConfirm={() => navigate('/exercise/playlist')}
+                    onClose={() => navigate('/exercise/playlist')}
                   />
                 </Box>
               </FormControl>

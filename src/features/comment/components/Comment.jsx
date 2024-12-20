@@ -17,10 +17,17 @@ const Comment = memo(({ exercise }) => {
   const auth = useAuth()
 
   const [commentNotify, setCommentNotify] = useState(null)
+  const [likeCommentNotify, setLikeCommentNotify] = useState(null)
 
   useSocketListener(auth.id, 'comment', (data) => {
     setCommentNotify(data)
   })
+
+  useSocketListener(auth.id, 'likecomment', (data) => {
+    setLikeCommentNotify(data)
+  })
+
+  console.log(likeCommentNotify)
 
   // Lắng nghe sự kiện 'comment'
 
@@ -105,6 +112,12 @@ const Comment = memo(({ exercise }) => {
       handleCreate(commentNotify.relatedId)
     }
   }, [commentNotify])
+
+  useEffect(() => {
+    if (likeCommentNotify) {
+      handleLikeChange(likeCommentNotify)
+    }
+  }, [likeCommentNotify])
 
   useEffect(() => {
     ;(async () => {

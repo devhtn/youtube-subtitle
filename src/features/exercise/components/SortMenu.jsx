@@ -10,8 +10,8 @@ const SORTS = [
     label: 'Phổ biến',
     sort: 'completedUsersCount',
     orderOptions: [
-      { label: 'Phổ biến - Tăng dần', order: 'desc' },
-      { label: 'Phổ biến - Giảm dần', order: 'asc' }
+      { label: 'Phổ biến - Giảm dần', order: 'desc' },
+      { label: 'Phổ biến - Tăng dần', order: 'asc' }
     ]
   },
   {

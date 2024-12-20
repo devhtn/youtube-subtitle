@@ -34,7 +34,7 @@ const PlayExercise = () => {
   const [currentTime, setCurrentTime] = useState(0)
   const [selectedSegmentIndex, setSelectedSegmentIndex] = useState(null)
   const [currentSegmentIndex, setCurrentSegmentIndex] = useState(0)
-  const [isCheck, setIsCheck] = useState(false)
+  const [isCheck, setIsCheck] = useState(true)
   const [end, setEnd] = useState(null)
   const [timePlay, setTimePlay] = useState({})
   const [isPreview, setIsPreview] = useState(false)
@@ -154,7 +154,7 @@ const PlayExercise = () => {
             <Box mt={2}>
               {isCheck &&
                 isPreview &&
-                dictation.segments[currentSegmentIndex].note && (
+                dictation?.segments?.[currentSegmentIndex]?.note && (
                   <SegmentNote
                     note={dictation.segments[currentSegmentIndex].note}
                   />
@@ -227,6 +227,7 @@ const PlayExercise = () => {
                           />
                         </Box>
                       ))}
+                      <Box height='calc(50vh - 56px)'></Box>
                     </Box>
                   </Box>
                 </Box>

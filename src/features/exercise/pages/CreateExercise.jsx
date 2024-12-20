@@ -45,8 +45,9 @@ const CreateExercise = () => {
   }
 
   const handleClose = () => {
-    setExercise(null)
+    setTimePlay({})
     setCurrentSegmentIndex(0)
+    setExercise(null)
     reset()
   }
 
@@ -55,10 +56,8 @@ const CreateExercise = () => {
     try {
       await exerciseApi.createExercise(exercise)
       if (auth.role === 'admin') {
-        setExercise(null)
-        setCurrentSegmentIndex(0)
         customToast.success(`Bài tập đã được chia sẻ thành công!`)
-        reset()
+        handleClose()
       } else {
         navigate('/exercise/playlist')
         customToast.success(`Lưu bài tập thành công! Chăm chỉ bạn nhé!`)
@@ -128,7 +127,9 @@ const CreateExercise = () => {
           </>
         }
         onClose={() => navigate(-1)}
-        onConfirm={() => navigate('/exercise/playlist')}
+        onConfirm={() => {
+          navigate('/exercise/playlist')
+        }}
       />
       {exercise ? (
         <Box sx={{ display: 'flex' }}>

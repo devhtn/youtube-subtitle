@@ -23,6 +23,7 @@ const TextField = forwardRef(
             fullWidth
             size='small'
             margin='normal'
+            spellCheck={false}
             sx={{
               '& .MuiTextField-root': {
                 backgroundColor: 'background.paper' // Nền phần input

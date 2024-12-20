@@ -103,6 +103,7 @@ const Account = ({ openSidebar }) => {
   const [highlight, setHighlight] = useState(false)
   const [notifyAnchorEl, setNotifyAnchorEl] = useState(null)
   const [newNotifies, setNewNotifies] = useState([])
+  const [notifyExpired, setNotifyExpired] = useState(null)
   const open = Boolean(anchorEl)
 
   // handle notify
@@ -154,7 +155,9 @@ const Account = ({ openSidebar }) => {
         setUser(user)
         //
         if (user.role === 'user' && level.words.length === 0) {
-          const { levelWords } = await statisticApi.createNewDay()
+          const { levelWords, notifyExpired } =
+            await statisticApi.createNewDay()
+          setNotifyExpired(notifyExpired || {})
 
           dispatch(addLevelWords(levelWords))
         }
@@ -216,7 +219,7 @@ const Account = ({ openSidebar }) => {
               }}
             />
           </ListItemButton>
-          {user.id && (
+          {user.id && notifyExpired !== null && (
             <NotifyList
               anchorEl={notifyAnchorEl}
               open={isNotifyOpen}
